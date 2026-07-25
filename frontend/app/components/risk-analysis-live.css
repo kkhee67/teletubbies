@@ -1,0 +1,138 @@
+.result-items-empty {
+  background: #f8f9f7;
+  border: 1px dashed #d6ddd7;
+  border-radius: 15px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 18px;
+}
+
+.risk-score-card {
+  align-items: center;
+  background: white;
+  border: 1px solid #dce2dd;
+  border-radius: 19px;
+  display: grid;
+  gap: 34px;
+  grid-template-columns: 210px 1fr;
+  margin-top: 18px;
+  padding: 25px;
+}
+
+.risk-score-copy {
+  display: grid;
+  gap: 7px;
+}
+
+.risk-score-copy span {
+  color: #7e8881;
+  font-size: 12px;
+}
+
+.risk-score-copy strong {
+  color: var(--stage-color);
+  font-size: 29px;
+}
+
+.risk-score-track {
+  background: #e3e9e5;
+  border-radius: 999px;
+  height: 9px;
+  overflow: hidden;
+}
+
+.risk-score-track span {
+  background: var(--stage-color);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.risk-score-detail p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 12px 0 0;
+}
+
+.analysis-recommendation {
+  align-items: center;
+  background: #fff8e8;
+  border: 1px solid #ead8aa;
+  border-radius: 19px;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 24px 25px;
+}
+
+.analysis-recommendation div > span {
+  color: #977023;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.analysis-recommendation h3 {
+  font-size: 19px;
+  margin: 8px 0 0;
+}
+
+.analysis-recommendation p {
+  color: #695d42;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.analysis-recommendation > strong {
+  background: #f1dfb2;
+  border-radius: 999px;
+  color: #755719;
+  flex: 0 0 auto;
+  font-size: 11px;
+  padding: 8px 11px;
+}
+
+
+.reference-signal-panel {
+  background: white;
+  border: 1px solid #dce2dd;
+  border-radius: 21px;
+  box-shadow: inset 0 4px 0 #4f769f;
+  grid-column: 1 / -1;
+  padding: 25px;
+}
+
+.reference-signal-panel .list-panel-heading > strong {
+  color: #41698f;
+}
+
+.reference-signal-note {
+  border-top: 1px solid #e5e9e5;
+  color: #758078;
+  font-size: 11px;
+  line-height: 1.55;
+  margin: 17px 0 0;
+  padding-top: 13px;
+}
+
+@media (max-width: 600px) {
+  .reference-signal-panel {
+    padding: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .risk-score-card {
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-recommendation {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

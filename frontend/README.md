@@ -1,49 +1,52 @@
 # 안심계약 레이더
 
-주소와 계약 예정 보증금으로 시작해 반환보증 상태, 확인된 위험신호,
-확인이 필요한 정보와 분석 신뢰도를 구분해 보여주는 계약 전 의사결정
-지원 서비스입니다.
+주소와 계약 예정 보증금을 바탕으로 반환보증 상태, 위험 신호와 계약 전
+확인 사항을 보여주는 프론트엔드입니다. 화면은 개발용 샘플 데이터가 아닌
+백엔드 분석 API 응답을 기준으로 렌더링합니다.
 
-## 현재 구현된 기능
+## 백엔드 연결 흐름
 
-- 실제 주소 입력을 위한 입력 화면
-- 계약 예정 보증금과 선택형 상황 설명
-- 매물정보 확인 화면
-  - 주택유형
-  - 참고 주택가액
-  - 근저당
-  - 압류·가압류
-  - 공동담보
-  - 항목별 출처와 기준일
-- 반환보증 상태 6단계
-  - `estimated_eligible`
-  - `officially_eligible`
-  - `applied`
-  - `enrolled`
-  - `ineligible`
-  - `unknown`
-- 반환보증 화면 그룹 4개
-  - 확인 필요
-  - 가입 절차 진행
-  - 보호장치 확보
-  - 심층분석 필요
-- 분석 결과 화면
-  - 위험단계
-  - 확인된 위험신호
-  - 확인이 필요한 정보
-  - 분석 신뢰도
-- AI 유사상담사례 화면
-  - 상담문장과 위험맥락 유사도
-  - 현재 계약과 일치하거나 다른 요인
-  - 고등학생도 이해하기 쉬운 설명
-  - 동일 피해를 예측하지 않는다는 안내
+사용자가 주소를 입력하고 제출하면 다음 요청을 순서대로 보냅니다.
 
-현재 데이터는 API 연결 전 개발용 샘플이며, 데이터 파일을 실제 팀 API
-응답으로 교체할 수 있도록 화면과 분리되어 있습니다.
+1. `GET /properties/search?q={주소}`로 매물을 검색합니다.
+2. 검색 결과의 첫 번째 `property_id`를 가져옵니다.
+3. 해당 `property_id`, 입력 주소, 보증금, 월세와 사용자 메모를 담아
+   `POST /analyze`를 호출합니다.
+4. 분석 응답을 매물 요약, 반환보증 상태, 위험 분석, 유사 사례와 행동
+   체크리스트 화면에 표시합니다.
+
+분석 요청 예시는 다음과 같습니다.
+
+```json
+{
+  "property_id": "P001",
+  "address_query": "수영구",
+  "planned_deposit": 200000000,
+  "monthly_rent": 0,
+  "user_note": "잔금일에 근저당을 말소한다고 들었습니다."
+}
+```
+
+검색 결과가 없거나 네트워크·서버 응답에 문제가 있으면 샘플로 대체하지
+않고 사용자에게 오류 상태를 표시합니다.
+
+## 환경 변수
+
+`.env.example`을 `.env.local`로 복사한 뒤 백엔드 주소를 환경에 맞게
+설정합니다.
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
+```
+
+환경 변수가 없으면 `http://127.0.0.1:8000`을 기본값으로 사용합니다.
+배포 환경에서는 브라우저가 접근 가능한 백엔드 URL과 해당 도메인을
+허용하는 백엔드 CORS 설정이 필요합니다.
 
 ## 실행 방법
 
-Node.js 22.13 이상이 필요합니다.
+Node.js 22.13 이상이 필요합니다. 백엔드를 먼저 실행한 다음 프론트엔드를
+실행합니다.
 
 ```bash
 pnpm install
@@ -52,26 +55,30 @@ pnpm run dev
 
 브라우저에서 터미널에 표시된 로컬 주소로 접속합니다.
 
-## 빌드 확인
+## 검증
 
 ```bash
-pnpm run build
+pnpm run test
+pnpm run lint
 ```
+
+`test` 명령은 프로덕션 빌드와 서버 렌더링, API 호출 및 응답 변환에 대한
+회귀 검사를 수행합니다.
 
 ## 주요 파일
 
 ```text
 app/
 ├─ components/
+│  ├─ ActionChecklist.tsx
 │  ├─ PropertySummary.tsx
 │  ├─ GuaranteeStatusCard.tsx
 │  ├─ RiskAnalysis.tsx
 │  └─ SimilarCaseCard.tsx
-├─ data/
-│  ├─ propertySample.ts
-│  ├─ guaranteeStates.ts
-│  ├─ analysisSample.ts
-│  └─ similarCasesSample.ts
+├─ integration/
+│  ├─ api.ts
+│  ├─ adapters.ts
+│  └─ types.ts
 ├─ globals.css
 ├─ layout.tsx
 └─ page.tsx
@@ -79,9 +86,13 @@ app/
 
 ## 통합 원칙
 
-- 가입 가능과 가입 완료를 구분합니다.
-- `enrolled` 상태에서만 보호장치 확보로 표현합니다.
-- 확인된 위험과 미확인 정보를 서로 다른 목록으로 표시합니다.
-- 분석 신뢰도는 계약 안전도가 아니라 정보 확인 정도입니다.
-- 실제 계약에서는 최신 공식 서류와 반환보증 가입 여부를 다시
-  확인해야 합니다.
+- `property_summary`는 매물 요약 화면에 표시합니다.
+- `guarantee_branch`, `guarantee_message`,
+  `property_summary.guarantee_status`는 반환보증 상태 화면에 표시합니다.
+- `risk_stage`, `risk_score`, `signals`, `checklist`,
+  `recommended_action`은 위험 분석과 행동 체크리스트에 표시합니다.
+- 가입 가능과 실제 가입 완료를 구분하며, 실제 가입 완료가 확인된 경우에만
+  보호장치가 확보되었다고 표현합니다.
+- 위험 점수는 피해 확률이나 계약 안전 보증이 아닙니다.
+- 실제 계약에서는 최신 공식 서류와 반환보증 가입 여부를 다시 확인해야
+  합니다.

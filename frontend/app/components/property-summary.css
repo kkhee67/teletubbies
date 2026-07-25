@@ -33,11 +33,11 @@
   margin: 15px 0 0;
 }
 
-.sample-data-badge {
-  background: #fff3d2;
-  border: 1px solid #eddba8;
+.api-data-badge {
+  background: #e1f2e8;
+  border: 1px solid #b9d9c7;
   border-radius: 999px;
-  color: #765813;
+  color: #176b4d;
   flex: 0 0 auto;
   font-size: 12px;
   font-weight: 750;
@@ -104,6 +104,11 @@
   font-size: 13px;
   line-height: 1.5;
   margin: 0;
+}
+
+.source-guide code,
+.integration-note code {
+  font-size: .92em;
 }
 
 .property-grid {
@@ -315,7 +320,7 @@
     gap: 18px;
   }
 
-  .sample-data-badge {
+  .api-data-badge {
     justify-self: start;
   }
 
