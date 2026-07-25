@@ -1,0 +1,1304 @@
+{
+  "source_directory": "provided_data",
+  "files": [
+    {
+      "file": "비식별_임대차상담데이터.xlsx",
+      "bytes": 427049,
+      "units": [
+        {
+          "name": "비식별_상담데이터",
+          "profile": {
+            "rows": 938,
+            "columns_count": 16,
+            "duplicate_rows": 0,
+            "missing_cells": 430,
+            "columns": [
+              {
+                "name": "일련번호",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 938,
+                "sample_values": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 938,
+                  "invalid_count": 0,
+                  "min": 1,
+                  "median": 469.5,
+                  "max": 938,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "자료군",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 11,
+                "sample_values": [
+                  "G01",
+                  "G02",
+                  "G03",
+                  "G04",
+                  "G05"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "상담월",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 12,
+                "sample_values": [
+                  "2024-10",
+                  "2024-11",
+                  "2024-12",
+                  "미상",
+                  "2025-02"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "지역(시도)",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 18,
+                "sample_values": [
+                  "서울",
+                  "부산",
+                  "충남",
+                  "경기",
+                  "대전"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "지역(시군구)",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 141,
+                "sample_values": [
+                  "동작구",
+                  "강서구",
+                  "서산시",
+                  "연제구",
+                  "안성시"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "보증금구간",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 5,
+                "sample_values": [
+                  "1억~2억",
+                  "3억 이상",
+                  "1억 미만",
+                  "2억~3억",
+                  "미상"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "계약상태",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "계약중(종료예정)",
+                  "계약종료",
+                  "미상"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "주택유형",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 8,
+                "sample_values": [
+                  "다세대주택",
+                  "미상",
+                  "아파트",
+                  "빌라",
+                  "다가구주택"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "선순위권리",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 4,
+                "sample_values": [
+                  "근저당설정",
+                  "압류·가압류",
+                  "미상",
+                  "선순위존재"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "보증보험",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "가입",
+                  "미상",
+                  "미가입"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "분쟁유형",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 8,
+                "sample_values": [
+                  "경매·공매",
+                  "기타·일반문의",
+                  "묵시적갱신분쟁",
+                  "전세사기",
+                  "보증금미반환"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "진행단계",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 7,
+                "sample_values": [
+                  "HUG이행청구",
+                  "임차권등기",
+                  "상담·검토",
+                  "소송제기",
+                  "판결·집행"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "상황요약",
+                "dtype": "str",
+                "missing_count": 3,
+                "missing_rate": 0.0032,
+                "unique_count": 932,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "담당자의견",
+                "dtype": "str",
+                "missing_count": 46,
+                "missing_rate": 0.049,
+                "unique_count": 312,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "특이사항",
+                "dtype": "str",
+                "missing_count": 381,
+                "missing_rate": 0.4062,
+                "unique_count": 473,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "상담변호사",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "변호사A",
+                  "미상",
+                  "변호사B"
+                ],
+                "sample_values_redacted": false
+              }
+            ]
+          }
+        },
+        {
+          "name": "데이터정의서",
+          "profile": {
+            "rows": 37,
+            "columns_count": 3,
+            "duplicate_rows": 3,
+            "missing_cells": 40,
+            "columns": [
+              {
+                "name": "DIVE 2026 발제 데이터 : 비식별 임대차 상담 데이터 정의서",
+                "dtype": "str",
+                "missing_count": 16,
+                "missing_rate": 0.4324,
+                "unique_count": 21,
+                "sample_values": [
+                  "1. 개요",
+                  "2. 컬럼 정의",
+                  "컬럼",
+                  "일련번호",
+                  "자료군"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "Unnamed: 1",
+                "dtype": "str",
+                "missing_count": 16,
+                "missing_rate": 0.4324,
+                "unique_count": 10,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "Unnamed: 2",
+                "dtype": "str",
+                "missing_count": 8,
+                "missing_rate": 0.2162,
+                "unique_count": 29,
+                "sample_values": [],
+                "sample_values_redacted": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "분포요약",
+          "profile": {
+            "rows": 66,
+            "columns_count": 3,
+            "duplicate_rows": 6,
+            "missing_cells": 87,
+            "columns": [
+              {
+                "name": "주요 컬럼 분포",
+                "dtype": "str",
+                "missing_count": 59,
+                "missing_rate": 0.8939,
+                "unique_count": 7,
+                "sample_values": [
+                  "보증금구간",
+                  "계약상태",
+                  "분쟁유형",
+                  "진행단계",
+                  "보증보험"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "Unnamed: 1",
+                "dtype": "str",
+                "missing_count": 14,
+                "missing_rate": 0.2121,
+                "unique_count": 48,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "Unnamed: 2",
+                "dtype": "float64",
+                "missing_count": 14,
+                "missing_rate": 0.2121,
+                "unique_count": 43,
+                "sample_values": [],
+                "sample_values_redacted": true,
+                "numeric": {
+                  "valid_count": 52,
+                  "invalid_count": 0,
+                  "min": 1.0,
+                  "median": 60.0,
+                  "max": 576.0,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "file": "임대보증 대위변제_합성데이터.csv",
+      "bytes": 2265011,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 23107,
+            "columns_count": 6,
+            "duplicate_rows": 2417,
+            "missing_cells": 23097,
+            "columns": [
+              {
+                "name": "상품명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2,
+                "sample_values": [
+                  "임대보증금보증(세대_사용검사후)",
+                  "개인임대사업자임대보증금보증"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "최초 발급일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1060,
+                "sample_values": [
+                  "2025-12-19",
+                  "2023-09-12",
+                  "2024-05-24",
+                  "2025-11-25",
+                  "2024-08-06"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "개인사업자/법인사업자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2,
+                "sample_values": [
+                  "법인사업자",
+                  "개인사업자"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "대위변제금액(보증이행)",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2241,
+                "sample_values": [
+                  62400000,
+                  198000000,
+                  150000000,
+                  189400000,
+                  183300000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 23107,
+                  "invalid_count": 0,
+                  "min": 128000,
+                  "median": 173300000.0,
+                  "max": 575000000,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "주택형태",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 8,
+                "sample_values": [
+                  "아파트",
+                  "기타(오피스텔)",
+                  "다세대주택",
+                  "다가구주택",
+                  "연립주택"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "Unnamed: 5",
+                "dtype": "str",
+                "missing_count": 23097,
+                "missing_rate": 0.9996,
+                "unique_count": 3,
+                "sample_values": [],
+                "sample_values_redacted": true
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    },
+    {
+      "file": "임대보증 사고현황_합성 데이터.csv",
+      "bytes": 3251082,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 25687,
+            "columns_count": 8,
+            "duplicate_rows": 3,
+            "missing_cells": 1313,
+            "columns": [
+              {
+                "name": "채무자 법인/개인사업자 구분",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2,
+                "sample_values": [
+                  "개인사업자",
+                  "법인사업자"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "보증종료일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1520,
+                "sample_values": [
+                  "2024-10-24",
+                  "2023-11-22",
+                  "2022-09-26",
+                  "2023-08-06",
+                  "2023-08-27"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "사고사유",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "기간만료미반환",
+                  "경공매미반환",
+                  "공사인정사유"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "사업장지역상세",
+                "dtype": "str",
+                "missing_count": 1313,
+                "missing_rate": 0.0511,
+                "unique_count": 5885,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "주택형태",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 8,
+                "sample_values": [
+                  "기타(오피스텔)",
+                  "다세대주택",
+                  "다가구주택",
+                  "아파트",
+                  "연립주택"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "임대보증금 금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1008,
+                "sample_values": [
+                  450000000,
+                  380000000,
+                  245000000,
+                  268000000,
+                  270000000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 25687,
+                  "invalid_count": 0,
+                  "min": 5000000,
+                  "median": 181000000.0,
+                  "max": 510000000,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "임대보증금 금액 대비 사고금액 (%)",
+                "dtype": "float64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1,
+                "sample_values": [
+                  100.0
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 25687,
+                  "invalid_count": 0,
+                  "min": 100.0,
+                  "median": 100.0,
+                  "max": 100.0,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "보증종료일자 기준 사고발생일자 소요일",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 589,
+                "sample_values": [
+                  -42,
+                  60,
+                  -59,
+                  5,
+                  63
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 25687,
+                  "invalid_count": 0,
+                  "min": -350,
+                  "median": 11.0,
+                  "max": 309,
+                  "negative_count": 11812,
+                  "zero_count": 109
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    },
+    {
+      "file": "전세 및 임대채무자 경매현황_합성데이터.csv",
+      "bytes": 3892973,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 32542,
+            "columns_count": 7,
+            "duplicate_rows": 59,
+            "missing_cells": 7854,
+            "columns": [
+              {
+                "name": "상품명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "전세보증금반환보증",
+                  "개인임대사업자임대보증금보증",
+                  "임대보증금보증(세대_사용검사후)"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "경공매구분",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 4,
+                "sample_values": [
+                  "강제경매",
+                  "임의경매",
+                  "공매",
+                  "강제관리"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "경매신청일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1403,
+                "sample_values": [
+                  "2025-10-16",
+                  "2024-12-17",
+                  "2023-12-01",
+                  "2025-05-07",
+                  "2025-06-05"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "배당금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 9417,
+                "sample_values": [
+                  0,
+                  105241537,
+                  75820496,
+                  100617403,
+                  96158235
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 32542,
+                  "invalid_count": 0,
+                  "min": 0,
+                  "median": 0.0,
+                  "max": 1998169399,
+                  "negative_count": 0,
+                  "zero_count": 21115
+                }
+              },
+              {
+                "name": "대위변제금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1702,
+                "sample_values": [
+                  136000000,
+                  218000000,
+                  135000000,
+                  230000000,
+                  200000000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 32542,
+                  "invalid_count": 0,
+                  "min": 4761,
+                  "median": 218000000.0,
+                  "max": 700000000,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "물건종류",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 14,
+                "sample_values": [
+                  "다세대주택",
+                  "연립주택",
+                  "아파트",
+                  "기타건물",
+                  "다가구주택"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "물건 소재지",
+                "dtype": "str",
+                "missing_count": 7854,
+                "missing_rate": 0.2413,
+                "unique_count": 5465,
+                "sample_values": [],
+                "sample_values_redacted": true
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    },
+    {
+      "file": "전세 및 임대채무자 배당내역_합성 데이터.csv",
+      "bytes": 2906437,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 28961,
+            "columns_count": 8,
+            "duplicate_rows": 0,
+            "missing_cells": 0,
+            "columns": [
+              {
+                "name": "상품명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2,
+                "sample_values": [
+                  "전세보증금반환보증",
+                  "개인임대사업자임대보증금보증"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "경/공매신청일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1412,
+                "sample_values": [
+                  "2025-03-06",
+                  "2024-11-19",
+                  "2023-05-26",
+                  "2024-09-02",
+                  "2023-12-18"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "신청청구금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 5735,
+                "sample_values": [
+                  151191001,
+                  197597807,
+                  300000000,
+                  387586576,
+                  95000000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 28961,
+                  "invalid_count": 0,
+                  "min": 0,
+                  "median": 214000000.0,
+                  "max": 25111000000,
+                  "negative_count": 0,
+                  "zero_count": 495
+                }
+              },
+              {
+                "name": "채권구분",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "소송대지급금",
+                  "구상채권(신상품)",
+                  "구상채권"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "발생일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1712,
+                "sample_values": [
+                  "2025-04-18",
+                  "2025-01-10",
+                  "2023-09-12",
+                  "2024-12-19",
+                  "2023-06-09"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "발생금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 10975,
+                "sample_values": [
+                  2863500,
+                  2788370,
+                  551000,
+                  2768500,
+                  2611930
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 28961,
+                  "invalid_count": 0,
+                  "min": 450,
+                  "median": 3359640.0,
+                  "max": 700000000,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "발생금액대비 총회수금액(%)",
+                "dtype": "float64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 6057,
+                "sample_values": [
+                  80.73,
+                  100.0,
+                  99.8,
+                  98.11,
+                  77.72
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 28961,
+                  "invalid_count": 0,
+                  "min": 0.0,
+                  "median": 100.0,
+                  "max": 100.0,
+                  "negative_count": 0,
+                  "zero_count": 8
+                }
+              },
+              {
+                "name": "신청일자대비 배당 소요일",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 849,
+                "sample_values": [
+                  454,
+                  568,
+                  433,
+                  574,
+                  504
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 28961,
+                  "invalid_count": 0,
+                  "min": -275,
+                  "median": 456.0,
+                  "max": 1710,
+                  "negative_count": 38,
+                  "zero_count": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    },
+    {
+      "file": "전세보증 대위변제_합성 데이터.csv",
+      "bytes": 6540197,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 66579,
+            "columns_count": 5,
+            "duplicate_rows": 133,
+            "missing_cells": 5730,
+            "columns": [
+              {
+                "name": "상품명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2,
+                "sample_values": [
+                  "전세보증금반환보증",
+                  "전세자금대출특약보증"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "보증상태",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2,
+                "sample_values": [
+                  "해지",
+                  "정상"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "사고접수일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1460,
+                "sample_values": [
+                  "2023-02-21",
+                  "2023-09-14",
+                  "2023-07-19",
+                  "2023-11-16",
+                  "2023-02-20"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "대위변제금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 5704,
+                "sample_values": [
+                  237000000,
+                  307000000,
+                  248000000,
+                  346500000,
+                  245000000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 66579,
+                  "invalid_count": 0,
+                  "min": 4761,
+                  "median": 199000000.0,
+                  "max": 700000000,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "시도구",
+                "dtype": "str",
+                "missing_count": 5730,
+                "missing_rate": 0.0861,
+                "unique_count": 10670,
+                "sample_values": [],
+                "sample_values_redacted": true
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    },
+    {
+      "file": "전세사고(임대보증금 대비 사고금액)_합성 데이터.csv",
+      "bytes": 5349379,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 69435,
+            "columns_count": 5,
+            "duplicate_rows": 9,
+            "missing_cells": 0,
+            "columns": [
+              {
+                "name": "보증종료일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2387,
+                "sample_values": [
+                  "2024-08-29",
+                  "2023-07-10",
+                  "2023-06-07",
+                  "2024-05-31",
+                  "2023-11-15"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "시도명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 841,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "주택유형",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 10,
+                "sample_values": [
+                  "다세대주택",
+                  "오피스텔",
+                  "연립주택",
+                  "단독주택",
+                  "다가구주택"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "임대보증금액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1481,
+                "sample_values": [
+                  168000000,
+                  238000000,
+                  139000000,
+                  280000000,
+                  283000000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 69435,
+                  "invalid_count": 0,
+                  "min": 3000000,
+                  "median": 200000000.0,
+                  "max": 700000000,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "임대보증금액 대비 사고금액 비율(%)",
+                "dtype": "float64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 1598,
+                "sample_values": [
+                  100.0,
+                  88.76,
+                  97.53,
+                  95.26,
+                  82.3
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 69435,
+                  "invalid_count": 0,
+                  "min": 0.0,
+                  "median": 100.0,
+                  "max": 100.0,
+                  "negative_count": 0,
+                  "zero_count": 3
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    },
+    {
+      "file": "전세사고(주택가액 대비 임재보증금)_합성데이터.csv",
+      "bytes": 7691550,
+      "units": [
+        {
+          "name": "CSV",
+          "profile": {
+            "rows": 69435,
+            "columns_count": 6,
+            "duplicate_rows": 1,
+            "missing_cells": 0,
+            "columns": [
+              {
+                "name": "상품명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 3,
+                "sample_values": [
+                  "전세금안심대출(반환보증)",
+                  "전세보증금반환보증",
+                  "전세금안심대출(특약보증)"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "보증종료일자",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 2387,
+                "sample_values": [
+                  "2023-10-13",
+                  "2025-01-08",
+                  "2024-06-14",
+                  "2023-08-30",
+                  "2023-08-18"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "시도명",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 841,
+                "sample_values": [],
+                "sample_values_redacted": true
+              },
+              {
+                "name": "주택유형",
+                "dtype": "str",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 10,
+                "sample_values": [
+                  "다세대주택",
+                  "연립주택",
+                  "다가구주택",
+                  "단독주택",
+                  "오피스텔"
+                ],
+                "sample_values_redacted": false
+              },
+              {
+                "name": "주택가액",
+                "dtype": "int64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 11039,
+                "sample_values": [
+                  250500000,
+                  265000000,
+                  359000000,
+                  110000000,
+                  246000000
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 69435,
+                  "invalid_count": 0,
+                  "min": 24000000,
+                  "median": 226500000.0,
+                  "max": 312112623750,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              },
+              {
+                "name": "주택가액 대비 임대보증금액 비율(%)",
+                "dtype": "float64",
+                "missing_count": 0,
+                "missing_rate": 0.0,
+                "unique_count": 6812,
+                "sample_values": [
+                  99.09,
+                  95.53,
+                  99.36,
+                  100.0,
+                  96.37
+                ],
+                "sample_values_redacted": false,
+                "numeric": {
+                  "valid_count": 69435,
+                  "invalid_count": 0,
+                  "min": 0.01,
+                  "median": 94.63,
+                  "max": 100.0,
+                  "negative_count": 0,
+                  "zero_count": 0
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "encoding": "utf-8-sig"
+    }
+  ],
+  "issues": [
+    {
+      "file": "비식별_임대차상담데이터.xlsx/비식별_상담데이터",
+      "type": "missing_values",
+      "severity": "check",
+      "detail": "상황요약: 3건 (0.3%)"
+    },
+    {
+      "file": "비식별_임대차상담데이터.xlsx/비식별_상담데이터",
+      "type": "missing_values",
+      "severity": "check",
+      "detail": "담당자의견: 46건 (4.9%)"
+    },
+    {
+      "file": "비식별_임대차상담데이터.xlsx/비식별_상담데이터",
+      "type": "missing_values",
+      "severity": "check",
+      "detail": "특이사항: 381건 (40.6%)"
+    },
+    {
+      "file": "임대보증 대위변제_합성데이터.csv",
+      "type": "duplicate_rows",
+      "severity": "check",
+      "detail": "완전 중복행 2,417건"
+    },
+    {
+      "file": "임대보증 대위변제_합성데이터.csv",
+      "type": "unnamed_column",
+      "severity": "remove_candidate",
+      "detail": "Unnamed: 5: 결측 23,097건, 값 존재 10건"
+    },
+    {
+      "file": "임대보증 사고현황_합성 데이터.csv",
+      "type": "duplicate_rows",
+      "severity": "check",
+      "detail": "완전 중복행 3건"
+    },
+    {
+      "file": "임대보증 사고현황_합성 데이터.csv",
+      "type": "missing_values",
+      "severity": "check",
+      "detail": "사업장지역상세: 1,313건 (5.1%)"
+    },
+    {
+      "file": "임대보증 사고현황_합성 데이터.csv",
+      "type": "negative_value",
+      "severity": "definition_check",
+      "detail": "보증종료일자 기준 사고발생일자 소요일: 음수 11,812건, 최소 -350"
+    },
+    {
+      "file": "전세 및 임대채무자 경매현황_합성데이터.csv",
+      "type": "duplicate_rows",
+      "severity": "check",
+      "detail": "완전 중복행 59건"
+    },
+    {
+      "file": "전세 및 임대채무자 경매현황_합성데이터.csv",
+      "type": "missing_values",
+      "severity": "check",
+      "detail": "물건 소재지: 7,854건 (24.1%)"
+    },
+    {
+      "file": "전세 및 임대채무자 배당내역_합성 데이터.csv",
+      "type": "negative_value",
+      "severity": "definition_check",
+      "detail": "신청일자대비 배당 소요일: 음수 38건, 최소 -275"
+    },
+    {
+      "file": "전세보증 대위변제_합성 데이터.csv",
+      "type": "duplicate_rows",
+      "severity": "check",
+      "detail": "완전 중복행 133건"
+    },
+    {
+      "file": "전세보증 대위변제_합성 데이터.csv",
+      "type": "missing_values",
+      "severity": "check",
+      "detail": "시도구: 5,730건 (8.6%)"
+    },
+    {
+      "file": "전세사고(임대보증금 대비 사고금액)_합성 데이터.csv",
+      "type": "duplicate_rows",
+      "severity": "check",
+      "detail": "완전 중복행 9건"
+    },
+    {
+      "file": "전세사고(주택가액 대비 임재보증금)_합성데이터.csv",
+      "type": "duplicate_rows",
+      "severity": "check",
+      "detail": "완전 중복행 1건"
+    }
+  ]
+}
