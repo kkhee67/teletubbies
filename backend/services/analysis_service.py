@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any
 
 from repositories import property_repository
-from schemas import AnalyzeRequest
+from schemas import GUARANTEE_STATUS_VALUES, AnalyzeRequest
 from scoring.risk_score import calculate_risk_signals
 from services.guarantee_service import resolve_guarantee_branch
 from similarity.checklist import build_checklist
@@ -23,7 +23,7 @@ STATUS_VALUES = {
     "mortgage_status": {"none", "exists", "promised_removal", "removed", "unknown"},
     "seizure_status": {"none", "exists", "unknown"},
     "joint_collateral": {"none", "exists", "unknown"},
-    "guarantee_status": {"eligible", "ineligible", "unknown"},
+    "guarantee_status": GUARANTEE_STATUS_VALUES,
 }
 
 
@@ -49,6 +49,13 @@ def analyze_contract(request: AnalyzeRequest) -> dict[str, Any]:
     checklist = build_checklist(property_data, risk_result, guarantee)
 
     return {
+        "guarantee": {
+            "status": guarantee["status"],
+            "group": guarantee["group"],
+            "group_display_text": guarantee["group_display_text"],
+            "display_text": guarantee["message"],
+            "is_enrolled": guarantee["is_enrolled"],
+        },
         "guarantee_branch": guarantee["branch"],
         "guarantee_message": guarantee["message"],
         "guarantee_disclaimer": "공식 보증 가입 승인 결과가 아니며, HUG 등 공식 절차로 재확인이 필요합니다.",
@@ -119,12 +126,15 @@ def build_recommended_action(risk_result: dict[str, Any], guarantee: dict[str, A
     score = risk_result["risk_score"]
     branch = guarantee["branch"]
 
-    if score >= 70 or branch == "ineligible":
+    if score >= 70 or branch == "deep_analysis":
         label = "계약 전 재검토"
         description = "계약을 즉시 진행하기보다 핵심 서류와 보증 가능 여부를 먼저 확인하세요."
-    elif score >= 45 or branch == "unknown":
+    elif score >= 45 or branch == "check_required":
         label = "확인 후 판단"
         description = "미확인 항목을 줄인 뒤 같은 조건으로 다시 분석하세요."
+    elif branch == "in_progress":
+        label = "가입 완료 확인"
+        description = "보증 신청이나 사전확인을 가입 완료로 보지 말고 보증서 발급 여부를 확인하세요."
     else:
         label = "잔여 위험 확인"
         description = "보호장치가 있어도 계약서와 공식 서류 확인은 필요합니다."

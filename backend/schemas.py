@@ -1,6 +1,19 @@
+from enum import Enum
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
+
+
+class GuaranteeStatus(str, Enum):
+    estimated_eligible = "estimated_eligible"
+    officially_eligible = "officially_eligible"
+    applied = "applied"
+    enrolled = "enrolled"
+    ineligible = "ineligible"
+    unknown = "unknown"
+
+
+GUARANTEE_STATUS_VALUES = {status.value for status in GuaranteeStatus}
 
 
 class AnalyzeRequest(BaseModel):
@@ -23,7 +36,7 @@ class PropertySearchItem(BaseModel):
     district: str
     housing_type: str
     reference_value: int
-    guarantee_status: str
+    guarantee_status: GuaranteeStatus
 
 
 class PropertySearchResponse(BaseModel):

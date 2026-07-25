@@ -50,7 +50,13 @@ def find_similar_cases(
             score += 8
         if property_data.get("joint_collateral") in {"exists", "unknown"} and "공동담보" in text:
             score += 8
-        if property_data.get("guarantee_status") in {"ineligible", "unknown"} and "보증" in text:
+        if property_data.get("guarantee_status") in {
+            "estimated_eligible",
+            "officially_eligible",
+            "applied",
+            "ineligible",
+            "unknown",
+        } and "보증" in text:
             score += 6
 
         scored.append(

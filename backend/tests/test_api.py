@@ -57,6 +57,36 @@ def test_analyze_contract():
     assert body["property_summary"]["deposit_ratio"] == 90.9
     assert "signals" in body
     assert "checklist" in body
+    assert body["guarantee"]["status"] == "unknown"
+    assert body["guarantee"]["group"] == "check_required"
+
+
+def test_guarantee_six_status_mapping():
+    expectations = {
+        "estimated_eligible": "check_required",
+        "officially_eligible": "in_progress",
+        "applied": "in_progress",
+        "enrolled": "protected",
+        "ineligible": "deep_analysis",
+        "unknown": "check_required",
+    }
+
+    for status, group in expectations.items():
+        response = api_call(
+            "post",
+            "/analyze",
+            json={
+                "property_id": "P001",
+                "planned_deposit": 200000000,
+                "user_corrections": {"guarantee_status": status},
+            },
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["property_summary"]["guarantee_status"] == status
+        assert body["guarantee"]["status"] == status
+        assert body["guarantee"]["group"] == group
+        assert body["guarantee_branch"] == group
 
 
 def test_simulate_contract():
@@ -74,7 +104,7 @@ def test_simulate_contract():
                 "user_corrections": {
                     "mortgage_status": "removed",
                     "joint_collateral": "none",
-                    "guarantee_status": "eligible",
+                    "guarantee_status": "enrolled",
                 },
             },
         },
