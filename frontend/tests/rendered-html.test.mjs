@@ -420,6 +420,11 @@ test("keeps the UI wired to live integration without sample data imports", async
   assert.match(risk, /분석 신뢰도/);
   assert.doesNotMatch(risk, /riskScore|risk_score|참고 위험신호 점수|risk-score/);
   assert.doesNotMatch(risk, /\/\s*100/);
+  assert.doesNotMatch(
+    property,
+    /source-guide|<dt>출처|<dt>기준일|분석 생성 시각|generatedAt|formatDate/,
+  );
+  assert.doesNotMatch(page, /권리정보와 응답 출처/);
   for (const source of [page, property, guarantee, risk, similar]) {
     assert.doesNotMatch(source, /(?:\/data\/|Sample|sample)/);
   }

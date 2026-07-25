@@ -441,7 +441,6 @@ export default function Home() {
             searchItem={result.searchItem}
             searchedAddress={address}
             plannedDeposit={Number(deposit)}
-            generatedAt={result.analysis.generatedAt}
             onEdit={() => {
               invalidateAnalysis();
               document
@@ -482,7 +481,7 @@ export default function Home() {
           <li>
             <span>02</span>
             <strong>매물정보 확인</strong>
-            <p>주택유형, 참고가액, 권리정보와 응답 출처를 확인합니다.</p>
+            <p>주택유형, 참고가액과 권리정보를 확인합니다.</p>
           </li>
           <li>
             <span>03</span>
