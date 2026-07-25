@@ -54,11 +54,20 @@ function jsonResponse(payload, init = {}) {
 }
 
 const analyzeResponse = {
-  guarantee_branch: "eligible",
+  ai_api_status: "ok",
+  ai_api_message: null,
+  guarantee: {
+    status: "estimated_eligible",
+    group: "check_required",
+    display_text: "가입 가능성 추정",
+    message: "반환보증 가입 가능성을 확인했습니다.",
+    next_actions: ["보증기관에서 공식 가입 가능 여부 확인"],
+  },
+  guarantee_branch: "check_required",
   guarantee_message: "반환보증 가입 가능성을 확인했습니다.",
   guarantee_disclaimer: "가입 완료 여부는 보증기관에서 다시 확인해 주세요.",
   risk_stage: "caution",
-  risk_score: 42,
+  analysis_confidence: 73,
   signals: [
     {
       code: "MORTGAGE_EXISTS",
@@ -109,7 +118,8 @@ const analyzeResponse = {
     mortgage_status: "exists",
     seizure_status: "none",
     joint_collateral: "unknown",
-    guarantee_status: "eligible",
+    guarantee_status: "estimated_eligible",
+    guarantee_product_type: "jeonse_return",
     value_source: "team-api",
   },
   similar_cases: [
@@ -128,6 +138,16 @@ const analyzeResponse = {
   },
   generated_at: "2026-07-25T12:00:00Z",
   disclaimer: "이 분석은 계약 안전을 보증하지 않습니다.",
+};
+
+const firstSearchItem = {
+  property_id: "P001",
+  address_display: "부산광역시 수영구 광안동 1-1",
+  district: "수영구",
+  housing_type: "apartment",
+  reference_value: 350000000,
+  guarantee_status: "estimated_eligible",
+  guarantee_product_type: "jeonse_return",
 };
 
 test("server-renders the live-analysis entry screen", async () => {
@@ -164,31 +184,13 @@ test("uses the configured API base URL and the localhost default", () => {
   }
 });
 
-test("searches by address, selects the first property, then posts analyze", async () => {
+test("automatically analyzes a single address-search result", async () => {
   const calls = [];
   const fetcher = async (input, init) => {
     calls.push({ input: String(input), init });
-
-    if (calls.length === 1) {
-      return jsonResponse({
-        items: [
-          {
-            property_id: "P001",
-            address_display: "부산광역시 수영구 광안동 1-1",
-            district: "수영구",
-            housing_type: "apartment",
-            reference_value: 350000000,
-            guarantee_status: "eligible",
-          },
-          {
-            property_id: "P002",
-            address_display: "두 번째 매물",
-          },
-        ],
-      });
-    }
-
-    return jsonResponse(analyzeResponse);
+    return calls.length === 1
+      ? jsonResponse({ items: [firstSearchItem] })
+      : jsonResponse(analyzeResponse);
   };
 
   const result = await integration.searchAndAnalyze(
@@ -219,18 +221,22 @@ test("searches by address, selects the first property, then posts analyze", asyn
     address_query: "부산 수영구 광안동 1-1",
     planned_deposit: 200000000,
     monthly_rent: 0,
+    guarantee_product_type: "jeonse_return",
     user_note: "잔금일에 근저당을 말소한다고 들었습니다.",
   });
 
   assert.equal(result.propertyId, "P001");
   assert.equal(result.analysis.propertySummary.propertyId, "P001");
-  assert.equal(result.analysis.guarantee.rawStatus, "eligible");
-  assert.equal(result.analysis.guarantee.branch, "eligible");
-  assert.equal(result.analysis.guarantee.propertyStatus, "eligible");
+  assert.equal(result.analysis.guarantee.rawStatus, "estimated_eligible");
+  assert.equal(result.analysis.guarantee.branch, "check_required");
+  assert.equal(
+    result.analysis.guarantee.propertyStatus,
+    "estimated_eligible",
+  );
   assert.equal(result.analysis.guarantee.status, "estimated_eligible");
   assert.equal(result.analysis.guarantee.group, "check_required");
   assert.equal(result.analysis.riskAnalysis.riskStage, "caution");
-  assert.equal(result.analysis.riskAnalysis.riskScore, 42);
+  assert.equal(result.analysis.riskAnalysis.analysisConfidence, 73);
   assert.equal(result.analysis.riskAnalysis.confirmedRisks.length, 1);
   assert.equal(result.analysis.riskAnalysis.requiredChecks.length, 1);
   assert.equal(result.analysis.riskAnalysis.referenceSignals.length, 1);
@@ -243,6 +249,70 @@ test("searches by address, selects the first property, then posts analyze", asyn
     result.analysis.similarCases[0].plainExplanation,
     "계약서에 말소 약속을 구체적으로 적어야 합니다.",
   );
+  assert.equal(result.analysis.aiApiStatus, "ok");
+  assert.equal(result.analysis.aiApiMessage, null);
+});
+
+test("requires an explicit selection when address search returns multiple properties", async () => {
+  let callCount = 0;
+  const searchPayload = {
+    items: [
+      firstSearchItem,
+      {
+        ...firstSearchItem,
+        property_id: "P002",
+        address_display: "부산광역시 강서구 샘플로 12",
+        guarantee_product_type: "rental_deposit",
+      },
+    ],
+  };
+  const searchFetcher = async () => {
+    callCount += 1;
+    return jsonResponse(searchPayload);
+  };
+
+  await assert.rejects(
+    integration.searchAndAnalyze(
+      { address: "부산", plannedDeposit: 200000000 },
+      { fetcher: searchFetcher },
+    ),
+    (error) => {
+      assert.ok(error instanceof integration.ApiError);
+      assert.equal(error.code, "PROPERTY_SELECTION_REQUIRED");
+      assert.equal(error.details.length, 2);
+      return true;
+    },
+  );
+  assert.equal(callCount, 1, "selection 전에는 /analyze를 호출하지 않아야 합니다");
+
+  const items = integration.adaptPropertySearchResponse(searchPayload);
+  let analyzeBody;
+  const selectedResult = await integration.analyzeSelectedProperty(
+    items[1],
+    {
+      address: "부산",
+      plannedDeposit: 200000000,
+      userNote: "선택한 매물만 분석",
+    },
+    {
+      baseUrl: "https://api.example.com",
+      fetcher: async (_input, init) => {
+        analyzeBody = JSON.parse(init.body);
+        return jsonResponse({
+          ...analyzeResponse,
+          property_summary: {
+            ...analyzeResponse.property_summary,
+            property_id: "P002",
+            guarantee_product_type: "rental_deposit",
+          },
+        });
+      },
+    },
+  );
+
+  assert.equal(selectedResult.propertyId, "P002");
+  assert.equal(analyzeBody.property_id, "P002");
+  assert.equal(analyzeBody.guarantee_product_type, "rental_deposit");
 });
 
 test("does not call analyze or fabricate fallback data when search is empty", async () => {
@@ -267,6 +337,36 @@ test("does not call analyze or fabricate fallback data when search is empty", as
   assert.equal(callCount, 1);
 });
 
+test("preserves every documented AI API status and message", () => {
+  const statuses = [
+    "ok",
+    "fallback",
+    "disabled",
+    "unavailable",
+    "timeout",
+    "error",
+    "local_mock",
+    "unsupported_product_type",
+  ];
+
+  for (const status of statuses) {
+    const mapped = integration.adaptAnalyzeResponse({
+      ai_api_status: status,
+      ai_api_message: `${status} message`,
+      property_summary: { property_id: "P-AI" },
+    });
+    assert.equal(mapped.aiApiStatus, status);
+    assert.equal(mapped.aiApiMessage, `${status} message`);
+  }
+
+  const unknown = integration.adaptAnalyzeResponse({
+    ai_api_status: "future_status",
+    property_summary: { property_id: "P-AI" },
+  });
+  assert.equal(unknown.aiApiStatus, "unknown");
+  assert.equal(unknown.aiApiMessage, null);
+});
+
 test("maps incomplete API responses to explicit empty values", () => {
   const mapped = integration.adaptAnalyzeResponse({
     property_summary: { property_id: "P-EMPTY" },
@@ -279,10 +379,12 @@ test("maps incomplete API responses to explicit empty values", () => {
     mapped.propertySummary.fields.every((field) => field.referenceDate === null),
   );
   assert.equal(mapped.guarantee.status, null);
-  assert.equal(mapped.riskAnalysis.riskScore, null);
+  assert.equal(mapped.riskAnalysis.analysisConfidence, null);
   assert.deepEqual(mapped.riskAnalysis.signals, []);
   assert.deepEqual(mapped.checklist, []);
   assert.deepEqual(mapped.similarCases, []);
+  assert.equal(mapped.aiApiStatus, "unknown");
+  assert.equal(mapped.aiApiMessage, null);
 });
 
 test("keeps the UI wired to live integration without sample data imports", async () => {
@@ -306,8 +408,26 @@ test("keeps the UI wired to live integration without sample data imports", async
     ),
   ]);
 
-  assert.match(page, /searchAndAnalyze/);
+  assert.match(page, /searchProperties/);
+  assert.match(page, /analyzeSelectedProperty/);
+  assert.match(page, /handleAnalyzeSelected/);
+  assert.doesNotMatch(page, /searchItems\[0\]/);
   assert.match(page, /<ActionChecklist/);
+  assert.match(similar, /AI 유사사례 서비스에 현재 연결되지 않았습니다/);
+  assert.match(similar, /로컬 모의 유사사례/);
+  assert.match(risk, /확정 위험/);
+  assert.match(risk, /확인 필요/);
+  assert.doesNotMatch(
+    risk,
+    /분석 신뢰도|confidence-card|analysisConfidence/,
+  );
+  assert.doesNotMatch(risk, /riskScore|risk_score|참고 위험신호 점수|risk-score/);
+  assert.doesNotMatch(risk, /\/\s*100/);
+  assert.doesNotMatch(
+    property,
+    /source-guide|<dt>출처|<dt>기준일|분석 생성 시각|generatedAt|formatDate/,
+  );
+  assert.doesNotMatch(page, /권리정보와 응답 출처/);
   for (const source of [page, property, guarantee, risk, similar]) {
     assert.doesNotMatch(source, /(?:\/data\/|Sample|sample)/);
   }

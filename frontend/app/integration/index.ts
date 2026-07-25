@@ -5,6 +5,7 @@ export {
 export {
   ApiError,
   analyzeProperty,
+  analyzeSelectedProperty,
   DEFAULT_API_BASE_URL,
   getApiBaseUrl,
   searchAndAnalyze,

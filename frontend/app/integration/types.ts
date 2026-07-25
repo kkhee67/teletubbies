@@ -1,5 +1,10 @@
 export type UnknownRecord = Record<string, unknown>;
 
+export type GuaranteeProductType =
+  | "jeonse_return"
+  | "rental_deposit"
+  | "unknown";
+
 export type PropertySearchItem = {
   propertyId: string;
   addressDisplay: string | null;
@@ -7,6 +12,7 @@ export type PropertySearchItem = {
   housingType: string | null;
   referenceValue: number | null;
   guaranteeStatus: string | null;
+  guaranteeProductType: GuaranteeProductType | null;
 };
 
 export type AnalyzeRequestPayload = {
@@ -14,6 +20,7 @@ export type AnalyzeRequestPayload = {
   address_query: string;
   planned_deposit: number;
   monthly_rent: number;
+  guarantee_product_type?: GuaranteeProductType;
   user_note: string;
   user_corrections?: Record<string, string | number | boolean>;
 };
@@ -124,8 +131,6 @@ export type RecommendedActionViewModel = {
 
 export type RiskAnalysisViewModel = {
   riskStage: string | null;
-  riskScore: number | null;
-  unknownCount: number | null;
   analysisConfidence: number | null;
   signals: RiskSignalViewModel[];
   confirmedRisks: RiskSignalViewModel[];
@@ -157,12 +162,25 @@ export type SimilarCaseViewModel = {
   referenceDate: string | null;
 };
 
+export type AiApiStatus =
+  | "ok"
+  | "fallback"
+  | "disabled"
+  | "unavailable"
+  | "timeout"
+  | "error"
+  | "local_mock"
+  | "unsupported_product_type"
+  | "unknown";
+
 export type AnalysisViewModel = {
   propertySummary: PropertySummaryViewModel;
   guarantee: GuaranteeViewModel;
   riskAnalysis: RiskAnalysisViewModel;
   similarCases: SimilarCaseViewModel[];
   checklist: ChecklistItemViewModel[];
+  aiApiStatus: AiApiStatus;
+  aiApiMessage: string | null;
   generatedAt: string | null;
 };
 

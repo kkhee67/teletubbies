@@ -13,7 +13,7 @@ type RiskAnalysisProps = {
 type StageTone = "basic" | "check" | "caution" | "review";
 
 const riskStages: Array<{ tone: StageTone; label: string }> = [
-  { tone: "basic", label: "낮음 · 기본 확인" },
+  { tone: "basic", label: "기본 확인" },
   { tone: "check", label: "확인 필요" },
   { tone: "caution", label: "주의" },
   { tone: "review", label: "계약 전 재검토" },
@@ -21,7 +21,7 @@ const riskStages: Array<{ tone: StageTone; label: string }> = [
 
 const stageDescriptions: Record<StageTone, string> = {
   basic:
-    "현재 응답의 위험신호 점수는 낮은 구간입니다. 낮은 점수도 계약의 안전을 보장하지 않으므로 최신 공식 서류 확인은 필요합니다.",
+    "현재 확인된 위험은 없지만 계약이 안전하다는 뜻은 아닙니다. 최신 공식 서류와 남은 확인 항목을 계약 전에 검토하세요.",
   check:
     "미확인 정보나 추가 확인 항목이 있습니다. 체크리스트를 완료한 뒤 같은 조건으로 다시 분석하는 것이 좋습니다.",
   caution:
@@ -102,11 +102,6 @@ function SignalList({
 
 export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
   const tone = stageTone(analysis.riskStage);
-  const score =
-    analysis.riskScore === null
-      ? null
-      : Math.min(100, Math.max(0, analysis.riskScore));
-
   return (
     <section
       className={`analysis-section analysis-section--${tone}`}
@@ -117,12 +112,11 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
         <div className="analysis-heading">
           <p className="eyebrow">STEP 04 · 분석 결과</p>
           <h2 id="analysis-title">
-            위험신호와 미확인 정보를 따로 보여드립니다
+            확정 위험과 확인 필요 정보를 따로 보여드립니다
           </h2>
           <p>
-            <code>risk_stage</code>, <code>risk_score</code>와{" "}
-            <code>signals</code>를 실제 분석 응답에서 가져옵니다. 점수는 사고
-            확률이나 법률적 확정 판단이 아닙니다.
+            위험단계를 유지하면서 확인된 사실과 아직 확인되지 않은 정보를
+            구분합니다.
           </p>
         </div>
 
@@ -152,28 +146,20 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
 
           <div className="analysis-stats">
             <article className="analysis-stat analysis-stat--risk">
-              <span>확인된 위험신호</span>
+              <span>확정 위험</span>
               <strong>
                 {analysis.confirmedRisks.length}
                 <small>개</small>
               </strong>
-              <p>분석 응답에서 위험으로 분류된 조건</p>
+              <p>자료에서 위험요인으로 확인된 사실</p>
             </article>
             <article className="analysis-stat analysis-stat--check">
-              <span>확인 필요한 정보</span>
+              <span>확인 필요</span>
               <strong>
-                {analysis.unknownCount ?? analysis.requiredChecks.length}
+                {analysis.requiredChecks.length}
                 <small>개</small>
               </strong>
-              <p>미확인 값 또는 추가 확인 신호</p>
-            </article>
-            <article className="analysis-stat analysis-stat--confidence">
-              <span>참고 위험신호 점수</span>
-              <strong>
-                {analysis.riskScore ?? "—"}
-                <small>/100</small>
-              </strong>
-              <p>사고확률이 아닌 백엔드 규칙 기반 점수</p>
+              <p>자료가 없거나 추가 확인이 필요한 항목</p>
             </article>
           </div>
         </div>
@@ -186,13 +172,13 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
             <div className="list-panel-heading">
               <div>
                 <span>확인된 사실</span>
-                <h3 id="confirmed-title">위험신호</h3>
+                <h3 id="confirmed-title">확정 위험</h3>
               </div>
               <strong>{analysis.confirmedRisks.length}</strong>
             </div>
             <SignalList
               signals={analysis.confirmedRisks}
-              emptyMessage="API 응답에 확인된 위험신호가 없습니다. 이것만으로 계약이 안전하다는 뜻은 아닙니다."
+              emptyMessage="API 응답에 확정 위험이 없습니다. 이것만으로 계약이 안전하다는 뜻은 아닙니다."
             />
           </section>
 
@@ -203,7 +189,7 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
             <div className="list-panel-heading">
               <div>
                 <span>아직 모르는 정보</span>
-                <h3 id="required-title">추가 확인</h3>
+                <h3 id="required-title">확인 필요</h3>
               </div>
               <strong>{analysis.requiredChecks.length}</strong>
             </div>
@@ -220,7 +206,7 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
             >
               <div className="list-panel-heading">
                 <div>
-                  <span>점수에 포함되지 않은 정보</span>
+                  <span>위험단계와 별도로 보는 정보</span>
                   <h3 id="reference-signal-title">참고 신호</h3>
                 </div>
                 <strong>{analysis.referenceSignals.length}</strong>
@@ -230,27 +216,12 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
                 emptyMessage="API 응답에 별도의 참고 신호가 없습니다."
               />
               <p className="reference-signal-note">
-                이 항목은 위험 점수에는 포함되지 않지만 분석 API가 함께 반환한 참고 정보입니다.
+                이 항목은 확정 위험이나 확인 필요로 분류되지 않았지만 분석
+                API가 함께 반환한 참고 정보입니다.
               </p>
             </section>
           ) : null}
         </div>
-
-        <article className="risk-score-card">
-          <div className="risk-score-copy">
-            <span>참고 위험신호 점수</span>
-            <strong>{score === null ? "응답 없음" : `${score} / 100`}</strong>
-          </div>
-          <div className="risk-score-detail">
-            <div className="risk-score-track" aria-hidden="true">
-              <span style={{ width: `${score ?? 0}%` }} />
-            </div>
-            <p>
-              이 값은 백엔드 분석 규칙이 감지한 신호의 합계입니다. 피해 발생
-              가능성이나 보증금 회수 확률로 읽지 마세요.
-            </p>
-          </div>
-        </article>
 
         <article className="analysis-recommendation">
           <div>
@@ -271,7 +242,7 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
           <strong>결과 해석 안내</strong>
           <p>
             {analysis.notice ??
-              "위험단계와 점수는 계약 전 의사결정을 돕는 참고 신호입니다."}{" "}
+              "위험단계는 계약 전 의사결정을 돕는 참고 신호입니다."}{" "}
             {analysis.disclaimer ??
               "실제 계약 전에는 최신 공식 서류와 전문가 확인이 필요합니다."}
           </p>

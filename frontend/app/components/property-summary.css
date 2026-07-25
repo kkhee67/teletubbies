@@ -75,38 +75,7 @@
   letter-spacing: -.02em;
 }
 
-.source-guide {
-  align-items: center;
-  background: #dde8e1;
-  border-radius: 13px;
-  color: #455a4e;
-  display: flex;
-  gap: 11px;
-  margin-bottom: 24px;
-  padding: 13px 16px;
-}
 
-.source-guide span {
-  align-items: center;
-  background: var(--green);
-  border-radius: 50%;
-  color: white;
-  display: inline-flex;
-  flex: 0 0 22px;
-  font-family: Georgia, serif;
-  font-size: 13px;
-  font-weight: 700;
-  height: 22px;
-  justify-content: center;
-}
-
-.source-guide p {
-  font-size: 13px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.source-guide code,
 .integration-note code {
   font-size: .92em;
 }
@@ -197,29 +166,6 @@
   margin: 10px 0 22px;
 }
 
-.property-card dl {
-  border-top: 1px solid #edf0ed;
-  display: grid;
-  gap: 7px;
-  margin: auto 0 0;
-  padding-top: 14px;
-}
-
-.property-card dl div {
-  display: grid;
-  font-size: 11px;
-  gap: 8px;
-  grid-template-columns: 38px 1fr;
-}
-
-.property-card dt {
-  color: #929b95;
-}
-
-.property-card dd {
-  color: #5a655e;
-  margin: 0;
-}
 
 .integration-note {
   align-items: center;

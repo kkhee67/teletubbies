@@ -9,53 +9,6 @@
   padding: 18px;
 }
 
-.risk-score-card {
-  align-items: center;
-  background: white;
-  border: 1px solid #dce2dd;
-  border-radius: 19px;
-  display: grid;
-  gap: 34px;
-  grid-template-columns: 210px 1fr;
-  margin-top: 18px;
-  padding: 25px;
-}
-
-.risk-score-copy {
-  display: grid;
-  gap: 7px;
-}
-
-.risk-score-copy span {
-  color: #7e8881;
-  font-size: 12px;
-}
-
-.risk-score-copy strong {
-  color: var(--stage-color);
-  font-size: 29px;
-}
-
-.risk-score-track {
-  background: #e3e9e5;
-  border-radius: 999px;
-  height: 9px;
-  overflow: hidden;
-}
-
-.risk-score-track span {
-  background: var(--stage-color);
-  border-radius: inherit;
-  display: block;
-  height: 100%;
-}
-
-.risk-score-detail p {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.55;
-  margin: 12px 0 0;
-}
 
 .analysis-recommendation {
   align-items: center;
@@ -126,11 +79,6 @@
   }
 }
 @media (max-width: 600px) {
-  .risk-score-card {
-    gap: 18px;
-    grid-template-columns: 1fr;
-  }
-
   .analysis-recommendation {
     align-items: flex-start;
     flex-direction: column;

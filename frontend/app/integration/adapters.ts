@@ -1,4 +1,5 @@
 import type {
+  AiApiStatus,
   AnalysisViewModel,
   ChecklistItemViewModel,
   GuaranteeGroup,
@@ -194,8 +195,42 @@ export function adaptPropertySearchResponse(
       guaranteeStatus: toStringOrNull(
         pick(item, "guarantee_status", "guaranteeStatus"),
       ),
+      guaranteeProductType: normalizeGuaranteeProductType(
+        pick(item, "guarantee_product_type", "guaranteeProductType"),
+      ),
     }))
     .filter((item) => item.propertyId !== "");
+}
+
+function normalizeGuaranteeProductType(
+  value: unknown,
+): PropertySearchItem["guaranteeProductType"] {
+  const normalized = normalizeKnownStatus(value);
+  if (
+    normalized === "jeonse_return" ||
+    normalized === "rental_deposit" ||
+    normalized === "unknown"
+  ) {
+    return normalized;
+  }
+  return null;
+}
+
+function normalizeAiApiStatus(value: unknown): AiApiStatus {
+  const normalized = normalizeKnownStatus(value);
+  if (
+    normalized === "ok" ||
+    normalized === "fallback" ||
+    normalized === "disabled" ||
+    normalized === "unavailable" ||
+    normalized === "timeout" ||
+    normalized === "error" ||
+    normalized === "local_mock" ||
+    normalized === "unsupported_product_type"
+  ) {
+    return normalized;
+  }
+  return "unknown";
 }
 
 function adaptPropertySummary(root: UnknownRecord): PropertySummaryViewModel {
@@ -501,8 +536,6 @@ function adaptRiskAnalysis(
 
   return {
     riskStage: toStringOrNull(pick(source, "risk_stage", "riskStage")),
-    riskScore: toNumberOrNull(pick(source, "risk_score", "riskScore")),
-    unknownCount: toNumberOrNull(pick(source, "unknown_count", "unknownCount")),
     analysisConfidence: toNumberOrNull(
       pick(source, "analysis_confidence", "analysisConfidence"),
     ),
@@ -606,6 +639,13 @@ export function adaptAnalyzeResponse(payload: unknown): AnalysisViewModel {
     riskAnalysis: adaptRiskAnalysis(root, checklist),
     similarCases: adaptSimilarCases(root),
     checklist,
+    aiApiStatus: normalizeAiApiStatus(
+      pick(root, "ai_api_status", "aiApiStatus") ??
+        pick(envelope, "ai_api_status", "aiApiStatus"),
+    ),
+    aiApiMessage:
+      toStringOrNull(pick(root, "ai_api_message", "aiApiMessage")) ??
+      toStringOrNull(pick(envelope, "ai_api_message", "aiApiMessage")),
     generatedAt: toStringOrNull(
       pick(root, "generated_at", "generatedAt"),
     ),

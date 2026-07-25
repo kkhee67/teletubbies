@@ -10,7 +10,6 @@ type PropertySummaryProps = {
   searchItem: PropertySearchItem;
   searchedAddress: string;
   plannedDeposit: number;
-  generatedAt: string | null;
   onEdit: () => void;
 };
 
@@ -45,16 +44,6 @@ function formatWon(value: number) {
   return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
 }
 
-function formatDate(value: string | null) {
-  if (!value) return "API 응답에 기준일 없음";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime())
-    ? value
-    : new Intl.DateTimeFormat("ko-KR", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
-}
 
 function formatFieldValue(field: PropertyFieldViewModel) {
   if (field.value === null) return "응답 없음";
@@ -95,7 +84,6 @@ export function PropertySummary({
   searchItem,
   searchedAddress,
   plannedDeposit,
-  generatedAt,
   onEdit,
 }: PropertySummaryProps) {
   const displayAddress =
@@ -115,7 +103,7 @@ export function PropertySummary({
             <p className="eyebrow">STEP 02 · 매물정보 확인</p>
             <h2 id="property-title">분석에 사용한 실제 API 응답입니다</h2>
             <p>
-              주소 검색의 첫 번째 매물 ID로 분석을 요청했습니다. 값이 없는
+              주소 검색에서 선택한 매물 ID로 분석을 요청했습니다. 값이 없는
               항목은 임의로 채우지 않고 ‘응답 없음’으로 표시합니다.
             </p>
           </div>
@@ -135,14 +123,6 @@ export function PropertySummary({
           </div>
         </div>
 
-        <div className="source-guide">
-          <span aria-hidden="true">i</span>
-          <p>
-            아래 값은 <code>POST /analyze</code>의{" "}
-            <code>property_summary</code>에서 가져옵니다. 출처나 기준일이
-            응답에 없으면 그 사실도 그대로 표시합니다.
-          </p>
-        </div>
 
         <div className="property-grid">
           {property.fields.map((field) => (
@@ -156,16 +136,6 @@ export function PropertySummary({
               </div>
               <strong>{formatFieldValue(field)}</strong>
               <p>{fieldDescription(field, property)}</p>
-              <dl>
-                <div>
-                  <dt>출처</dt>
-                  <dd>{field.sourceName ?? "분석 API property_summary"}</dd>
-                </div>
-                <div>
-                  <dt>기준일</dt>
-                  <dd>{formatDate(field.referenceDate)}</dd>
-                </div>
-              </dl>
             </article>
           ))}
         </div>
@@ -174,11 +144,8 @@ export function PropertySummary({
           <div>
             <strong>검색 → 분석 연결 완료</strong>
             <p>
-              첫 번째 검색 결과 <code>{searchItem.propertyId}</code>를 분석
+              선택한 검색 결과 <code>{searchItem.propertyId}</code>를 분석
               요청의 <code>property_id</code>로 사용했습니다.
-              <br />
-              분석 생성 시각 ·{" "}
-              {generatedAt ? formatDate(generatedAt) : "API 응답에 분석 시각 없음"}
             </p>
           </div>
           <button className="secondary-button" type="button" onClick={onEdit}>
