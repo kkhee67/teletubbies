@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import datetime
+import os
 from typing import Any
 
 from repositories import property_repository
@@ -28,7 +29,7 @@ STATUS_VALUES = {
 }
 
 
-def analyze_contract(request: AnalyzeRequest) -> dict[str, Any]:
+def analyze_contract(request: AnalyzeRequest, *, include_ai: bool = True) -> dict[str, Any]:
     base = property_repository.get(request.property_id)
     if base is None:
         raise ValueError("PROPERTY_NOT_FOUND")
@@ -45,17 +46,28 @@ def analyze_contract(request: AnalyzeRequest) -> dict[str, Any]:
         or property_data.get("guarantee_product_type")
         or "jeonse_return"
     )
-    ai_result = fetch_similar_cases(
-        property_data=property_data,
-        risk_result=risk_result,
-        planned_deposit=request.planned_deposit,
-        user_note=request.user_note,
-        guarantee_product_type=guarantee_product_type,
-        limit=3,
-    )
+    if include_ai:
+        ai_result = fetch_similar_cases(
+            property_data=property_data,
+            risk_result=risk_result,
+            planned_deposit=request.planned_deposit,
+            user_note=request.user_note,
+            guarantee_product_type=guarantee_product_type,
+            limit=3,
+        )
+    else:
+        ai_result = {
+            "status": "disabled",
+            "similar_cases": [],
+            "easy_explanation": None,
+            "message": "AI search was skipped for this request.",
+        }
     similar_cases = ai_result["similar_cases"]
     easy_explanation = ai_result["easy_explanation"]
-    if ai_result["status"] != "ok":
+    ai_api_status = ai_result["status"]
+    ai_api_message = ai_result.get("message")
+
+    if include_ai and ai_result["status"] != "ok" and local_similar_cases_enabled():
         similar_cases = find_similar_cases(
             property_data=property_data,
             planned_deposit=request.planned_deposit,
@@ -63,17 +75,20 @@ def analyze_contract(request: AnalyzeRequest) -> dict[str, Any]:
             limit=3,
         )
         easy_explanation = explain_cases_safely(similar_cases, risk_result)
+        ai_api_status = "local_mock"
+        ai_api_message = "AI API 장애로 명시적인 로컬 모의사례를 반환했습니다."
 
     checklist = build_checklist(property_data, risk_result, guarantee)
 
     return {
-        "ai_api_status": ai_result["status"],
+        "ai_api_status": ai_api_status,
+        "ai_api_message": ai_api_message,
         "guarantee": {
             "status": guarantee["status"],
             "group": guarantee["group"],
-            "group_display_text": guarantee["group_display_text"],
-            "display_text": guarantee["message"],
-            "is_enrolled": guarantee["is_enrolled"],
+            "display_text": guarantee["display_text"],
+            "message": guarantee["message"],
+            "next_actions": guarantee["next_actions"],
         },
         "guarantee_branch": guarantee["branch"],
         "guarantee_message": guarantee["message"],
@@ -86,9 +101,47 @@ def analyze_contract(request: AnalyzeRequest) -> dict[str, Any]:
         "recommended_action": build_recommended_action(risk_result, guarantee),
         "market_context": build_market_context(property_data),
         "data_sources": build_data_sources(property_data),
-        "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "generated_at": generated_at(),
         "disclaimer": "법률적 확정판정이나 보증 가입 승인이 아닙니다. 계약 전 공식 서류와 전문가 확인이 필요합니다.",
     }
+
+
+def simulate_contract(request) -> dict[str, Any]:
+    current = analyze_contract(request.current, include_ai=False)
+    changed = analyze_contract(request.changed, include_ai=False)
+
+    return {
+        "current": simulation_snapshot(current),
+        "changed": simulation_snapshot(changed),
+        "delta": {
+            "risk_score": changed["risk_score"] - current["risk_score"],
+            "signal_count": changed["signal_count"] - current["signal_count"],
+        },
+        "disclaimer": "시뮬레이션은 법적 안전을 보장하지 않고 위험신호의 변화를 보여줍니다.",
+        "generated_at": generated_at(),
+    }
+
+
+def simulation_snapshot(result: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "risk_score": result["risk_score"],
+        "risk_stage": result["risk_stage"],
+        "signal_count": result["signal_count"],
+        "property_summary": result["property_summary"],
+    }
+
+
+def local_similar_cases_enabled() -> bool:
+    return os.getenv("LOCAL_SIMILAR_CASES_ENABLED", "false").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def generated_at() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
 def apply_user_corrections(
@@ -182,9 +235,9 @@ def build_market_context(property_data: dict[str, Any]) -> list[dict[str, Any]]:
 def build_data_sources(property_data: dict[str, Any]) -> list[dict[str, str]]:
     return [
         {
-            "name": "샘플 매물 데이터",
-            "type": "demo",
-            "note": "해커톤 MVP 시연을 위한 가상 주소 및 매물정보입니다.",
+            "name": "매물 데이터 저장소",
+            "type": "datastore",
+            "note": "PROPERTY_DATA_PATH로 지정한 매물 데이터 저장소의 현재 스냅샷입니다.",
         },
         {
             "name": "HUG 합성 사고·대위변제 데이터",

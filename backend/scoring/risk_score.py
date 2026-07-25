@@ -191,6 +191,21 @@ def _build_signals(property_data: dict[str, Any], deposit_ratio: float) -> list[
     elif joint == "unknown":
         signals.append(_unknown_signal("JOINT_COLLATERAL_UNKNOWN", "공동담보 여부"))
 
+    seizure = property_data.get("seizure_status", "unknown")
+    if seizure == "exists":
+        signals.append(
+            {
+                "code": "SEIZURE_EXISTS",
+                "title": "압류·가압류가 확인됐습니다",
+                "severity": "high",
+                "explanation": "압류나 가압류가 있으면 임차보증금 회수와 권리관계 확인에 중대한 영향을 줄 수 있습니다.",
+                "action": "등기부와 관련 서류에서 압류·가압류 원인, 금액, 해제 가능 여부를 확인하세요.",
+                "included_in_risk_score": True,
+            }
+        )
+    elif seizure == "unknown":
+        signals.append(_unknown_signal("SEIZURE_UNKNOWN", "압류·가압류 여부"))
+
     guarantee = property_data.get("guarantee_status", "unknown")
     if guarantee == "ineligible":
         signals.append(
