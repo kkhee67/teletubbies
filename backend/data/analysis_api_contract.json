@@ -1,0 +1,239 @@
+{
+  "contract_name": "rental_risk_analysis",
+  "contract_version": "1.0.0",
+  "rule_version": "1.0.0",
+  "scope": {
+    "data_analysis_owner": "김건희",
+    "http_api_owner": "백엔드 담당자",
+    "description": "데이터 분석 모듈에 전달할 값과 분석 모듈이 반환하는 값의 계약입니다.",
+    "not_in_scope": [
+      "HTTP 라우터 구현",
+      "프론트엔드 연결",
+      "유사 상담 사례 생성",
+      "체크리스트 생성"
+    ]
+  },
+  "request": {
+    "content_type": "application/json",
+    "required": [
+      "property_id",
+      "planned_deposit"
+    ],
+    "properties": {
+      "property_id": {
+        "type": "string",
+        "description": "backend/data/mock_properties.json의 property_id"
+      },
+      "planned_deposit": {
+        "type": "integer",
+        "exclusive_minimum": 0,
+        "unit": "KRW",
+        "description": "사용자가 계약하려는 보증금"
+      }
+    },
+    "example": {
+      "property_id": "MOCK-005",
+      "planned_deposit": 330000000
+    }
+  },
+  "response": {
+    "required": [
+      "property",
+      "guarantee",
+      "analysis",
+      "similar_cases",
+      "checklist",
+      "location_context"
+    ],
+    "properties": {
+      "property": {
+        "required": [
+          "property_id",
+          "display_address",
+          "is_mock",
+          "property_type",
+          "reference_value",
+          "deposit_ratio",
+          "deposit_ratio_status",
+          "deposit_ratio_notice"
+        ],
+        "enums": {
+          "property_type": [
+            "apartment",
+            "officetel",
+            "multi_household",
+            "multi_unit",
+            "row_house",
+            "detached",
+            "unknown"
+          ],
+          "deposit_ratio_status": [
+            "verified",
+            "provisional",
+            "unavailable"
+          ]
+        },
+        "nullable": [
+          "reference_value",
+          "deposit_ratio"
+        ]
+      },
+      "guarantee": {
+        "required": [
+          "status",
+          "group",
+          "display_text"
+        ],
+        "enums": {
+          "status": [
+            "estimated_eligible",
+            "officially_eligible",
+            "applied",
+            "enrolled",
+            "ineligible",
+            "unknown"
+          ],
+          "group": [
+            "confirmation_required",
+            "in_progress",
+            "protected",
+            "deep_analysis"
+          ]
+        }
+      },
+      "analysis": {
+        "required": [
+          "rule_version",
+          "risk_stage",
+          "confirmed_risk_count",
+          "high_risk_count",
+          "medium_risk_count",
+          "required_check_count",
+          "analysis_confidence",
+          "analysis_confidence_detail",
+          "confirmed_risks",
+          "required_checks",
+          "notice",
+          "basic_stage_notice"
+        ],
+        "enums": {
+          "risk_stage": [
+            "계약 전 재검토",
+            "주의",
+            "추가 확인 필요",
+            "기본 확인"
+          ],
+          "confirmed_risks.severity": [
+            "high",
+            "medium"
+          ],
+          "required_checks.severity": [
+            "check"
+          ]
+        },
+        "analysis_confidence_range": {
+          "minimum": 0,
+          "maximum": 100,
+          "meaning": "필수정보가 검증된 정도이며 안전도나 사고확률이 아닙니다."
+        },
+        "item_contracts": {
+          "confirmed_risks": {
+            "required": [
+              "code",
+              "title",
+              "severity",
+              "explanation",
+              "action"
+            ]
+          },
+          "required_checks": {
+            "required": [
+              "code",
+              "title",
+              "severity",
+              "action"
+            ],
+            "not_returned": [
+              "explanation"
+            ]
+          }
+        }
+      },
+      "similar_cases": {
+        "type": "array",
+        "owner": "다른 담당자",
+        "data_analysis_default": []
+      },
+      "checklist": {
+        "type": "array",
+        "owner": "다른 담당자",
+        "data_analysis_default": []
+      },
+      "location_context": {
+        "type": "object",
+        "required": [
+          "included_in_risk_score"
+        ],
+        "optional": [
+          "items",
+          "source_type",
+          "source_name",
+          "reference_date",
+          "notice"
+        ],
+        "fixed_values": {
+          "included_in_risk_score": false
+        },
+        "description": "입지 참고정보이며 위험단계 산정에 사용하지 않습니다."
+      }
+    },
+    "forbidden_fields": [
+      "risk_score",
+      "accident_probability"
+    ],
+    "full_examples_file": "backend/data/sample_analysis_results.json",
+    "full_examples_format": "배열의 각 원소는 {input, result}이며 result가 실제 분석 응답입니다. input.purpose는 샘플 설명용으로 API 요청 필드가 아닙니다."
+  },
+  "errors": [
+    {
+      "condition": "property_id에 해당하는 모의 매물이 없음",
+      "module_exception": "KeyError",
+      "recommended_http_status": 404
+    },
+    {
+      "condition": "planned_deposit가 숫자가 아니거나 0 이하임",
+      "module_exception": "ValueError",
+      "recommended_http_status": 400
+    }
+  ],
+  "integration": {
+    "demo_function": "backend.scoring.service.analyze_sample(property_id, planned_deposit)",
+    "core_function": "backend.scoring.risk_rules.analyze_property(property_data, planned_deposit, location_context=location_context)",
+    "core_property_field_shape": {
+      "value_field": {
+        "value": "허용된 표준값",
+        "source_type": "mock | official | user_confirmed",
+        "source_name": "출처 이름",
+        "reference_date": "YYYY-MM-DD"
+      },
+      "reference_value": {
+        "amount": "양의 숫자",
+        "value_type": "가격 종류",
+        "comparison_unit_confirmed": "boolean",
+        "source_type": "mock | official | user_confirmed",
+        "source_name": "출처 이름",
+        "reference_date": "YYYY-MM-DD"
+      },
+      "note": "실제 매물 직접 호출에서는 상태값을 평면 문자열로 전달하지 않습니다."
+    },
+    "mock_properties_file": "backend/data/mock_properties.json",
+    "location_context_file": "backend/data/location_context.json",
+    "sample_results_file": "backend/data/sample_analysis_results.json"
+  },
+  "interpretation_rules": [
+    "risk_stage는 사고확률이나 법률적 판단이 아닙니다.",
+    "기본 확인은 안전하다는 뜻이 아닙니다.",
+    "unknown은 위험 확정이 아니라 required_checks로 반환합니다.",
+    "입지정보는 권리위험을 상쇄하거나 가격 상승을 보장하지 않습니다."
+  ]
+}
