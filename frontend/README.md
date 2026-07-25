@@ -32,6 +32,11 @@
   - 확인된 위험신호
   - 확인이 필요한 정보
   - 분석 신뢰도
+- AI 유사상담사례 화면
+  - 상담문장과 위험맥락 유사도
+  - 현재 계약과 일치하거나 다른 요인
+  - 고등학생도 이해하기 쉬운 설명
+  - 동일 피해를 예측하지 않는다는 안내
 
 현재 데이터는 API 연결 전 개발용 샘플이며, 데이터 파일을 실제 팀 API
 응답으로 교체할 수 있도록 화면과 분리되어 있습니다.
@@ -60,11 +65,13 @@ app/
 ├─ components/
 │  ├─ PropertySummary.tsx
 │  ├─ GuaranteeStatusCard.tsx
-│  └─ RiskAnalysis.tsx
+│  ├─ RiskAnalysis.tsx
+│  └─ SimilarCaseCard.tsx
 ├─ data/
 │  ├─ propertySample.ts
 │  ├─ guaranteeStates.ts
-│  └─ analysisSample.ts
+│  ├─ analysisSample.ts
+│  └─ similarCasesSample.ts
 ├─ globals.css
 ├─ layout.tsx
 └─ page.tsx
