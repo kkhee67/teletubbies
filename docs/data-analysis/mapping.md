@@ -5,6 +5,9 @@
 | 표준 필드 | 의미 | 허용값 또는 형식 |
 |---|---|---|
 | `property_id` | 저장·연결용 매물 ID | 문자열 |
+| `dataset_type` | 실제·샘플 데이터 구분 | `real`, `synthetic` |
+| `data_version` | 검색·분석 시점 비교용 데이터 버전 | 문자열 |
+| `updated_at` | 해당 레코드가 갱신된 시각 | 시간대가 포함된 ISO 8601 |
 | `display_address` | 화면용 축약 주소 | 문자열 |
 | `property_type.value` | 표준 주택유형 | `apartment`, `officetel`, `multi_household`, `multi_unit`, `row_house`, `detached`, `unknown` |
 | `reference_value.amount` | 참고 주택가액 | 양의 정수 |
@@ -17,7 +20,19 @@
 | `housing_required_info.value` | 주택유형별 필수 확인정보 | 유형별 boolean 필드 |
 | `down_contract_requested` | 실제 보증금과 다른 계약서 작성 요구 | `true`, `false` |
 | `source_type` | 개별 필드 출처 종류 | `mock`, `official`, `user_confirmed` |
+| `source_name` | 개별 필드 출처 이름 | 문자열 |
 | `reference_date` | 정보 기준일 | `YYYY-MM-DD` |
+| `retrieved_at` | 해당 정보를 조회한 시각 | 시간대가 포함된 ISO 8601 |
+
+## 기준 데이터와 버전
+
+- [`data_manifest.json`](../../backend/data/data_manifest.json)이 설명 가능한 위험 분석 모듈의 기준 데이터 파일과 버전을 지정합니다.
+- 기준 매물은 `backend/data/mock_properties.json`, 기준 입지정보는 `backend/data/location_context.json`입니다.
+- `backend/data`의 다른 파일 전체나 `ai/data`를 자동으로 같은 데이터라고 간주하지 않습니다.
+- 검색 결과의 `data_version`과 분석 결과의 `data_version`이 다르면 최신 매물을 다시 조회한 뒤 분석합니다.
+- 위 재조회는 데이터 계약의 정책이며, 공개 API에서 실제로 비교·재호출하는 구현은 백엔드 담당 범위입니다.
+- 현재 내부 샘플 서비스는 호출할 때마다 JSON을 다시 읽으므로 파일 변경에 서버 재시작이 필요하지 않습니다.
+- `updated_at`은 레코드 갱신시각이고 `retrieved_at`은 개별 정보 조회시각이므로 서로 바꾸어 사용하지 않습니다.
 
 ## HUG·상담 데이터 사용 원칙
 

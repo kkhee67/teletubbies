@@ -8,6 +8,9 @@
     "result": {
       "property": {
         "property_id": "MOCK-001",
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "display_address": "부산광역시 모의구 안심로 일대",
         "is_mock": true,
         "property_type": "multi_unit",
@@ -120,6 +123,9 @@
       "similar_cases": [],
       "checklist": [],
       "location_context": {
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "items": [
           {
             "code": "AIRPORT_HEIGHT_RESTRICTION_CHECK",
@@ -135,6 +141,7 @@
         "source_type": "mock",
         "source_name": "해커톤 모의자료",
         "reference_date": "2026-07-25",
+        "retrieved_at": "2026-07-26T01:58:29+09:00",
         "included_in_risk_score": false,
         "notice": "입지정보는 계약 권리위험을 상쇄하지 않으며 가격 상승을 보장하지 않습니다."
       }
@@ -149,6 +156,9 @@
     "result": {
       "property": {
         "property_id": "MOCK-002",
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "display_address": "부산광역시 예시구 계약길 일대",
         "is_mock": true,
         "property_type": "apartment",
@@ -221,10 +231,14 @@
       "similar_cases": [],
       "checklist": [],
       "location_context": {
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "items": [],
         "source_type": "mock",
         "source_name": "해커톤 모의자료",
         "reference_date": "2026-07-25",
+        "retrieved_at": "2026-07-26T01:58:29+09:00",
         "included_in_risk_score": false
       }
     }
@@ -238,6 +252,9 @@
     "result": {
       "property": {
         "property_id": "MOCK-003",
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "display_address": "부산광역시 샘플구 레이더로 일대",
         "is_mock": true,
         "property_type": "multi_household",
@@ -353,6 +370,9 @@
       "similar_cases": [],
       "checklist": [],
       "location_context": {
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "items": [
           {
             "code": "MILITARY_ZONE_CHECK",
@@ -363,6 +383,7 @@
         "source_type": "mock",
         "source_name": "해커톤 모의자료",
         "reference_date": "2026-07-25",
+        "retrieved_at": "2026-07-26T01:58:29+09:00",
         "included_in_risk_score": false
       }
     }
@@ -376,6 +397,9 @@
     "result": {
       "property": {
         "property_id": "MOCK-004",
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "display_address": "부산광역시 테스트구 보증로 일대",
         "is_mock": true,
         "property_type": "officetel",
@@ -473,10 +497,14 @@
       "similar_cases": [],
       "checklist": [],
       "location_context": {
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "items": [],
         "source_type": "mock",
         "source_name": "해커톤 모의자료",
         "reference_date": "2026-07-25",
+        "retrieved_at": "2026-07-26T01:58:29+09:00",
         "included_in_risk_score": false
       }
     }
@@ -490,6 +518,9 @@
     "result": {
       "property": {
         "property_id": "MOCK-005",
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "display_address": "부산광역시 가상구 임차길 일대",
         "is_mock": true,
         "property_type": "multi_unit",
@@ -591,10 +622,14 @@
       "similar_cases": [],
       "checklist": [],
       "location_context": {
+        "dataset_type": "synthetic",
+        "data_version": "2026-07-26-v1",
+        "updated_at": "2026-07-26T01:58:29+09:00",
         "items": [],
         "source_type": "mock",
         "source_name": "해커톤 모의자료",
         "reference_date": "2026-07-25",
+        "retrieved_at": "2026-07-26T01:58:29+09:00",
         "included_in_risk_score": false
       }
     }

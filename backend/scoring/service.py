@@ -20,6 +20,9 @@ def list_sample_properties() -> list[dict]:
     return [
         {
             "property_id": item["property_id"],
+            "dataset_type": item["dataset_type"],
+            "data_version": item["data_version"],
+            "updated_at": item["updated_at"],
             "display_address": item["display_address"],
             "is_mock": item["is_mock"],
         }

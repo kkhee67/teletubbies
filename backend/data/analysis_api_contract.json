@@ -1,9 +1,32 @@
 {
   "contract_name": "rental_risk_analysis",
-  "contract_version": "1.0.0",
+  "contract_version": "1.1.0",
   "rule_version": "1.0.0",
+  "data_contract": {
+    "manifest_file": "backend/data/data_manifest.json",
+    "canonical_scope": "explainable_rental_risk_analysis",
+    "canonical_data_root": "backend/data",
+    "dataset_types": [
+      "synthetic",
+      "real"
+    ],
+    "required_record_metadata": [
+      "dataset_type",
+      "data_version",
+      "updated_at"
+    ],
+    "required_fact_metadata": [
+      "source_type",
+      "source_name",
+      "reference_date",
+      "retrieved_at"
+    ],
+    "version_mismatch_action": "reload_property_before_analysis",
+    "version_mismatch_enforcement_owner": "backend",
+    "version_mismatch_implementation": "contract_only"
+  },
   "scope": {
-    "data_analysis_owner": "김건희",
+    "data_analysis_owner": "데이터 분석 담당자",
     "http_api_owner": "백엔드 담당자",
     "description": "데이터 분석 모듈에 전달할 값과 분석 모듈이 반환하는 값의 계약입니다.",
     "not_in_scope": [
@@ -49,6 +72,9 @@
       "property": {
         "required": [
           "property_id",
+          "dataset_type",
+          "data_version",
+          "updated_at",
           "display_address",
           "is_mock",
           "property_type",
@@ -58,6 +84,10 @@
           "deposit_ratio_notice"
         ],
         "enums": {
+          "dataset_type": [
+            "synthetic",
+            "real"
+          ],
           "property_type": [
             "apartment",
             "officetel",
@@ -171,16 +201,29 @@
       },
       "location_context": {
         "type": "object",
-        "required": [
-          "included_in_risk_score"
-        ],
-        "optional": [
-          "items",
-          "source_type",
-          "source_name",
-          "reference_date",
-          "notice"
-        ],
+                "required": [
+                    "included_in_risk_score"
+                ],
+                "conditional_required_when_location_data_exists": [
+                    "dataset_type",
+                    "data_version",
+                    "updated_at",
+                    "source_type",
+                    "source_name",
+                    "reference_date",
+                    "retrieved_at"
+                ],
+                "optional": [
+                    "dataset_type",
+                    "data_version",
+                    "updated_at",
+                    "items",
+                    "source_type",
+                    "source_name",
+                    "reference_date",
+                    "retrieved_at",
+                    "notice"
+                ],
         "fixed_values": {
           "included_in_risk_score": false
         },
@@ -214,7 +257,8 @@
         "value": "허용된 표준값",
         "source_type": "mock | official | user_confirmed",
         "source_name": "출처 이름",
-        "reference_date": "YYYY-MM-DD"
+        "reference_date": "YYYY-MM-DD",
+        "retrieved_at": "ISO 8601 datetime with timezone"
       },
       "reference_value": {
         "amount": "양의 숫자",
@@ -222,10 +266,15 @@
         "comparison_unit_confirmed": "boolean",
         "source_type": "mock | official | user_confirmed",
         "source_name": "출처 이름",
-        "reference_date": "YYYY-MM-DD"
+        "reference_date": "YYYY-MM-DD",
+        "retrieved_at": "ISO 8601 datetime with timezone"
       },
       "note": "실제 매물 직접 호출에서는 상태값을 평면 문자열로 전달하지 않습니다."
     },
+    "data_manifest_file": "backend/data/data_manifest.json",
+    "canonical_data_root": "backend/data",
+    "internal_loader_refresh": "per_call",
+    "version_mismatch_action": "reload_property_before_analysis",
     "mock_properties_file": "backend/data/mock_properties.json",
     "location_context_file": "backend/data/location_context.json",
     "sample_results_file": "backend/data/sample_analysis_results.json"
@@ -234,6 +283,8 @@
     "risk_stage는 사고확률이나 법률적 판단이 아닙니다.",
     "기본 확인은 안전하다는 뜻이 아닙니다.",
     "unknown은 위험 확정이 아니라 required_checks로 반환합니다.",
-    "입지정보는 권리위험을 상쇄하거나 가격 상승을 보장하지 않습니다."
+    "입지정보는 권리위험을 상쇄하거나 가격 상승을 보장하지 않습니다.",
+    "synthetic 데이터의 official 및 enrolled는 테스트 시나리오이며 실제 증빙이 아닙니다.",
+    "real 데이터에서 enrolled는 공식 가입 증빙이 있을 때만 사용합니다."
   ]
 }

@@ -1,0 +1,49 @@
+{
+  "manifest_version": "1.0.0",
+  "canonical_scope": "explainable_rental_risk_analysis",
+  "canonical_data_root": "backend/data",
+  "runtime_usage": "contract_and_validation",
+  "dataset_type": "synthetic",
+  "data_version": "2026-07-26-v1",
+  "updated_at": "2026-07-26T01:58:29+09:00",
+  "datasets": {
+    "properties": {
+      "path": "backend/data/mock_properties.json",
+      "format": "json-array",
+      "record_count": 5,
+      "id_field": "property_id"
+    },
+    "location_context": {
+      "path": "backend/data/location_context.json",
+      "format": "json-object-by-property-id",
+      "record_count": 5,
+      "included_in_risk_score": false
+    },
+    "sample_results": {
+      "path": "backend/data/sample_analysis_results.json",
+      "format": "json-array",
+      "record_count": 5,
+      "derived": true
+    }
+  },
+  "contracts": {
+    "internal_analysis": "backend/data/analysis_api_contract.json",
+    "public_http_api": null,
+    "public_http_api_owner": "backend"
+  },
+  "policies": {
+    "original_source_files": "do_not_modify",
+    "unknown_values": "unknown_or_null",
+    "synthetic_records_are_real_evidence": false,
+    "enrolled_on_real_data_requires_official_evidence": true,
+    "internal_estimate_status": "estimated_eligible",
+    "location_context_included_in_risk_score": false,
+    "version_mismatch_action": "reload_property_before_analysis",
+    "version_mismatch_enforcement_owner": "backend"
+  },
+  "notes": [
+    "이 매니페스트는 설명 가능한 데이터 분석 모듈의 기준 파일만 지정합니다.",
+    "backend/data/sample_properties.csv와 ai/data의 별도 데이터는 이 기준 데이터셋에 포함하지 않습니다.",
+    "synthetic 데이터의 official 및 enrolled 값은 테스트 시나리오이며 실제 가입 증빙이 아닙니다."
+  ]
+}

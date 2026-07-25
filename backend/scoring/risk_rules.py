@@ -276,6 +276,9 @@ def analyze_property(property_data, planned_deposit, *, location_context=None):
     return {
         "property": {
             "property_id": property_data["property_id"],
+            "dataset_type": property_data.get("dataset_type"),
+            "data_version": property_data.get("data_version"),
+            "updated_at": property_data.get("updated_at"),
             "display_address": property_data["display_address"],
             "is_mock": bool(property_data.get("is_mock", False)),
             "property_type": _field_value(property_data, "property_type"),
