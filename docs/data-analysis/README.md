@@ -153,7 +153,7 @@ Pandas의 `read_csv`와 `read_excel`로 파일을 읽고, `isna`·`duplicated`·
 - 위험단계, 위험근거, 확인사항 자동 생성
 - 필수정보가 얼마나 확인됐는지 분석 신뢰도 계산
 - 네 가지 위험단계가 모두 포함된 결과 예시 5건 제작
-- 위험 규칙과 결과 검증 테스트 18개 작성
+- 위험 규칙과 데이터 계약 검증 테스트 27개 작성
 
 주요 구현 파일:
 
@@ -161,6 +161,7 @@ Pandas의 `read_csv`와 `read_excel`로 파일을 읽고, `isna`·`duplicated`·
 - [`confidence.py`](../../backend/scoring/confidence.py)
 - [`mock_properties.json`](../../backend/data/mock_properties.json)
 - [`location_context.json`](../../backend/data/location_context.json)
+- [`data_manifest.json`](../../backend/data/data_manifest.json)
 - [`sample_analysis_results.json`](../../backend/data/sample_analysis_results.json)
 
 ### 7단계. 백엔드 전달 자료 작성
@@ -174,9 +175,23 @@ Pandas의 `read_csv`와 `read_excel`로 파일을 읽고, `isna`·`duplicated`·
 
 전달 파일:
 
+- [`data_manifest.json`](../../backend/data/data_manifest.json)
 - [`analysis_api_contract.json`](../../backend/data/analysis_api_contract.json)
 - [`backend-handoff.md`](backend-handoff.md)
 - [`mapping.md`](mapping.md)
+
+### 데이터 규격과 버전 관리
+
+실제 데이터와 시연용 합성데이터가 섞이지 않도록 `dataset_type`을 추가하고, 검색 시점과 분석 시점의 데이터가 같은지 확인할 수 있도록 `data_version`과 `updated_at`을 제공합니다. 각 개별 사실에는 출처, 기준일과 함께 `retrieved_at`을 기록합니다.
+
+- `data_manifest.json`이 설명 가능한 위험 분석 모듈의 기준 파일을 지정
+- 시연 데이터는 `dataset_type: synthetic`으로 명시
+- 기준 매물과 입지정보에 동일한 `data_version` 적용
+- 검색 결과와 분석 결과에 데이터 버전을 함께 제공
+- 버전이 다르면 최신 매물을 다시 조회하도록 계약에 명시
+- 공개 API의 실제 버전 비교·재조회 구현은 백엔드 연결 작업으로 남김
+- 내부 서비스는 호출할 때마다 JSON을 다시 읽어 서버 재시작 없이 변경 반영
+- `ai/data`와 기존 CSV는 자동으로 같은 데이터라고 간주하지 않음
 
 ## 작업하면서 정한 중요한 원칙
 
@@ -187,6 +202,8 @@ Pandas의 `read_csv`와 `read_excel`로 파일을 읽고, `isna`·`duplicated`·
 5. `기본 확인`은 계약이 안전하다는 의미가 아닙니다.
 6. 입지정보는 근저당·압류·반환보증 같은 계약 위험을 낮추지 않습니다.
 7. 합성데이터와 모의정보를 실제 공식자료처럼 표현하지 않습니다.
+8. 데이터 버전이 다르면 기존 검색 결과를 그대로 분석하지 않습니다.
+9. `updated_at`과 개별 정보의 `retrieved_at`을 구분합니다.
 
 ## 완성한 결과물
 
@@ -198,15 +215,17 @@ Pandas의 `read_csv`와 `read_excel`로 파일을 읽고, `isna`·`duplicated`·
 | 상담 분석 | 상담 위험맥락과 미확인 정보 분석 |
 | 위험 규칙 | 위험단계·위험근거·확인사항 명세 |
 | 분석 코드 | 위험 규칙과 분석 신뢰도 계산 |
-| 모의데이터 | 모의 매물 5건과 입지 참고정보 |
+| 모의데이터 | 버전과 출처가 표시된 모의 매물 5건과 입지 참고정보 |
+| 데이터 규격 | 기준 파일 매니페스트와 내부 계약 버전 `1.1.0` |
 | 결과 예시 | 네 가지 위험단계를 포함한 분석 결과 5건 |
 | 백엔드 전달 | JSON 계약, 필드 매핑, 연결 안내 |
-| 검증 | 자동 테스트 18개 |
+| 검증 | 자동 테스트 27개 |
 
 ## 현재 상태
 
 - 데이터 분석 1~6단계 완료
 - 모의 매물 분석 결과 5건 생성 완료
-- 테스트 18개 통과
+- 테스트 27개 통과
 - JSON 계약과 백엔드 전달 문서 작성 완료
+- 합성데이터 구분, 데이터 버전, 갱신·조회시각 제공 완료
 - `feature/data-analysis` 브랜치에서 작업

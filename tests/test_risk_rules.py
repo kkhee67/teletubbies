@@ -187,8 +187,12 @@ class RiskRulesTest(unittest.TestCase):
         samples = list_sample_properties()
         self.assertEqual(len(samples), 5)
         self.assertTrue(all(item["is_mock"] for item in samples))
+        self.assertTrue(all(item["dataset_type"] == "synthetic" for item in samples))
+        self.assertTrue(all(item["data_version"] == "2026-07-26-v1" for item in samples))
         result = analyze_sample("MOCK-001", 200_000_000)
         self.assertEqual(result["property"]["property_id"], "MOCK-001")
+        self.assertEqual(result["property"]["dataset_type"], "synthetic")
+        self.assertEqual(result["property"]["data_version"], "2026-07-26-v1")
 
     def test_sample_results_cover_all_four_stages(self):
         stages = {row["result"]["analysis"]["risk_stage"] for row in build_sample_results()}
