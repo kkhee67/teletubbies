@@ -1,0 +1,7 @@
+property_id,address_display,district,legal_dong,housing_type,reference_value,value_source,mortgage_status,seizure_status,joint_collateral,guarantee_status,market_note,built_year
+P001,부산광역시 수영구 안심로 24,수영구,광안동,multi_unit,220000000,샘플 가격정보,exists,none,unknown,unknown,도시철도 계획 공식 자료 연동 전; 정비사업 확인 필요,2015
+P002,부산광역시 강서구 샘플로 12,강서구,명지동,officetel,220000000,샘플 가격정보,promised_removal,none,unknown,ineligible,개발행위허가 및 주변 거래 표본 추가 확인 필요,2018
+P003,부산광역시 부산진구 전포대로 100,부산진구,전포동,apartment,350000000,샘플 가격정보,none,none,none,eligible,지역 참고정보는 점수에서 제외,2020
+P004,부산광역시 사하구 감천로 45,사하구,감천동,multi_household,180000000,샘플 가격정보,exists,unknown,exists,ineligible,정비사업 여부 공식 출처 확인 필요,2007
+P005,부산광역시 해운대구 해운대로 300,해운대구,우동,officetel,280000000,샘플 가격정보,unknown,none,unknown,unknown,최근 거래 표본 부족; 공식 시세 확인 필요,2012
+P006,부산광역시 동래구 온천장로 77,동래구,온천동,row_house,160000000,샘플 가격정보,removed,none,none,eligible,시장 참고정보는 별도 확인,2003
