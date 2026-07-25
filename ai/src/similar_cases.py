@@ -97,6 +97,8 @@ GUARANTEE_MATCH_LABELS = {
     "deep_analysis": "반환보증 가입 어려움",
 }
 
+PUBLIC_CASE_SOURCE_NAME = "발제사 제공 비식별 합성 상담사례"
+
 CONTEXT_PATTERNS = {
     "공동담보": r"공동담보",
     "말소 약속": r"(?:말소.{0,12}(?:약속|하기로|한다고|예정)|약속.{0,12}말소)",
@@ -427,10 +429,7 @@ class SimilarCaseSearchEngine:
         ranked = []
         for index, case in enumerate(self.cases):
             case_product = self._case_product_type(case)
-            if (
-                query.product_type
-                and case_product not in {query.product_type, UNKNOWN_PRODUCT}
-            ):
+            if query.product_type and case_product != query.product_type:
                 continue
             housing, rights, guarantee, deposit = self._structured_components(case, query)
             product_match = self._product_match(case, query) or 0.0
@@ -443,16 +442,6 @@ class SimilarCaseSearchEngine:
             )
             ranked.append((structured_score, index))
         ranked.sort(key=lambda item: (-item[0], item[1]))
-
-        if query.product_type:
-            exact_product_cases = [
-                item
-                for item in ranked
-                if self._case_product_type(self.cases[item[1]])
-                == query.product_type
-            ]
-            if len(exact_product_cases) >= top_k:
-                ranked = exact_product_cases
 
         minimum_candidates = min(len(ranked), max(100, top_k * 20))
         positive = [index for score, index in ranked if score > 0]
@@ -474,6 +463,8 @@ class SimilarCaseSearchEngine:
 
         query = build_query_context(property_data, analysis, user_text)
         candidate_indices = self._candidate_indices(query, top_k)
+        if not candidate_indices:
+            return []
         query_vector = self.vectorizer.transform([query.query_text])
         text_scores = cosine_similarity(
             query_vector, self.case_matrix[candidate_indices]
@@ -515,7 +506,19 @@ class SimilarCaseSearchEngine:
                         "dispute_type": case["dispute_type"],
                         "progress_stage": case["progress_stage"],
                         "source_summary": case["source_summary"],
-                        "disclaimer": "비슷한 조건의 참고사례이며 동일한 피해를 예측하지 않습니다.",
+                        "source": {
+                            "source_type": case.get("source", {}).get(
+                                "type", "provided_synthetic_consultations"
+                            ),
+                            "source_name": PUBLIC_CASE_SOURCE_NAME,
+                            "is_synthetic": bool(
+                                case.get("source", {}).get("is_synthetic", True)
+                            ),
+                        },
+                        "disclaimer": (
+                            "유사도는 위험 확률이나 사고 확률이 아닙니다. "
+                            "비슷한 조건의 참고사례이며 동일한 피해를 예측하지 않습니다."
+                        ),
                     },
                 )
             )

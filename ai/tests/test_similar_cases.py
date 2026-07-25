@@ -118,7 +118,39 @@ class SimilarCasesTest(unittest.TestCase):
             )
 
         self.assertEqual(results[0]["case_id"], "CASE-0002")
-        self.assertNotIn("CASE-0001", {result["case_id"] for result in results})
+        self.assertEqual({result["case_id"] for result in results}, {"CASE-0002"})
+
+    def test_no_exact_product_returns_no_cases(self):
+        cases = [
+            make_case(
+                "CASE-0001",
+                "다세대주택",
+                "1억~2억",
+                "근저당설정",
+                "unknown",
+                ["근저당"],
+                "상품 유형 미확인 근저당 상담",
+            )
+        ]
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "cases.jsonl"
+            path.write_text(
+                json.dumps(cases[0], ensure_ascii=False),
+                encoding="utf-8",
+            )
+            engine = SimilarCaseSearchEngine(path)
+            results = engine.search(
+                {
+                    "guarantee_product_type": "jeonse_return",
+                    "housing_type": "다세대주택",
+                },
+                {},
+                None,
+                top_k=3,
+            )
+
+        self.assertEqual(results, [])
 
     def test_user_text_context_is_normalized(self):
         self.assertEqual(
