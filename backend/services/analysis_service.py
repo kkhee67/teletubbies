@@ -5,6 +5,7 @@ from typing import Any
 from repositories import property_repository
 from schemas import GUARANTEE_STATUS_VALUES, AnalyzeRequest
 from scoring.risk_score import calculate_risk_signals
+from services.ai_client import fetch_similar_cases
 from services.guarantee_service import resolve_guarantee_branch
 from similarity.checklist import build_checklist
 from similarity.search_cases import explain_cases_safely, find_similar_cases
@@ -39,16 +40,34 @@ def analyze_contract(request: AnalyzeRequest) -> dict[str, Any]:
         planned_deposit=request.planned_deposit,
     )
 
-    similar_cases = find_similar_cases(
+    guarantee_product_type = (
+        request.guarantee_product_type
+        or property_data.get("guarantee_product_type")
+        or "jeonse_return"
+    )
+    ai_result = fetch_similar_cases(
         property_data=property_data,
+        risk_result=risk_result,
         planned_deposit=request.planned_deposit,
         user_note=request.user_note,
+        guarantee_product_type=guarantee_product_type,
         limit=3,
     )
-    easy_explanation = explain_cases_safely(similar_cases, risk_result)
+    similar_cases = ai_result["similar_cases"]
+    easy_explanation = ai_result["easy_explanation"]
+    if ai_result["status"] != "ok":
+        similar_cases = find_similar_cases(
+            property_data=property_data,
+            planned_deposit=request.planned_deposit,
+            user_note=request.user_note,
+            limit=3,
+        )
+        easy_explanation = explain_cases_safely(similar_cases, risk_result)
+
     checklist = build_checklist(property_data, risk_result, guarantee)
 
     return {
+        "ai_api_status": ai_result["status"],
         "guarantee": {
             "status": guarantee["status"],
             "group": guarantee["group"],
@@ -104,6 +123,11 @@ def apply_user_corrections(
 def build_property_summary(property_data: dict[str, Any], request: AnalyzeRequest) -> dict[str, Any]:
     reference_value = int(property_data.get("reference_value") or 0)
     deposit_ratio = round(request.planned_deposit / reference_value * 100, 1) if reference_value else None
+    guarantee_product_type = (
+        request.guarantee_product_type
+        or property_data.get("guarantee_product_type")
+        or "jeonse_return"
+    )
     return {
         "property_id": property_data.get("property_id"),
         "address_display": property_data.get("address_display"),
@@ -117,6 +141,7 @@ def build_property_summary(property_data: dict[str, Any], request: AnalyzeReques
         "seizure_status": property_data.get("seizure_status"),
         "joint_collateral": property_data.get("joint_collateral"),
         "guarantee_status": property_data.get("guarantee_status"),
+        "guarantee_product_type": guarantee_product_type,
         "value_source": property_data.get("value_source"),
         "user_corrections_applied": property_data.get("user_corrections_applied", {}),
     }

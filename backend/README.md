@@ -34,14 +34,21 @@ POST /analyze
 POST /simulate
 ```
 
-## 현재 AI 연동 범위
+## AI API 연동
 
-현재 백엔드 MVP는 AI FastAPI 서버를 HTTP로 직접 호출하지 않습니다.
+`/analyze`는 먼저 AI API의 `/api/similar-cases`를 호출해 유사 상담사례와 쉬운 설명을 가져옵니다.
 
-- `/analyze`는 `backend/similarity/search_cases.py`의 로컬 모의 유사사례를 사용합니다.
-- 백엔드 요청 스키마에는 아직 `guarantee_product_type`이 없어 전세보증금반환보증과 임대보증금보증을 AI API에 구분 전달하지 않습니다.
-- 백엔드 유사사례 응답과 `ai` 서비스의 유사사례 응답은 필드명과 유사도 단위가 다릅니다.
-- 백엔드 위험점수는 미확인 정보를 점수에 포함하지만, 데이터분석 모듈은 미확인 정보를 확인사항으로 분리합니다.
+- 기본 AI API 주소는 `http://127.0.0.1:8001`입니다.
+- 다른 주소를 쓰려면 `AI_API_BASE_URL` 환경변수를 설정하세요.
+- 응답 대기시간 기본값은 0.5초이며 `AI_API_TIMEOUT_SECONDS`로 조정할 수 있습니다.
+- AI API가 꺼져 있거나 오류를 반환하면 기존 로컬 모의 유사사례로 폴백하고 `ai_api_status: "fallback"`을 반환합니다.
+- `guarantee_product_type`으로 `jeonse_return`, `rental_deposit`, `unknown`을 전달할 수 있습니다.
+
+AI API는 별도 터미널에서 예를 들어 다음처럼 실행합니다.
+
+```powershell
+.\ai\run_api.ps1 -Port 8001
+```
 
 ## POST /analyze 예시
 
@@ -51,6 +58,7 @@ POST /simulate
   "address_query": "부산광역시 수영구 안심로 24",
   "planned_deposit": 200000000,
   "monthly_rent": 0,
+  "guarantee_product_type": "jeonse_return",
   "user_note": "잔금일에 근저당을 말소한다고 들었습니다."
 }
 ```

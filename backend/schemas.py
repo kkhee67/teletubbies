@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -21,6 +21,7 @@ class AnalyzeRequest(BaseModel):
     address_query: Optional[str] = Field(default=None, max_length=200)
     planned_deposit: int = Field(gt=0)
     monthly_rent: int = Field(default=0, ge=0)
+    guarantee_product_type: Literal["jeonse_return", "rental_deposit", "unknown"] | None = None
     user_note: str = Field(default="", max_length=1000)
     user_corrections: dict[str, str | int | bool] = Field(default_factory=dict)
 
@@ -37,6 +38,7 @@ class PropertySearchItem(BaseModel):
     housing_type: str
     reference_value: int
     guarantee_status: GuaranteeStatus
+    guarantee_product_type: Literal["jeonse_return", "rental_deposit", "unknown"]
 
 
 class PropertySearchResponse(BaseModel):
