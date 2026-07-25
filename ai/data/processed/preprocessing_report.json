@@ -1,0 +1,43 @@
+{
+  "input_file": "consultations.xlsx",
+  "output_file": "consultations_clean.csv",
+  "input_rows": 938,
+  "output_rows": 938,
+  "output_columns": [
+    "case_id",
+    "source_group",
+    "region_sido",
+    "region_sigungu",
+    "deposit_range",
+    "contract_status",
+    "housing_type",
+    "senior_rights",
+    "guarantee_raw",
+    "dispute_type",
+    "progress_stage",
+    "situation_summary_safe",
+    "special_notes_safe",
+    "guarantee_product_type",
+    "search_text",
+    "source_type"
+  ],
+  "duplicate_case_ids": 0,
+  "empty_situation_summaries": 3,
+  "unknown_counts": {
+    "housing_type": 565,
+    "senior_rights": 598,
+    "guarantee_raw": 538,
+    "deposit_range": 21
+  },
+  "guarantee_product_type_counts": {
+    "unknown": 882,
+    "jeonse_return": 48,
+    "rental_deposit": 8
+  },
+  "deidentification_hits": {
+    "resident_id": 0,
+    "email": 0,
+    "phone": 0,
+    "road_address": 1
+  }
+}

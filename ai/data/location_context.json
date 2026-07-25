@@ -1,0 +1,77 @@
+{
+  "MOCK-001": {
+    "included_in_risk_score": false,
+    "items": [
+      {
+        "key": "airport_height_restriction",
+        "label": "공항 고도제한",
+        "status": "check_required",
+        "description": "공항 관련 높이 제한의 영향 여부를 별도로 확인해야 합니다."
+      }
+    ],
+    "source_type": "mock",
+    "source_name": "해커톤 모의 입지자료",
+    "reference_date": "2026-07-25",
+    "notice": "입지 참고정보는 계약 권리위험 단계에 포함되지 않습니다."
+  },
+  "MOCK-002": {
+    "included_in_risk_score": false,
+    "items": [
+      {
+        "key": "railway_plan",
+        "label": "철도계획",
+        "status": "official_plan_found",
+        "description": "약 800m 인근에 모의 철도계획이 있는 시연 시나리오입니다. 가격 상승을 의미하지 않습니다."
+      }
+    ],
+    "source_type": "mock",
+    "source_name": "해커톤 모의 입지자료",
+    "reference_date": "2026-07-25",
+    "notice": "입지 참고정보는 계약 권리위험 단계에 포함되지 않습니다."
+  },
+  "MOCK-003": {
+    "included_in_risk_score": false,
+    "items": [
+      {
+        "key": "redevelopment",
+        "label": "정비계획",
+        "status": "check_required",
+        "description": "정비계획 대상 여부와 진행단계를 공식 자료에서 확인해야 하는 모의 시나리오입니다."
+      }
+    ],
+    "source_type": "mock",
+    "source_name": "해커톤 모의 입지자료",
+    "reference_date": "2026-07-25",
+    "notice": "입지 참고정보는 계약 권리위험 단계에 포함되지 않습니다."
+  },
+  "MOCK-004": {
+    "included_in_risk_score": false,
+    "items": [
+      {
+        "key": "building_use",
+        "label": "건축물 용도",
+        "status": "check_required",
+        "description": "오피스텔의 주거용·업무용 용도를 건축물대장에서 확인해야 합니다."
+      }
+    ],
+    "source_type": "mock",
+    "source_name": "해커톤 모의 입지자료",
+    "reference_date": "2026-07-25",
+    "notice": "입지 참고정보는 계약 권리위험 단계에 포함되지 않습니다."
+  },
+  "MOCK-005": {
+    "included_in_risk_score": false,
+    "items": [
+      {
+        "key": "military_protection_zone",
+        "label": "군사시설 보호구역",
+        "status": "none",
+        "description": "모의 자료에서 확인된 보호구역 정보는 없습니다."
+      }
+    ],
+    "source_type": "mock",
+    "source_name": "해커톤 모의 입지자료",
+    "reference_date": "2026-07-25",
+    "notice": "입지 참고정보는 계약 권리위험 단계에 포함되지 않습니다."
+  }
+}
