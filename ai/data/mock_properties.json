@@ -1,0 +1,335 @@
+[
+  {
+    "property_id": "MOCK-001",
+    "search_address": "부산광역시 모의구 안심로 101",
+    "display_address": "부산광역시 모의구 안심로 일대 (모의 매물·실제 주소 아님)",
+    "region_sido": "부산광역시",
+    "region_sigungu": "모의구",
+    "is_mock": true,
+    "guarantee_product_type": "jeonse_return",
+    "property_facts": {
+      "housing_type": {
+        "value": "다세대주택",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "reference_value": {
+        "amount": 220000000,
+        "value_type": "sample_estimated_value",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "mortgage": {
+        "status": "exists",
+        "amount": 120000000,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "seizure": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "joint_collateral": {
+        "status": "unknown",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      }
+    },
+    "guarantee_fact": {
+      "status": "ineligible",
+      "source": {
+        "source_type": "mock",
+        "source_name": "해커톤 모의 반환보증 데이터",
+        "reference_date": "2026-07-25"
+      }
+    }
+  },
+  {
+    "property_id": "MOCK-002",
+    "search_address": "부산광역시 예시구 계약길 24",
+    "display_address": "부산광역시 예시구 계약길 일대 (모의 매물·실제 주소 아님)",
+    "region_sido": "부산광역시",
+    "region_sigungu": "예시구",
+    "is_mock": true,
+    "guarantee_product_type": "jeonse_return",
+    "property_facts": {
+      "housing_type": {
+        "value": "아파트",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "reference_value": {
+        "amount": 450000000,
+        "value_type": "sample_estimated_value",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "mortgage": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "seizure": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "joint_collateral": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      }
+    },
+    "guarantee_fact": {
+      "status": "enrolled",
+      "source": {
+        "source_type": "mock",
+        "source_name": "해커톤 모의 반환보증 데이터",
+        "reference_date": "2026-07-25"
+      }
+    }
+  },
+  {
+    "property_id": "MOCK-003",
+    "search_address": "부산광역시 샘플구 레이더로 7",
+    "display_address": "부산광역시 샘플구 레이더로 일대 (모의 매물·실제 주소 아님)",
+    "region_sido": "부산광역시",
+    "region_sigungu": "샘플구",
+    "is_mock": true,
+    "guarantee_product_type": "jeonse_return",
+    "property_facts": {
+      "housing_type": {
+        "value": "다가구주택",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "reference_value": {
+        "amount": 300000000,
+        "value_type": "sample_estimated_value",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "mortgage": {
+        "status": "exists",
+        "amount": 90000000,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "seizure": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "joint_collateral": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "senior_tenant_deposits": {
+        "status": "unknown",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 임차관계 데이터",
+          "reference_date": "2026-07-25"
+        }
+      }
+    },
+    "guarantee_fact": {
+      "status": "estimated_eligible",
+      "source": {
+        "source_type": "mock",
+        "source_name": "해커톤 모의 반환보증 데이터",
+        "reference_date": "2026-07-25"
+      }
+    }
+  },
+  {
+    "property_id": "MOCK-004",
+    "search_address": "부산광역시 테스트구 보증로 55",
+    "display_address": "부산광역시 테스트구 보증로 일대 (모의 매물·실제 주소 아님)",
+    "region_sido": "부산광역시",
+    "region_sigungu": "테스트구",
+    "is_mock": true,
+    "guarantee_product_type": "jeonse_return",
+    "property_facts": {
+      "housing_type": {
+        "value": "오피스텔",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "reference_value": {
+        "amount": 180000000,
+        "value_type": "sample_estimated_value",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "mortgage": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "seizure": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "joint_collateral": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "officetel_use": {
+        "status": "unknown",
+        "value": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 건축물 용도 데이터",
+          "reference_date": "2026-07-25"
+        }
+      }
+    },
+    "guarantee_fact": {
+      "status": "unknown",
+      "source": {
+        "source_type": "mock",
+        "source_name": "해커톤 모의 반환보증 데이터",
+        "reference_date": "2026-07-25"
+      }
+    }
+  },
+  {
+    "property_id": "MOCK-005",
+    "search_address": "부산광역시 가상구 임차길 88",
+    "display_address": "부산광역시 가상구 임차길 일대 (모의 매물·실제 주소 아님)",
+    "region_sido": "부산광역시",
+    "region_sigungu": "가상구",
+    "is_mock": true,
+    "guarantee_product_type": "rental_deposit",
+    "property_facts": {
+      "housing_type": {
+        "value": "다세대주택",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "reference_value": {
+        "amount": 260000000,
+        "value_type": "sample_estimated_value",
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 매물 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "mortgage": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "seizure": {
+        "status": "none",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      },
+      "joint_collateral": {
+        "status": "exists",
+        "amount": null,
+        "source": {
+          "source_type": "mock",
+          "source_name": "해커톤 모의 권리분석 데이터",
+          "reference_date": "2026-07-25"
+        }
+      }
+    },
+    "guarantee_fact": {
+      "status": "applied",
+      "source": {
+        "source_type": "mock",
+        "source_name": "해커톤 모의 반환보증 데이터",
+        "reference_date": "2026-07-25"
+      }
+    }
+  }
+]
