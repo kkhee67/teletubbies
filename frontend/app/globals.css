@@ -150,8 +150,32 @@ textarea { line-height: 1.5; resize: vertical; }
   transition: background .2s, transform .2s;
 }
 .primary-button:hover { background: var(--green-dark); transform: translateY(-1px); }
+.primary-button:disabled {
+  cursor: wait;
+  opacity: .7;
+  transform: none;
+}
 .primary-button span { font-size: 21px; }
 .privacy-note { margin-top: 16px; text-align: center; }
+.api-error {
+  background: #fff0ec;
+  border: 1px solid #efc4b8;
+  border-radius: 13px;
+  color: #7f321f;
+  font-size: 12px;
+  line-height: 1.55;
+  margin: 14px 0 0;
+  padding: 13px 15px;
+}
+.api-error strong { display: block; margin-bottom: 3px; }
+.api-progress {
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 14px 2px 0;
+  text-align: center;
+}
 .ready-notice {
   align-items: flex-start;
   background: var(--mint);
@@ -195,7 +219,7 @@ textarea { line-height: 1.5; resize: vertical; }
 .flow-list {
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   list-style: none;
   margin: 0;
   padding: 0;

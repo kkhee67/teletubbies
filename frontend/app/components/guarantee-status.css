@@ -222,6 +222,13 @@
   letter-spacing: .1em;
 }
 
+.guarantee-actions-empty {
+  color: rgba(255, 255, 255, .72);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 23px 0 0;
+}
+
 .guarantee-actions ol {
   counter-reset: action;
   display: grid;
@@ -255,7 +262,7 @@
   border: 1px solid #dce2dd;
   border-radius: 17px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   margin-top: 17px;
   overflow: hidden;
 }
@@ -306,6 +313,10 @@
 
   .guarantee-main-card {
     grid-template-columns: 1fr;
+  }
+
+  .guarantee-metadata {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .guarantee-actions {

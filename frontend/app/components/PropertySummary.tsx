@@ -1,30 +1,108 @@
+import type {
+  PropertyFieldViewModel,
+  PropertySearchItem,
+  PropertySummaryViewModel,
+} from "../integration";
 import "./property-summary.css";
-import { propertySample, type PropertyFieldStatus } from "../data/propertySample";
 
 type PropertySummaryProps = {
-  address: string;
-  deposit: string;
+  property: PropertySummaryViewModel;
+  searchItem: PropertySearchItem;
+  searchedAddress: string;
+  plannedDeposit: number;
+  generatedAt: string | null;
   onEdit: () => void;
 };
 
-const statusLabels: Record<PropertyFieldStatus, string> = {
+const statusLabels: Record<PropertyFieldViewModel["status"], string> = {
   neutral: "정보",
   stable: "확인",
   warning: "주의",
   check: "확인 필요",
 };
 
-function toDisplayAddress(address: string) {
-  const parts = address.trim().split(/\s+/);
-  if (parts.length < 2) return address.trim();
-  return `${parts.slice(0, -1).join(" ")} 일대`;
+const valueLabels: Record<string, string> = {
+  apartment: "아파트",
+  detached: "단독주택",
+  multi_household: "다가구주택",
+  multi_unit: "다세대주택",
+  officetel: "오피스텔",
+  row_house: "연립주택",
+  eligible: "가입 가능성 있음",
+  estimated_eligible: "가입 가능성 확인 필요",
+  officially_eligible: "공식 가입 가능 확인",
+  applied: "가입 신청 중",
+  enrolled: "가입 완료",
+  ineligible: "가입 어려움",
+  exists: "있음",
+  none: "확인된 내역 없음",
+  promised_removal: "말소 예정",
+  removed: "말소 완료",
+  unknown: "확인 필요",
+};
+
+function formatWon(value: number) {
+  return `${new Intl.NumberFormat("ko-KR").format(value)}원`;
+}
+
+function formatDate(value: string | null) {
+  if (!value) return "API 응답에 기준일 없음";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat("ko-KR", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(date);
+}
+
+function formatFieldValue(field: PropertyFieldViewModel) {
+  if (field.value === null) return "응답 없음";
+  if (field.key === "reference_value" && typeof field.value === "number") {
+    return formatWon(field.value);
+  }
+  if (typeof field.value === "boolean") {
+    return field.value ? "예" : "아니요";
+  }
+  return valueLabels[String(field.value).toLowerCase()] ?? String(field.value);
+}
+
+function fieldDescription(
+  field: PropertyFieldViewModel,
+  property: PropertySummaryViewModel,
+) {
+  if (field.description) return field.description;
+  if (field.value === null) {
+    return "분석 응답에 값이 없어 계약 전에 별도 확인이 필요합니다.";
+  }
+  if (field.key === "reference_value" && property.depositRatio !== null) {
+    return `계약 예정 보증금은 이 참고가액의 ${property.depositRatio}%입니다.`;
+  }
+  if (field.key === "mortgage_status") {
+    return "선순위 권리와 실제 말소 여부를 최신 등기부에서 확인하세요.";
+  }
+  if (field.key === "seizure_status") {
+    return "압류·가압류 상태는 최신 공식 서류로 다시 확인해야 합니다.";
+  }
+  if (field.key === "joint_collateral") {
+    return "다른 부동산과 같은 채무의 담보로 묶였는지 확인하세요.";
+  }
+  return "분석 API의 매물 요약 응답입니다.";
 }
 
 export function PropertySummary({
-  address,
-  deposit,
+  property,
+  searchItem,
+  searchedAddress,
+  plannedDeposit,
+  generatedAt,
   onEdit,
 }: PropertySummaryProps) {
+  const displayAddress =
+    property.addressDisplay ?? searchItem.addressDisplay ?? searchedAddress;
+  const displayDeposit = property.plannedDeposit ?? plannedDeposit;
+  const propertyId = property.propertyId ?? searchItem.propertyId;
+
   return (
     <section
       className="property-section"
@@ -35,38 +113,39 @@ export function PropertySummary({
         <div className="section-heading">
           <div>
             <p className="eyebrow">STEP 02 · 매물정보 확인</p>
-            <h2 id="property-title">분석에 사용할 매물정보입니다</h2>
+            <h2 id="property-title">분석에 사용한 실제 API 응답입니다</h2>
             <p>
-              실제 데이터 연결 전에는 화면 구성과 API 응답 형식을 확인할 수
-              있도록 샘플값을 표시합니다.
+              주소 검색의 첫 번째 매물 ID로 분석을 요청했습니다. 값이 없는
+              항목은 임의로 채우지 않고 ‘응답 없음’으로 표시합니다.
             </p>
           </div>
-          <span className="sample-data-badge">API 연결 전 샘플</span>
+          <span className="api-data-badge">LIVE API 응답</span>
         </div>
 
         <div className="property-identity">
           <div>
-            <span>표시 주소</span>
-            <strong>{toDisplayAddress(address)}</strong>
-            <small>상세주소를 제외한 축약 주소</small>
+            <span>분석 주소</span>
+            <strong>{displayAddress}</strong>
+            <small>매물 ID · {propertyId}</small>
           </div>
           <div>
             <span>계약 예정 보증금</span>
-            <strong>{deposit}원</strong>
-            <small>사용자 입력</small>
+            <strong>{formatWon(displayDeposit)}</strong>
+            <small>사용자 입력값을 분석 요청에 전달</small>
           </div>
         </div>
 
         <div className="source-guide">
           <span aria-hidden="true">i</span>
           <p>
-            매물 전체에 하나의 출처를 붙이지 않고, 주택유형·가액·권리정보
-            각각에 출처와 기준일을 표시합니다.
+            아래 값은 <code>POST /analyze</code>의{" "}
+            <code>property_summary</code>에서 가져옵니다. 출처나 기준일이
+            응답에 없으면 그 사실도 그대로 표시합니다.
           </p>
         </div>
 
         <div className="property-grid">
-          {propertySample.map((field) => (
+          {property.fields.map((field) => (
             <article
               className={`property-card property-card--${field.status}`}
               key={field.key}
@@ -75,16 +154,16 @@ export function PropertySummary({
                 <span>{field.label}</span>
                 <em>{statusLabels[field.status]}</em>
               </div>
-              <strong>{field.value}</strong>
-              <p>{field.description}</p>
+              <strong>{formatFieldValue(field)}</strong>
+              <p>{fieldDescription(field, property)}</p>
               <dl>
                 <div>
                   <dt>출처</dt>
-                  <dd>{field.sourceName}</dd>
+                  <dd>{field.sourceName ?? "분석 API property_summary"}</dd>
                 </div>
                 <div>
                   <dt>기준일</dt>
-                  <dd>{field.referenceDate}</dd>
+                  <dd>{formatDate(field.referenceDate)}</dd>
                 </div>
               </dl>
             </article>
@@ -93,10 +172,13 @@ export function PropertySummary({
 
         <div className="integration-note">
           <div>
-            <strong>실제 데이터 연결 준비</strong>
+            <strong>검색 → 분석 연결 완료</strong>
             <p>
-              팀원이 제공하는 주소·매물·권리분석 API 응답으로 샘플 데이터
-              파일만 교체하면 같은 화면에 실제 값이 표시됩니다.
+              첫 번째 검색 결과 <code>{searchItem.propertyId}</code>를 분석
+              요청의 <code>property_id</code>로 사용했습니다.
+              <br />
+              분석 생성 시각 ·{" "}
+              {generatedAt ? formatDate(generatedAt) : "API 응답에 분석 시각 없음"}
             </p>
           </div>
           <button className="secondary-button" type="button" onClick={onEdit}>
