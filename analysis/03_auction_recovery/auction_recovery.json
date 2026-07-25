@@ -1,0 +1,278 @@
+{
+  "sources": {
+    "auction": "전세 및 임대채무자 경매현황_합성데이터.csv",
+    "distribution": "전세 및 임대채무자 배당내역_합성 데이터.csv",
+    "jeonse_subrogation": "전세보증 대위변제_합성 데이터.csv",
+    "rental_subrogation": "임대보증 대위변제_합성데이터.csv"
+  },
+  "source_is_synthetic_accident_data": true,
+  "auction": {
+    "rows": 32542,
+    "duplicate_rows": 59,
+    "missing_location": 7854,
+    "zero_dividend_count": 21115,
+    "zero_dividend_rate": 0.6489,
+    "median_dividend": 0,
+    "median_subrogation": 218000000,
+    "by_housing_type": [
+      {
+        "housing_type": "multi_unit",
+        "housing_type_display": "다세대주택",
+        "count": 19060,
+        "share": 0.5857,
+        "zero_dividend_count": 11582,
+        "zero_dividend_rate": 0.6077,
+        "median_dividend": 0,
+        "p90_dividend": 220767067,
+        "median_subrogation": 220000000
+      },
+      {
+        "housing_type": "officetel",
+        "housing_type_display": "오피스텔",
+        "count": 5833,
+        "share": 0.1792,
+        "zero_dividend_count": 4519,
+        "zero_dividend_rate": 0.7747,
+        "median_dividend": 0,
+        "p90_dividend": 135377301,
+        "median_subrogation": 213000000
+      },
+      {
+        "housing_type": "apartment",
+        "housing_type_display": "아파트",
+        "count": 4104,
+        "share": 0.1261,
+        "zero_dividend_count": 2272,
+        "zero_dividend_rate": 0.5536,
+        "median_dividend": 0,
+        "p90_dividend": 263004951,
+        "median_subrogation": 200000000
+      },
+      {
+        "housing_type": "detached",
+        "housing_type_display": "단독주택",
+        "count": 2340,
+        "share": 0.0719,
+        "zero_dividend_count": 2067,
+        "zero_dividend_rate": 0.8833,
+        "median_dividend": 0,
+        "p90_dividend": 18418664,
+        "median_subrogation": 250636386
+      },
+      {
+        "housing_type": "row_house",
+        "housing_type_display": "연립주택",
+        "count": 688,
+        "share": 0.0211,
+        "zero_dividend_count": 388,
+        "zero_dividend_rate": 0.564,
+        "median_dividend": 0,
+        "p90_dividend": 201217163,
+        "median_subrogation": 187250000
+      },
+      {
+        "housing_type": "other",
+        "housing_type_display": "기타",
+        "count": 329,
+        "share": 0.0101,
+        "zero_dividend_count": 186,
+        "zero_dividend_rate": 0.5653,
+        "median_dividend": 0,
+        "p90_dividend": 221420413,
+        "median_subrogation": 225000000
+      },
+      {
+        "housing_type": "multi_household",
+        "housing_type_display": "다가구주택",
+        "count": 188,
+        "share": 0.0058,
+        "zero_dividend_count": 101,
+        "zero_dividend_rate": 0.5372,
+        "median_dividend": 0,
+        "p90_dividend": 186768958,
+        "median_subrogation": 135000000
+      }
+    ],
+    "ratio_warning": "배당금액/대위변제금액 비율은 100% 초과가 2,884건이고 최댓값이 매우 커서 개별 회수율로 사용하지 않습니다. 두 금액의 집계 단위가 같은지 확인이 필요합니다."
+  },
+  "distribution": {
+    "rows": 28961,
+    "duplicate_rows": 0,
+    "median_recovery_rate": 100.0,
+    "zero_recovery_count": 8,
+    "zero_recovery_rate": 0.0003,
+    "full_recovery_rate": 0.5545,
+    "median_distribution_days_nonnegative": 456.0,
+    "p90_distribution_days_nonnegative": 670.0,
+    "negative_days_count": 38,
+    "by_claim_type": [
+      {
+        "claim_type": "소송대지급금",
+        "count": 17609,
+        "median_recovery_rate": 100.0,
+        "mean_recovery_rate": 92.72,
+        "zero_recovery_rate": 0.0001,
+        "full_recovery_rate": 0.7745,
+        "median_distribution_days_nonnegative": 454.0,
+        "negative_days_count": 24
+      },
+      {
+        "claim_type": "구상채권(신상품)",
+        "count": 10314,
+        "median_recovery_rate": 75.84,
+        "mean_recovery_rate": 74.56,
+        "zero_recovery_rate": 0.0005,
+        "full_recovery_rate": 0.2247,
+        "median_distribution_days_nonnegative": 462.0,
+        "negative_days_count": 13
+      },
+      {
+        "claim_type": "구상채권",
+        "count": 1038,
+        "median_recovery_rate": 62.73,
+        "mean_recovery_rate": 62.02,
+        "zero_recovery_rate": 0.001,
+        "full_recovery_rate": 0.0983,
+        "median_distribution_days_nonnegative": 446.0,
+        "negative_days_count": 1
+      }
+    ]
+  },
+  "jeonse_subrogation": {
+    "rows": 66579,
+    "duplicate_rows": 133,
+    "missing_region": 5730,
+    "total_amount": 13724134027276,
+    "median_amount": 199000000,
+    "p90_amount": 325359614,
+    "status_counts": {
+      "해지": 66486,
+      "정상": 93
+    }
+  },
+  "rental_subrogation": {
+    "duplicate_rows": 2417,
+    "unnamed_values": {
+      "Unnamed: 5": {
+        "non_null_count": 10,
+        "unique_count": 3,
+        "values_redacted": true
+      }
+    },
+    "raw": {
+      "rows": 23107,
+      "total_amount": 4148235947027,
+      "median_amount": 173300000,
+      "by_housing_type": [
+        {
+          "housing_type": "multi_unit",
+          "housing_type_display": "다세대주택",
+          "count": 7820,
+          "total_amount": 1837502870683,
+          "median_amount": 255000000
+        },
+        {
+          "housing_type": "apartment",
+          "housing_type_display": "아파트",
+          "count": 7532,
+          "total_amount": 827349798440,
+          "median_amount": 97400000
+        },
+        {
+          "housing_type": "officetel",
+          "housing_type_display": "오피스텔",
+          "count": 7239,
+          "total_amount": 1414207830218,
+          "median_amount": 189000000
+        },
+        {
+          "housing_type": "multi_household",
+          "housing_type_display": "다가구주택",
+          "count": 298,
+          "total_amount": 35779755965,
+          "median_amount": 105000000
+        },
+        {
+          "housing_type": "row_house",
+          "housing_type_display": "연립주택",
+          "count": 174,
+          "total_amount": 27603732967,
+          "median_amount": 145000000
+        },
+        {
+          "housing_type": "other",
+          "housing_type_display": "기타",
+          "count": 31,
+          "total_amount": 3775958754,
+          "median_amount": 120000000
+        },
+        {
+          "housing_type": "detached",
+          "housing_type_display": "단독주택",
+          "count": 13,
+          "total_amount": 2016000000,
+          "median_amount": 120000000
+        }
+      ]
+    },
+    "deduplicated_sensitivity": {
+      "rows": 20690,
+      "total_amount": 3837702566736,
+      "median_amount": 180000000,
+      "by_housing_type": [
+        {
+          "housing_type": "multi_unit",
+          "housing_type_display": "다세대주택",
+          "count": 7372,
+          "total_amount": 1740246235999,
+          "median_amount": 255000000
+        },
+        {
+          "housing_type": "officetel",
+          "housing_type_display": "오피스텔",
+          "count": 6755,
+          "total_amount": 1329765707456,
+          "median_amount": 190000000
+        },
+        {
+          "housing_type": "apartment",
+          "housing_type_display": "아파트",
+          "count": 6048,
+          "total_amount": 698570834095,
+          "median_amount": 105000000
+        },
+        {
+          "housing_type": "multi_household",
+          "housing_type_display": "다가구주택",
+          "count": 297,
+          "total_amount": 35724097465,
+          "median_amount": 105000000
+        },
+        {
+          "housing_type": "row_house",
+          "housing_type_display": "연립주택",
+          "count": 174,
+          "total_amount": 27603732967,
+          "median_amount": 145000000
+        },
+        {
+          "housing_type": "other",
+          "housing_type_display": "기타",
+          "count": 31,
+          "total_amount": 3775958754,
+          "median_amount": 120000000
+        },
+        {
+          "housing_type": "detached",
+          "housing_type_display": "단독주택",
+          "count": 13,
+          "total_amount": 2016000000,
+          "median_amount": 120000000
+        }
+      ]
+    },
+    "total_amount_difference_rate": 0.0749,
+    "deduplication_notice": "식별키가 없어 동일 행이 실제 중복인지 별도 계약인지 확정할 수 없습니다. 기본 결과는 원본 기준이며 중복 제거 결과는 민감도 확인용입니다."
+  },
+  "interpretation_notice": "사고 이후 합성자료의 결과이며 계약 전 개인별 회수금액이나 사고확률 예측값이 아닙니다."
+}

@@ -1,0 +1,60 @@
+{
+  "source_file": "전세사고(주택가액 대비 임재보증금)_합성데이터.csv",
+  "source_encoding": "utf-8-sig",
+  "source_is_synthetic_accident_data": true,
+  "row_count": 69435,
+  "valid_ratio_count": 69435,
+  "invalid_ratio_count": 0,
+  "housing_stats": {
+    "apartment": {
+      "count": 20103,
+      "mean_ratio": 75.49,
+      "median_ratio": 80.91,
+      "over_90_rate": 0.3125,
+      "over_100_rate": 0.0762
+    },
+    "detached": {
+      "count": 733,
+      "mean_ratio": 39.18,
+      "median_ratio": 31.85,
+      "over_90_rate": 0.0873,
+      "over_100_rate": 0.0314
+    },
+    "multi_household": {
+      "count": 1513,
+      "mean_ratio": 20.49,
+      "median_ratio": 14.55,
+      "over_90_rate": 0.0198,
+      "over_100_rate": 0.0086
+    },
+    "multi_unit": {
+      "count": 30231,
+      "mean_ratio": 94.78,
+      "median_ratio": 99.15,
+      "over_90_rate": 0.8241,
+      "over_100_rate": 0.3399
+    },
+    "officetel": {
+      "count": 15064,
+      "mean_ratio": 88.87,
+      "median_ratio": 93.21,
+      "over_90_rate": 0.5773,
+      "over_100_rate": 0.124
+    },
+    "other_unknown": {
+      "count": 21,
+      "mean_ratio": 58.17,
+      "median_ratio": 69.76,
+      "over_90_rate": 0.1905,
+      "over_100_rate": 0.0
+    },
+    "row_house": {
+      "count": 1770,
+      "mean_ratio": 85.1,
+      "median_ratio": 94.45,
+      "over_90_rate": 0.5785,
+      "over_100_rate": 0.2243
+    }
+  },
+  "interpretation_notice": "정상계약 전체 분모가 없는 합성 사고자료의 분포입니다. 개별 계약의 사고확률로 해석하지 않습니다."
+}

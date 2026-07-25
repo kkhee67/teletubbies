@@ -1,0 +1,29 @@
+{
+  "MOCK-001": {
+    "items": [
+      {"code": "AIRPORT_HEIGHT_RESTRICTION_CHECK", "status": "check_required", "description": "공항 관련 높이 제한 영향 여부 확인 필요"},
+      {"code": "RAILWAY_PLAN", "status": "official_plan_found", "description": "약 800m 인근 철도계획이 있는 모의 시나리오"}
+    ],
+    "source_type": "mock",
+    "source_name": "해커톤 모의자료",
+    "reference_date": "2026-07-25",
+    "included_in_risk_score": false,
+    "notice": "입지정보는 계약 권리위험을 상쇄하지 않으며 가격 상승을 보장하지 않습니다."
+  },
+  "MOCK-002": {
+    "items": [],
+    "source_type": "mock",
+    "source_name": "해커톤 모의자료",
+    "reference_date": "2026-07-25",
+    "included_in_risk_score": false
+  },
+  "MOCK-003": {
+    "items": [{"code": "MILITARY_ZONE_CHECK", "status": "check_required", "description": "군사시설보호구역 영향 여부 확인 필요"}],
+    "source_type": "mock",
+    "source_name": "해커톤 모의자료",
+    "reference_date": "2026-07-25",
+    "included_in_risk_score": false
+  },
+  "MOCK-004": {"items": [], "source_type": "mock", "source_name": "해커톤 모의자료", "reference_date": "2026-07-25", "included_in_risk_score": false},
+  "MOCK-005": {"items": [], "source_type": "mock", "source_name": "해커톤 모의자료", "reference_date": "2026-07-25", "included_in_risk_score": false}
+}

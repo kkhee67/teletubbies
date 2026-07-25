@@ -1,0 +1,594 @@
+{
+  "source_file": "비식별_임대차상담데이터.xlsx",
+  "sheet": "비식별_상담데이터",
+  "rows": 938,
+  "duplicate_rows": 0,
+  "serious_dispute_definition": [
+    "경매·공매",
+    "보증금미반환",
+    "전세사기"
+  ],
+  "serious_dispute_count": 514,
+  "serious_dispute_share": 0.548,
+  "unknown_summary": {
+    "housing_type": {
+      "count": 565,
+      "share": 0.6023
+    },
+    "senior_rights": {
+      "count": 598,
+      "share": 0.6375
+    },
+    "guarantee": {
+      "count": 538,
+      "share": 0.5736
+    }
+  },
+  "distributions": {
+    "housing_type": [
+      {
+        "value": "미상",
+        "count": 565,
+        "share": 0.6023
+      },
+      {
+        "value": "다가구주택",
+        "count": 112,
+        "share": 0.1194
+      },
+      {
+        "value": "오피스텔",
+        "count": 108,
+        "share": 0.1151
+      },
+      {
+        "value": "다세대·빌라",
+        "count": 79,
+        "share": 0.0842
+      },
+      {
+        "value": "아파트",
+        "count": 57,
+        "share": 0.0608
+      },
+      {
+        "value": "공공임대",
+        "count": 9,
+        "share": 0.0096
+      },
+      {
+        "value": "원룸·도시형",
+        "count": 8,
+        "share": 0.0085
+      }
+    ],
+    "senior_rights": [
+      {
+        "value": "미상",
+        "count": 598,
+        "share": 0.6375
+      },
+      {
+        "value": "근저당설정",
+        "count": 138,
+        "share": 0.1471
+      },
+      {
+        "value": "압류·가압류",
+        "count": 111,
+        "share": 0.1183
+      },
+      {
+        "value": "선순위존재",
+        "count": 91,
+        "share": 0.097
+      }
+    ],
+    "guarantee": [
+      {
+        "value": "미상",
+        "count": 538,
+        "share": 0.5736
+      },
+      {
+        "value": "가입",
+        "count": 340,
+        "share": 0.3625
+      },
+      {
+        "value": "미가입",
+        "count": 60,
+        "share": 0.064
+      }
+    ],
+    "dispute_type": [
+      {
+        "value": "기타·일반문의",
+        "count": 313,
+        "share": 0.3337
+      },
+      {
+        "value": "경매·공매",
+        "count": 212,
+        "share": 0.226
+      },
+      {
+        "value": "보증금미반환",
+        "count": 183,
+        "share": 0.1951
+      },
+      {
+        "value": "전세사기",
+        "count": 119,
+        "share": 0.1269
+      },
+      {
+        "value": "묵시적갱신분쟁",
+        "count": 93,
+        "share": 0.0991
+      },
+      {
+        "value": "원상복구·정산",
+        "count": 9,
+        "share": 0.0096
+      },
+      {
+        "value": "이중·다운계약",
+        "count": 8,
+        "share": 0.0085
+      },
+      {
+        "value": "전출선근저당후",
+        "count": 1,
+        "share": 0.0011
+      }
+    ],
+    "stage": [
+      {
+        "value": "상담·검토",
+        "count": 328,
+        "share": 0.3497
+      },
+      {
+        "value": "소송제기",
+        "count": 205,
+        "share": 0.2186
+      },
+      {
+        "value": "임차권등기",
+        "count": 181,
+        "share": 0.193
+      },
+      {
+        "value": "내용증명·공시송달",
+        "count": 84,
+        "share": 0.0896
+      },
+      {
+        "value": "판결·집행",
+        "count": 73,
+        "share": 0.0778
+      },
+      {
+        "value": "HUG이행청구",
+        "count": 62,
+        "share": 0.0661
+      },
+      {
+        "value": "상고심",
+        "count": 5,
+        "share": 0.0053
+      }
+    ]
+  },
+  "housing_patterns": [
+    {
+      "value": "미상",
+      "count": 565,
+      "serious_dispute_count": 267,
+      "serious_dispute_share_in_consultations": 0.4726,
+      "top_disputes": {
+        "기타·일반문의": 218,
+        "보증금미반환": 110,
+        "경매·공매": 105
+      }
+    },
+    {
+      "value": "다가구주택",
+      "count": 112,
+      "serious_dispute_count": 90,
+      "serious_dispute_share_in_consultations": 0.8036,
+      "top_disputes": {
+        "경매·공매": 46,
+        "전세사기": 30,
+        "기타·일반문의": 18
+      }
+    },
+    {
+      "value": "오피스텔",
+      "count": 108,
+      "serious_dispute_count": 76,
+      "serious_dispute_share_in_consultations": 0.7037,
+      "top_disputes": {
+        "보증금미반환": 27,
+        "전세사기": 25,
+        "경매·공매": 24
+      }
+    },
+    {
+      "value": "다세대·빌라",
+      "count": 79,
+      "serious_dispute_count": 44,
+      "serious_dispute_share_in_consultations": 0.557,
+      "top_disputes": {
+        "기타·일반문의": 27,
+        "경매·공매": 20,
+        "보증금미반환": 16
+      }
+    },
+    {
+      "value": "아파트",
+      "count": 57,
+      "serious_dispute_count": 28,
+      "serious_dispute_share_in_consultations": 0.4912,
+      "top_disputes": {
+        "기타·일반문의": 25,
+        "경매·공매": 15,
+        "보증금미반환": 12
+      }
+    },
+    {
+      "value": "공공임대",
+      "count": 9,
+      "serious_dispute_count": 5,
+      "serious_dispute_share_in_consultations": 0.5556,
+      "top_disputes": {
+        "전세사기": 3,
+        "보증금미반환": 2,
+        "기타·일반문의": 2
+      }
+    },
+    {
+      "value": "원룸·도시형",
+      "count": 8,
+      "serious_dispute_count": 4,
+      "serious_dispute_share_in_consultations": 0.5,
+      "top_disputes": {
+        "기타·일반문의": 2,
+        "보증금미반환": 2,
+        "경매·공매": 2
+      }
+    }
+  ],
+  "rights_patterns": [
+    {
+      "value": "미상",
+      "count": 598,
+      "serious_dispute_count": 276,
+      "serious_dispute_share_in_consultations": 0.4615,
+      "top_disputes": {
+        "기타·일반문의": 238,
+        "보증금미반환": 122,
+        "경매·공매": 95
+      }
+    },
+    {
+      "value": "근저당설정",
+      "count": 138,
+      "serious_dispute_count": 112,
+      "serious_dispute_share_in_consultations": 0.8116,
+      "top_disputes": {
+        "경매·공매": 62,
+        "전세사기": 28,
+        "보증금미반환": 22
+      }
+    },
+    {
+      "value": "압류·가압류",
+      "count": 111,
+      "serious_dispute_count": 73,
+      "serious_dispute_share_in_consultations": 0.6577,
+      "top_disputes": {
+        "경매·공매": 31,
+        "보증금미반환": 28,
+        "기타·일반문의": 26
+      }
+    },
+    {
+      "value": "선순위존재",
+      "count": 91,
+      "serious_dispute_count": 53,
+      "serious_dispute_share_in_consultations": 0.5824,
+      "top_disputes": {
+        "기타·일반문의": 28,
+        "경매·공매": 24,
+        "전세사기": 18
+      }
+    }
+  ],
+  "guarantee_patterns": [
+    {
+      "value": "미상",
+      "count": 538,
+      "serious_dispute_count": 296,
+      "serious_dispute_share_in_consultations": 0.5502,
+      "top_disputes": {
+        "기타·일반문의": 190,
+        "경매·공매": 142,
+        "전세사기": 77
+      }
+    },
+    {
+      "value": "가입",
+      "count": 340,
+      "serious_dispute_count": 178,
+      "serious_dispute_share_in_consultations": 0.5235,
+      "top_disputes": {
+        "기타·일반문의": 112,
+        "보증금미반환": 94,
+        "경매·공매": 55
+      }
+    },
+    {
+      "value": "미가입",
+      "count": 60,
+      "serious_dispute_count": 40,
+      "serious_dispute_share_in_consultations": 0.6667,
+      "top_disputes": {
+        "경매·공매": 15,
+        "전세사기": 13,
+        "보증금미반환": 12
+      }
+    }
+  ],
+  "keyword_patterns": [
+    {
+      "keyword": "임차권등기",
+      "record_count": 291,
+      "record_share": 0.3102,
+      "serious_dispute_count": 169,
+      "serious_dispute_share_in_keyword_records": 0.5808
+    },
+    {
+      "keyword": "보증보험",
+      "record_count": 276,
+      "record_share": 0.2942,
+      "serious_dispute_count": 147,
+      "serious_dispute_share_in_keyword_records": 0.5326
+    },
+    {
+      "keyword": "경매",
+      "record_count": 266,
+      "record_share": 0.2836,
+      "serious_dispute_count": 264,
+      "serious_dispute_share_in_keyword_records": 0.9925
+    },
+    {
+      "keyword": "압류",
+      "record_count": 162,
+      "record_share": 0.1727,
+      "serious_dispute_count": 114,
+      "serious_dispute_share_in_keyword_records": 0.7037
+    },
+    {
+      "keyword": "선순위",
+      "record_count": 139,
+      "record_share": 0.1482,
+      "serious_dispute_count": 90,
+      "serious_dispute_share_in_keyword_records": 0.6475
+    },
+    {
+      "keyword": "근저당",
+      "record_count": 138,
+      "record_share": 0.1471,
+      "serious_dispute_count": 112,
+      "serious_dispute_share_in_keyword_records": 0.8116
+    },
+    {
+      "keyword": "다가구",
+      "record_count": 112,
+      "record_share": 0.1194,
+      "serious_dispute_count": 90,
+      "serious_dispute_share_in_keyword_records": 0.8036
+    },
+    {
+      "keyword": "오피스텔",
+      "record_count": 111,
+      "record_share": 0.1183,
+      "serious_dispute_count": 77,
+      "serious_dispute_share_in_keyword_records": 0.6937
+    },
+    {
+      "keyword": "전세사기",
+      "record_count": 105,
+      "record_share": 0.1119,
+      "serious_dispute_count": 105,
+      "serious_dispute_share_in_keyword_records": 1.0
+    },
+    {
+      "keyword": "가압류",
+      "record_count": 98,
+      "record_share": 0.1045,
+      "serious_dispute_count": 69,
+      "serious_dispute_share_in_keyword_records": 0.7041
+    },
+    {
+      "keyword": "말소",
+      "record_count": 29,
+      "record_share": 0.0309,
+      "serious_dispute_count": 19,
+      "serious_dispute_share_in_keyword_records": 0.6552
+    },
+    {
+      "keyword": "미반환",
+      "record_count": 25,
+      "record_share": 0.0267,
+      "serious_dispute_count": 17,
+      "serious_dispute_share_in_keyword_records": 0.68
+    },
+    {
+      "keyword": "공동담보",
+      "record_count": 18,
+      "record_share": 0.0192,
+      "serious_dispute_count": 16,
+      "serious_dispute_share_in_keyword_records": 0.8889
+    },
+    {
+      "keyword": "공매",
+      "record_count": 13,
+      "record_share": 0.0139,
+      "serious_dispute_count": 13,
+      "serious_dispute_share_in_keyword_records": 1.0
+    },
+    {
+      "keyword": "다운계약",
+      "record_count": 7,
+      "record_share": 0.0075,
+      "serious_dispute_count": 0,
+      "serious_dispute_share_in_keyword_records": 0.0
+    }
+  ],
+  "top_combinations": [
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "기타·일반문의",
+      "count": 109
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "가입",
+      "dispute_type": "기타·일반문의",
+      "count": 69
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "가입",
+      "dispute_type": "보증금미반환",
+      "count": 47
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "보증금미반환",
+      "count": 38
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "경매·공매",
+      "count": 36
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "묵시적갱신분쟁",
+      "count": 28
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "가입",
+      "dispute_type": "묵시적갱신분쟁",
+      "count": 25
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "근저당설정",
+      "guarantee": "미상",
+      "dispute_type": "경매·공매",
+      "count": 22
+    },
+    {
+      "housing_type": "다가구주택",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "경매·공매",
+      "count": 21
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "전세사기",
+      "count": 20
+    },
+    {
+      "housing_type": "다가구주택",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "전세사기",
+      "count": 13
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "미상",
+      "guarantee": "가입",
+      "dispute_type": "경매·공매",
+      "count": 13
+    },
+    {
+      "housing_type": "다가구주택",
+      "senior_rights": "근저당설정",
+      "guarantee": "미상",
+      "dispute_type": "경매·공매",
+      "count": 12
+    },
+    {
+      "housing_type": "다가구주택",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "기타·일반문의",
+      "count": 11
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "압류·가압류",
+      "guarantee": "미상",
+      "dispute_type": "기타·일반문의",
+      "count": 10
+    },
+    {
+      "housing_type": "아파트",
+      "senior_rights": "미상",
+      "guarantee": "가입",
+      "dispute_type": "기타·일반문의",
+      "count": 10
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "근저당설정",
+      "guarantee": "가입",
+      "dispute_type": "기타·일반문의",
+      "count": 9
+    },
+    {
+      "housing_type": "오피스텔",
+      "senior_rights": "미상",
+      "guarantee": "미상",
+      "dispute_type": "기타·일반문의",
+      "count": 9
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "근저당설정",
+      "guarantee": "가입",
+      "dispute_type": "경매·공매",
+      "count": 8
+    },
+    {
+      "housing_type": "미상",
+      "senior_rights": "선순위존재",
+      "guarantee": "미상",
+      "dispute_type": "전세사기",
+      "count": 8
+    }
+  ],
+  "interpretation_notice": "법률상담을 요청한 비식별 사례의 내부 분포이며 전체 임대차계약의 사고확률이 아닙니다."
+}

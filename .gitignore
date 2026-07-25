@@ -1,6 +1,7 @@
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .pytest_cache/
 .env
+data/raw/
 backend/data/raw/
