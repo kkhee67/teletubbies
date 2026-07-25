@@ -1,6 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { GuaranteeStatusCard } from "./components/GuaranteeStatusCard";
+import { PropertySummary } from "./components/PropertySummary";
+import { RiskAnalysis } from "./components/RiskAnalysis";
+import { SimilarCaseCard } from "./components/SimilarCaseCard";
+import type { GuaranteeStatus } from "./data/guaranteeStates";
 
 function formatWon(value: string) {
   const amount = Number(value.replaceAll(",", ""));
@@ -12,11 +17,21 @@ export default function Home() {
   const [deposit, setDeposit] = useState("200000000");
   const [situation, setSituation] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [guaranteeStatus, setGuaranteeStatus] =
+    useState<GuaranteeStatus>("ineligible");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitted(true);
   }
+
+  useEffect(() => {
+    if (submitted) {
+      document
+        .getElementById("property-summary")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [submitted]);
 
   return (
     <main>
@@ -63,6 +78,7 @@ export default function Home() {
               }}
               placeholder="도로명 주소 또는 지번 주소를 입력하세요"
               autoComplete="street-address"
+              minLength={5}
               required
             />
             <p className="field-help">
@@ -102,21 +118,6 @@ export default function Home() {
             </button>
           </form>
 
-          {submitted && address.trim() && (
-            <div className="ready-notice" role="status">
-              <span aria-hidden="true">✓</span>
-              <div>
-                <strong>입력 정보가 준비되었습니다.</strong>
-                <p>
-                  {address.trim()} · 보증금 {formatWon(deposit)}원
-                </p>
-                <small>
-                  다음 개발 단계에서 실제 매물정보 조회 결과와 연결됩니다.
-                </small>
-              </div>
-            </div>
-          )}
-
           <p className="privacy-note">
             상세주소는 검색에만 사용하며 분석 결과와 로그에는 축약된 주소를
             사용합니다.
@@ -124,10 +125,31 @@ export default function Home() {
         </div>
       </section>
 
+      {submitted && address.trim() && (
+        <>
+          <PropertySummary
+            address={address}
+            deposit={formatWon(deposit)}
+            onEdit={() => {
+              setSubmitted(false);
+              document
+                .getElementById("address")
+                ?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+          />
+          <GuaranteeStatusCard
+            selectedStatus={guaranteeStatus}
+            onStatusChange={setGuaranteeStatus}
+          />
+          <RiskAnalysis guaranteeStatus={guaranteeStatus} />
+          <SimilarCaseCard guaranteeStatus={guaranteeStatus} />
+        </>
+      )}
+
       <section className="flow-section" aria-labelledby="flow-title">
         <div>
           <p className="eyebrow">분석 흐름</p>
-          <h2 id="flow-title">복잡한 계약 정보를 네 단계로 정리합니다</h2>
+          <h2 id="flow-title">복잡한 계약 정보를 다섯 단계로 정리합니다</h2>
         </div>
         <ol className="flow-list">
           <li>
@@ -147,8 +169,13 @@ export default function Home() {
           </li>
           <li>
             <span>04</span>
-            <strong>행동 안내</strong>
-            <p>계약 전에 확인하거나 협상할 일을 쉬운 말로 제시합니다.</p>
+            <strong>분석 신뢰도</strong>
+            <p>안전도가 아닌 필수정보의 확인 정도를 따로 표시합니다.</p>
+          </li>
+          <li>
+            <span>05</span>
+            <strong>AI 사례 설명</strong>
+            <p>유사 상담사례의 일치 요인과 의미를 쉬운 말로 설명합니다.</p>
           </li>
         </ol>
       </section>
