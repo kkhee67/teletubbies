@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import os
 from copy import deepcopy
 from contextlib import asynccontextmanager
 from datetime import date
 from typing import Any, Literal
 
 from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from contract_workflow import (
@@ -19,8 +17,6 @@ from guarantee_products import (
     JEONSE_RETURN,
     PRODUCT_LABELS,
     RENTAL_DEPOSIT,
-    SELECTABLE_PRODUCT_TYPES,
-    UNKNOWN_PRODUCT,
     canonical_product_type,
 )
 from mock_properties import MockPropertyRepository
@@ -28,14 +24,10 @@ from product_context import ProductContextRepository
 from similar_cases import SimilarCaseSearchEngine
 
 
-DEFAULT_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:4173",
-    "http://127.0.0.1:4173",
-]
+RESPONSE_DISCLAIMER = (
+    "유사도는 상담사례의 조건이 비슷한 정도이며 위험 확률이나 사고 확률이 아닙니다. "
+    "이 결과는 계약 전 확인을 돕는 참고정보로서 법률 판단이나 동일한 피해 발생을 예측하지 않습니다."
+)
 
 
 class AnalysisItem(BaseModel):
@@ -194,7 +186,8 @@ class SimulationRequest(BaseModel):
 
 
 class PropertyData(BaseModel):
-    model_config = ConfigDict(extra="allow")
+    # 상세주소나 사용자 연락처 같은 불필요한 추가 필드는 검색 입력에서 제외한다.
+    model_config = ConfigDict(extra="ignore")
 
     property_id: str | None = None
     region_sido: str | None = None
@@ -206,15 +199,17 @@ class PropertyData(BaseModel):
     senior_rights: str | None = None
     mortgage_status: str | None = None
     guarantee_status: str | None = None
-    guarantee_product_type: str = UNKNOWN_PRODUCT
+    guarantee_product_type: str
     guarantee: dict[str, Any] | None = None
 
     @field_validator("guarantee_product_type")
     @classmethod
     def validate_product_type(cls, value: str) -> str:
         product_type = canonical_product_type(value)
-        if product_type not in SELECTABLE_PRODUCT_TYPES:
-            raise ValueError("지원하지 않는 보증상품 유형입니다.")
+        if product_type not in {JEONSE_RETURN, RENTAL_DEPOSIT}:
+            raise ValueError(
+                "guarantee_product_type은 jeonse_return 또는 rental_deposit이어야 합니다."
+            )
         return product_type
 
 
@@ -252,6 +247,12 @@ class SimilarCasesRequest(BaseModel):
         return self
 
 
+class SimilarCaseSourcePublic(BaseModel):
+    source_type: str
+    source_name: str
+    is_synthetic: bool
+
+
 class SimilarCasePublic(BaseModel):
     case_id: str
     case_product_type: str
@@ -267,6 +268,7 @@ class SimilarCasePublic(BaseModel):
     actions: list[str]
     explanation_source: str
     safety_passed: bool
+    source: SimilarCaseSourcePublic
     disclaimer: str
 
 
@@ -394,7 +396,9 @@ class ResponseMeta(BaseModel):
     result_count: int
     search_method: str = "tfidf_structured_rerank"
     is_accident_probability: bool = False
-    similarity_notice: str = "유사도는 상담사례가 비슷한 정도이며 사고확률이 아닙니다."
+    similarity_notice: str = (
+        "유사도는 상담사례의 조건이 비슷한 정도이며 위험 확률이나 사고 확률이 아닙니다."
+    )
     selected_product_type: str
     selected_product_label: str
     product_separation_applied: bool
@@ -427,9 +431,11 @@ class ProductContextPublic(BaseModel):
 
 
 class SimilarCasesResponse(BaseModel):
+    status: Literal["ok", "fallback", "unavailable"]
     similar_cases: list[SimilarCasePublic]
     product_context: ProductContextPublic
     meta: ResponseMeta
+    disclaimer: str = RESPONSE_DISCLAIMER
 
 
 class ContractAnalysisResponse(BaseModel):
@@ -481,19 +487,12 @@ class SimulationResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    status: str
+    status: Literal["ok", "unavailable"]
     model_loaded: bool
     case_count: int
     product_context_loaded: bool
     data_source_count: int
     mock_property_count: int
-
-
-def configured_origins() -> list[str]:
-    raw_value = os.getenv("ALLOWED_ORIGINS", "")
-    if not raw_value.strip():
-        return DEFAULT_ORIGINS
-    return [origin.strip() for origin in raw_value.split(",") if origin.strip()]
 
 
 @asynccontextmanager
@@ -510,19 +509,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="안심계약 레이더 AI API",
     description=(
-        "주소·보증금 입력부터 매물정보, 반환보증 6단계, 위험분석, "
-        "상품별 유사사례까지 제공하는 API"
+        "백엔드 내부 호출용 AI 서비스입니다. 운영 공개 계약은 상태 확인과 "
+        "상품별 유사사례 검색으로 제한합니다."
     ),
-    version="3.0.0",
+    version="3.1.0",
     lifespan=lifespan,
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=configured_origins(),
-    allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
 )
 
 
@@ -556,7 +547,7 @@ def health(request: Request) -> HealthResponse:
             if engine is not None
             and product_context is not None
             and mock_properties is not None
-            else "starting"
+            else "unavailable"
         ),
         model_loaded=engine is not None,
         case_count=len(engine.cases) if engine is not None else 0,
@@ -617,7 +608,11 @@ def build_mock_analysis(
     return ContractAnalysisResponse(**result)
 
 
-@app.get("/properties/search", response_model=list[PropertySearchItemPublic])
+@app.get(
+    "/properties/search",
+    response_model=list[PropertySearchItemPublic],
+    include_in_schema=False,
+)
 def search_mock_properties(
     request: Request,
     q: str = Query(min_length=1, max_length=100),
@@ -626,7 +621,11 @@ def search_mock_properties(
     return [PropertySearchItemPublic(**item) for item in repository.search(q)]
 
 
-@app.get("/properties/{property_id}", response_model=PropertyLookupResponse)
+@app.get(
+    "/properties/{property_id}",
+    response_model=PropertyLookupResponse,
+    include_in_schema=False,
+)
 def get_mock_property(
     property_id: str, request: Request
 ) -> PropertyLookupResponse:
@@ -642,7 +641,9 @@ def get_mock_property(
     )
 
 
-@app.post("/analyze", response_model=ContractAnalysisResponse)
+@app.post(
+    "/analyze", response_model=ContractAnalysisResponse, include_in_schema=False
+)
 def analyze_mock_property(
     payload: AnalyzeRequest, request: Request
 ) -> ContractAnalysisResponse:
@@ -678,7 +679,9 @@ def analyze_mock_property(
     )
 
 
-@app.post("/simulate", response_model=SimulationResponse)
+@app.post(
+    "/simulate", response_model=SimulationResponse, include_in_schema=False
+)
 def simulate_contract(
     payload: SimulationRequest, request: Request
 ) -> SimulationResponse:
@@ -784,12 +787,20 @@ def simulate_contract(
     )
 
 
-@app.get("/api/contract-options", response_model=ContractOptionsResponse)
+@app.get(
+    "/api/contract-options",
+    response_model=ContractOptionsResponse,
+    include_in_schema=False,
+)
 def get_contract_options() -> ContractOptionsResponse:
     return ContractOptionsResponse(**contract_options())
 
 
-@app.post("/api/contract-analysis", response_model=ContractAnalysisResponse)
+@app.post(
+    "/api/contract-analysis",
+    response_model=ContractAnalysisResponse,
+    include_in_schema=False,
+)
 def analyze_contract(
     payload: ContractAnalysisRequest, request: Request
 ) -> ContractAnalysisResponse:
@@ -835,17 +846,13 @@ def search_similar_cases(
     if context_repository is None:
         raise HTTPException(status_code=503, detail="상품별 데이터가 준비되지 않았습니다.")
     property_data = payload.property_data.model_dump(exclude_none=True)
-    selected_product_type = property_data.get(
-        "guarantee_product_type", UNKNOWN_PRODUCT
+    selected_product_type = property_data["guarantee_product_type"]
+    product_context = context_repository.get_context(
+        selected_product_type,
+        payload.property_data.housing_type,
+        payload.property_data.region_sido,
     )
-    guarantee_data = property_data.get("guarantee")
-    if (
-        selected_product_type == UNKNOWN_PRODUCT
-        and isinstance(guarantee_data, dict)
-    ):
-        selected_product_type = canonical_product_type(
-            guarantee_data.get("product_type")
-        )
+    status: Literal["ok", "fallback", "unavailable"] = "ok"
     try:
         raw_results = engine.search(
             property_data,
@@ -855,14 +862,23 @@ def search_similar_cases(
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception:
+        raw_results = []
+        status = "unavailable"
 
-    results = [public_case(enrich_similar_case(result)) for result in raw_results]
-    product_context = context_repository.get_context(
-        selected_product_type,
-        payload.property_data.housing_type,
-        payload.property_data.region_sido,
-    )
+    results = []
+    for raw_result in raw_results:
+        enriched = enrich_similar_case(raw_result)
+        if enriched.get("explanation_source") == "template_fallback":
+            status = "fallback"
+        if enriched.get("safety_passed") is not True:
+            if status != "unavailable":
+                status = "fallback"
+            continue
+        results.append(public_case(enriched))
+
     return SimilarCasesResponse(
+        status=status,
         similar_cases=results,
         product_context=ProductContextPublic(**product_context),
         meta=ResponseMeta(

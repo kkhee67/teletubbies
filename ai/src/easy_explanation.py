@@ -231,4 +231,14 @@ def enrich_similar_case(
     case: dict,
     llm_generate: Callable[[str, str], Any] | None = None,
 ) -> dict:
-    return {**case, **generate_easy_explanation(case, llm_generate)}
+    explanation = generate_easy_explanation(case, llm_generate)
+    safety_errors = validate_explanation(
+        case,
+        explanation.get("easy_explanation", ""),
+        explanation.get("actions", []),
+    )
+    return {
+        **case,
+        **explanation,
+        "safety_passed": not safety_errors,
+    }

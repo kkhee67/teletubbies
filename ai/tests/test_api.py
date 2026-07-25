@@ -1,6 +1,7 @@
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -293,6 +294,7 @@ class ApiTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         body = response.json()
+        self.assertEqual(body["status"], "ok")
         self.assertEqual(body["meta"]["result_count"], 3)
         self.assertFalse(body["meta"]["is_accident_probability"])
         self.assertEqual(body["meta"]["selected_product_type"], "jeonse_return")
@@ -306,8 +308,14 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(first["similarity_label"], "상담사례 유사도")
         self.assertEqual(len(first["actions"]), 2)
         self.assertTrue(first["safety_passed"])
+        self.assertEqual(
+            first["source"]["source_name"],
+            "발제사 제공 비식별 합성 상담사례",
+        )
+        self.assertTrue(first["source"]["is_synthetic"])
         self.assertNotIn("source_summary", first)
-        self.assertIn(first["case_product_type"], {"jeonse_return", "unknown"})
+        self.assertEqual(first["case_product_type"], "jeonse_return")
+        self.assertIn("위험 확률", body["disclaimer"])
 
     def test_user_text_is_optional(self):
         response = self.client.post(
@@ -393,7 +401,7 @@ class ApiTest(unittest.TestCase):
 
         self.assertEqual(response.status_code, 422)
 
-    def test_cors_preflight_allows_local_frontend(self):
+    def test_direct_frontend_cors_is_not_enabled(self):
         response = self.client.options(
             "/api/similar-cases",
             headers={
@@ -402,11 +410,105 @@ class ApiTest(unittest.TestCase):
             },
         )
 
+        self.assertEqual(response.status_code, 405)
+        self.assertNotIn("access-control-allow-origin", response.headers)
+
+    def test_openapi_exposes_only_operational_endpoints(self):
+        response = self.client.get("/openapi.json")
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.headers["access-control-allow-origin"],
-            "http://localhost:5173",
+            set(response.json()["paths"]),
+            {"/health", "/api/similar-cases"},
         )
+
+    def test_user_text_and_sensitive_extra_fields_are_not_returned(self):
+        sensitive_values = [
+            "부산광역시 수영구 광안동 123-45 101동 202호",
+            "010-1234-5678",
+            "123-456-789012",
+        ]
+        response = self.client.post(
+            "/api/similar-cases",
+            json={
+                "property_data": {
+                    "guarantee_product_type": "jeonse_return",
+                    "housing_type": "다세대주택",
+                    "detailed_address": sensitive_values[0],
+                    "phone_number": sensitive_values[1],
+                    "account_number": sensitive_values[2],
+                },
+                "user_text": (
+                    f"연락처 {sensitive_values[1]}, 계좌 {sensitive_values[2]}로 "
+                    "보증금을 보내라고 했습니다."
+                ),
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        for sensitive_value in sensitive_values:
+            self.assertNotIn(sensitive_value, response.text)
+
+    def test_unsafe_cases_are_filtered_from_response(self):
+        unsafe_result = {
+            "case_id": "CASE-UNSAFE",
+            "case_product_type": "jeonse_return",
+        }
+
+        class UnsafeSearchEngine:
+            def search(self, *args, **kwargs):
+                return [unsafe_result]
+
+        original_engine = self.client.app.state.search_engine
+        self.client.app.state.search_engine = UnsafeSearchEngine()
+        try:
+            with patch(
+                "api.enrich_similar_case",
+                return_value={
+                    **unsafe_result,
+                    "explanation_source": "llm",
+                    "safety_passed": False,
+                },
+            ):
+                response = self.client.post(
+                    "/api/similar-cases",
+                    json={
+                        "property_data": {
+                            "guarantee_product_type": "jeonse_return",
+                            "housing_type": "다세대주택",
+                        }
+                    },
+                )
+        finally:
+            self.client.app.state.search_engine = original_engine
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "fallback")
+        self.assertEqual(response.json()["similar_cases"], [])
+
+    def test_search_failure_returns_unavailable_status(self):
+        class FailingSearchEngine:
+            def search(self, *args, **kwargs):
+                raise RuntimeError("temporary search failure")
+
+        original_engine = self.client.app.state.search_engine
+        self.client.app.state.search_engine = FailingSearchEngine()
+        try:
+            response = self.client.post(
+                "/api/similar-cases",
+                json={
+                    "property_data": {
+                        "guarantee_product_type": "rental_deposit",
+                        "housing_type": "아파트",
+                    }
+                },
+            )
+        finally:
+            self.client.app.state.search_engine = original_engine
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "unavailable")
+        self.assertEqual(response.json()["similar_cases"], [])
 
 
 if __name__ == "__main__":
