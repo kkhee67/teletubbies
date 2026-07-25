@@ -248,7 +248,7 @@
       },
       "guarantee": {
         "status": "unknown",
-        "group": "confirmation_required",
+        "group": "check_required",
         "display_text": "확인 필요"
       },
       "analysis": {
@@ -386,7 +386,7 @@
       },
       "guarantee": {
         "status": "estimated_eligible",
-        "group": "confirmation_required",
+        "group": "check_required",
         "display_text": "가입 가능성 확인 필요"
       },
       "analysis": {

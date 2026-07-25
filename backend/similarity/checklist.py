@@ -38,13 +38,31 @@ def build_checklist(
             )
         )
 
-    if guarantee["branch"] in {"ineligible", "unknown"}:
+    if guarantee["branch"] == "deep_analysis":
         items.append(
             _item(
                 "CHK_GUARANTEE",
                 "반환보증 사전 확인",
-                "가입이 어렵거나 미확인이라면 공식 기관에서 가능 여부와 불가 사유를 먼저 확인하세요.",
+                "공식 기관에서 가입 불가 사유와 대체 보호장치를 먼저 확인하세요.",
                 "high",
+            )
+        )
+    elif guarantee["branch"] == "check_required":
+        items.append(
+            _item(
+                "CHK_GUARANTEE",
+                "반환보증 공식 확인",
+                "내부 추정이나 미확인 상태를 가입 가능 또는 가입 완료로 보지 말고 공식 사전확인을 진행하세요.",
+                "high",
+            )
+        )
+    elif guarantee["branch"] == "in_progress":
+        items.append(
+            _item(
+                "CHK_GUARANTEE",
+                "반환보증 가입 완료 확인",
+                "사전확인 또는 신청 접수 상태이므로 보증서 발급과 가입 완료 증빙을 확인하세요.",
+                "medium",
             )
         )
 

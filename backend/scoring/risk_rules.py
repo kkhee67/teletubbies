@@ -19,12 +19,12 @@ GUARANTEE_STATUSES = {
     "enrolled", "ineligible", "unknown",
 }
 GUARANTEE_GROUPS = {
-    "estimated_eligible": ("confirmation_required", "가입 가능성 확인 필요"),
+    "estimated_eligible": ("check_required", "가입 가능성 확인 필요"),
     "officially_eligible": ("in_progress", "가입 절차 진행"),
     "applied": ("in_progress", "가입 신청 중"),
     "enrolled": ("protected", "보호장치 확보"),
     "ineligible": ("deep_analysis", "가입 어려움"),
-    "unknown": ("confirmation_required", "확인 필요"),
+    "unknown": ("check_required", "확인 필요"),
 }
 MORTGAGE_STATUSES = {"none", "exists", "promised_removal", "removed", "unknown"}
 SEIZURE_STATUSES = {"none", "exists", "unknown"}

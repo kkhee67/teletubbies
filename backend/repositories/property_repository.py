@@ -19,6 +19,7 @@ PUBLIC_FIELDS = {
     "seizure_status",
     "joint_collateral",
     "guarantee_status",
+    "guarantee_product_type",
     "market_note",
 }
 
