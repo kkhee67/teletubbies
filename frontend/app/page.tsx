@@ -1,6 +1,10 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { GuaranteeStatusCard } from "./components/GuaranteeStatusCard";
+import { PropertySummary } from "./components/PropertySummary";
+import { RiskAnalysis } from "./components/RiskAnalysis";
+import type { GuaranteeStatus } from "./data/guaranteeStates";
 
 function formatWon(value: string) {
   const amount = Number(value.replaceAll(",", ""));
@@ -12,11 +16,21 @@ export default function Home() {
   const [deposit, setDeposit] = useState("200000000");
   const [situation, setSituation] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [guaranteeStatus, setGuaranteeStatus] =
+    useState<GuaranteeStatus>("ineligible");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitted(true);
   }
+
+  useEffect(() => {
+    if (submitted) {
+      document
+        .getElementById("property-summary")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [submitted]);
 
   return (
     <main>
@@ -63,6 +77,7 @@ export default function Home() {
               }}
               placeholder="도로명 주소 또는 지번 주소를 입력하세요"
               autoComplete="street-address"
+              minLength={5}
               required
             />
             <p className="field-help">
@@ -102,27 +117,32 @@ export default function Home() {
             </button>
           </form>
 
-          {submitted && address.trim() && (
-            <div className="ready-notice" role="status">
-              <span aria-hidden="true">✓</span>
-              <div>
-                <strong>입력 정보가 준비되었습니다.</strong>
-                <p>
-                  {address.trim()} · 보증금 {formatWon(deposit)}원
-                </p>
-                <small>
-                  다음 개발 단계에서 실제 매물정보 조회 결과와 연결됩니다.
-                </small>
-              </div>
-            </div>
-          )}
-
           <p className="privacy-note">
             상세주소는 검색에만 사용하며 분석 결과와 로그에는 축약된 주소를
             사용합니다.
           </p>
         </div>
       </section>
+
+      {submitted && address.trim() && (
+        <>
+          <PropertySummary
+            address={address}
+            deposit={formatWon(deposit)}
+            onEdit={() => {
+              setSubmitted(false);
+              document
+                .getElementById("address")
+                ?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+          />
+          <GuaranteeStatusCard
+            selectedStatus={guaranteeStatus}
+            onStatusChange={setGuaranteeStatus}
+          />
+          <RiskAnalysis guaranteeStatus={guaranteeStatus} />
+        </>
+      )}
 
       <section className="flow-section" aria-labelledby="flow-title">
         <div>
