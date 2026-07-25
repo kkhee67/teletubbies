@@ -34,6 +34,15 @@ POST /analyze
 POST /simulate
 ```
 
+## 현재 AI 연동 범위
+
+현재 백엔드 MVP는 AI FastAPI 서버를 HTTP로 직접 호출하지 않습니다.
+
+- `/analyze`는 `backend/similarity/search_cases.py`의 로컬 모의 유사사례를 사용합니다.
+- 백엔드 요청 스키마에는 아직 `guarantee_product_type`이 없어 전세보증금반환보증과 임대보증금보증을 AI API에 구분 전달하지 않습니다.
+- 백엔드 유사사례 응답과 `ai` 서비스의 유사사례 응답은 필드명과 유사도 단위가 다릅니다.
+- 백엔드 위험점수는 미확인 정보를 점수에 포함하지만, 데이터분석 모듈은 미확인 정보를 확인사항으로 분리합니다.
+
 ## POST /analyze 예시
 
 ```json
