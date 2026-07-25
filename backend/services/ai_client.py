@@ -6,6 +6,13 @@ import httpx
 
 DEFAULT_AI_API_BASE_URL = "http://127.0.0.1:8001"
 DEFAULT_TIMEOUT_SECONDS = 3.0
+SUPPORTED_AI_PRODUCT_TYPES = {"jeonse_return", "rental_deposit"}
+AI_RESPONSE_STATUSES = {"ok", "fallback", "unavailable"}
+DEFAULT_CASE_SOURCE = {
+    "source_type": "ai_api",
+    "source_name": "AI API similar consultation cases",
+    "is_synthetic": True,
+}
 
 HOUSING_TYPE_LABELS = {
     "apartment": "아파트",
@@ -40,6 +47,17 @@ def fetch_similar_cases(
             "message": "AI API is disabled.",
         }
 
+    if guarantee_product_type not in SUPPORTED_AI_PRODUCT_TYPES:
+        return {
+            "status": "unsupported_product_type",
+            "similar_cases": [],
+            "easy_explanation": None,
+            "message": (
+                "AI search was skipped because guarantee_product_type is not "
+                "supported by the AI API."
+            ),
+        }
+
     payload = build_similar_cases_payload(
         property_data=property_data,
         risk_result=risk_result,
@@ -53,14 +71,23 @@ def fetch_similar_cases(
         response = httpx.post(url, json=payload, timeout=ai_api_timeout())
         response.raise_for_status()
         body = response.json()
+        if not isinstance(body, dict):
+            raise TypeError("AI API response must be a JSON object.")
+        status = ai_response_status(body)
         similar_cases = [
             normalize_ai_case(case)
             for case in body.get("similar_cases", [])
         ]
+        easy_explanation = (
+            build_easy_explanation(similar_cases, risk_result)
+            if status != "unavailable"
+            else None
+        )
         return {
-            "status": "ok",
+            "status": status,
             "similar_cases": similar_cases,
-            "easy_explanation": build_easy_explanation(similar_cases, risk_result),
+            "easy_explanation": easy_explanation,
+            "message": ai_response_message(status, body),
             "raw_result_count": body.get("meta", {}).get("result_count", len(similar_cases)),
         }
     except (httpx.ConnectTimeout, httpx.ReadTimeout, httpx.PoolTimeout) as exc:
@@ -108,6 +135,31 @@ def ai_api_timeout() -> float:
         return max(0.1, float(raw_value))
     except ValueError:
         return DEFAULT_TIMEOUT_SECONDS
+
+
+def ai_response_status(body: dict[str, Any]) -> str:
+    meta = body.get("meta", {})
+    candidates = [
+        body.get("status"),
+        body.get("ai_api_status"),
+        meta.get("ai_search_status") if isinstance(meta, dict) else None,
+    ]
+    for candidate in candidates:
+        if candidate in AI_RESPONSE_STATUSES:
+            return str(candidate)
+    return "error"
+
+
+def ai_response_message(status: str, body: dict[str, Any]) -> str | None:
+    if isinstance(body.get("message"), str):
+        return body["message"]
+    if status == "fallback":
+        return "AI API returned fallback results."
+    if status == "unavailable":
+        return "AI API reported unavailable."
+    if status == "error":
+        return "AI API returned an unsupported status."
+    return None
 
 
 def build_similar_cases_payload(
@@ -198,14 +250,55 @@ def normalize_ai_case(case: dict[str, Any]) -> dict[str, Any]:
         + list(case.get("confirmed_risk_tags", []))
         + list(case.get("required_check_tags", []))
     ))
+    source = normalize_case_source(case.get("source"))
     return {
         **case,
         "similarity": similarity,
         "tags": tags,
         "summary": case.get("easy_explanation") or case.get("dispute_type", "유사 상담사례"),
         "missed_checks": case.get("actions", []),
-        "source": "AI API 유사 상담사례",
+        "source": source,
+        "source_type": case_source_type(source),
+        "source_name": case_source_name(source),
+        "reference_date": case_reference_date(source),
     }
+
+
+def normalize_case_source(source: Any) -> dict[str, Any] | str:
+    if isinstance(source, dict) and source:
+        return source
+    if isinstance(source, str) and source.strip():
+        return source
+    return dict(DEFAULT_CASE_SOURCE)
+
+
+def case_source_type(source: dict[str, Any] | str) -> str | None:
+    if isinstance(source, dict):
+        return (
+            source.get("source_type")
+            or source.get("type")
+            or source.get("source_id")
+        )
+    return None
+
+
+def case_source_name(source: dict[str, Any] | str) -> str:
+    if isinstance(source, dict):
+        return str(
+            source.get("source_name")
+            or source.get("name")
+            or source.get("label")
+            or source.get("type")
+            or DEFAULT_CASE_SOURCE["source_name"]
+        )
+    return source
+
+
+def case_reference_date(source: dict[str, Any] | str) -> str | None:
+    if isinstance(source, dict):
+        value = source.get("reference_date") or source.get("retrieved_at")
+        return str(value) if value else None
+    return None
 
 
 def build_easy_explanation(

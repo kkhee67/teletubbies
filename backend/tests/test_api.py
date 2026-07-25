@@ -160,6 +160,7 @@ def test_analyze_calls_ai_api_with_product_type(monkeypatch):
 
         def json(self):
             return {
+                "status": "ok",
                 "similar_cases": [
                     {
                         "case_id": "CASE-AI-001",
@@ -176,6 +177,12 @@ def test_analyze_calls_ai_api_with_product_type(monkeypatch):
                         "actions": ["보증기관 확인", "최신 등기부 확인"],
                         "explanation_source": "template",
                         "safety_passed": True,
+                        "source": {
+                            "source_type": "provided_synthetic_consultations",
+                            "source_name": "Synthetic consultation cases",
+                            "is_synthetic": True,
+                            "reference_date": "2026-07-25",
+                        },
                         "disclaimer": "참고사례입니다.",
                     }
                 ],
@@ -209,9 +216,79 @@ def test_analyze_calls_ai_api_with_product_type(monkeypatch):
     assert body["ai_api_status"] == "ok"
     assert body["similar_cases"][0]["case_id"] == "CASE-AI-001"
     assert body["similar_cases"][0]["similarity"] == 87.6
-    assert body["similar_cases"][0]["source"] == "AI API 유사 상담사례"
+    assert body["similar_cases"][0]["source"] == {
+        "source_type": "provided_synthetic_consultations",
+        "source_name": "Synthetic consultation cases",
+        "is_synthetic": True,
+        "reference_date": "2026-07-25",
+    }
+    assert body["similar_cases"][0]["source_type"] == "provided_synthetic_consultations"
+    assert body["similar_cases"][0]["source_name"] == "Synthetic consultation cases"
     assert body["easy_explanation"]["plain_explanation"] == "AI API에서 받은 쉬운 설명입니다."
     assert "SEIZURE_UNKNOWN" in {signal["code"] for signal in body["signals"]}
+
+
+def test_analyze_skips_ai_api_for_unknown_product_type(monkeypatch):
+    calls = []
+
+    def fail_if_called(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("unknown guarantee_product_type must not call AI API")
+
+    monkeypatch.setenv("AI_API_ENABLED", "true")
+    monkeypatch.setenv("LOCAL_SIMILAR_CASES_ENABLED", "false")
+    monkeypatch.setattr(ai_client.httpx, "post", fail_if_called)
+
+    response = api_call(
+        "post",
+        "/analyze",
+        json={
+            "property_id": "P001",
+            "planned_deposit": 200000000,
+            "guarantee_product_type": "unknown",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ai_api_status"] == "unsupported_product_type"
+    assert "not supported" in body["ai_api_message"]
+    assert body["similar_cases"] == []
+    assert body["easy_explanation"] is None
+    assert calls == []
+
+
+def test_analyze_preserves_ai_fallback_status(monkeypatch):
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {
+                "status": "fallback",
+                "similar_cases": [],
+                "message": "AI API used fallback explanation.",
+                "meta": {"result_count": 0},
+            }
+
+    def fake_post(*args, **kwargs):
+        return FakeResponse()
+
+    monkeypatch.setenv("AI_API_ENABLED", "true")
+    monkeypatch.setenv("LOCAL_SIMILAR_CASES_ENABLED", "false")
+    monkeypatch.setattr(ai_client.httpx, "post", fake_post)
+
+    response = api_call(
+        "post",
+        "/analyze",
+        json={"property_id": "P004", "planned_deposit": 150000000},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ai_api_status"] == "fallback"
+    assert body["ai_api_message"] == "AI API used fallback explanation."
+    assert body["similar_cases"] == []
 
 
 def test_analyze_returns_empty_cases_when_ai_api_fails(monkeypatch):

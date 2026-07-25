@@ -53,7 +53,16 @@ class ErrorResponse(BaseModel):
 
 GuaranteeGroup = Literal["check_required", "in_progress", "protected", "deep_analysis"]
 GuaranteeProductType = Literal["jeonse_return", "rental_deposit", "unknown"]
-AiApiStatus = Literal["ok", "disabled", "unavailable", "timeout", "error", "local_mock"]
+AiApiStatus = Literal[
+    "ok",
+    "fallback",
+    "disabled",
+    "unavailable",
+    "timeout",
+    "error",
+    "local_mock",
+    "unsupported_product_type",
+]
 
 
 class GuaranteeResponse(BaseModel):
