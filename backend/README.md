@@ -34,6 +34,22 @@ POST /analyze
 POST /simulate
 ```
 
+## AI API 연동
+
+`/analyze`는 먼저 AI API의 `/api/similar-cases`를 호출해 유사 상담사례와 쉬운 설명을 가져옵니다.
+
+- 기본 AI API 주소는 `http://127.0.0.1:8001`입니다.
+- 다른 주소를 쓰려면 `AI_API_BASE_URL` 환경변수를 설정하세요.
+- 응답 대기시간 기본값은 0.5초이며 `AI_API_TIMEOUT_SECONDS`로 조정할 수 있습니다.
+- AI API가 꺼져 있거나 오류를 반환하면 기존 로컬 모의 유사사례로 폴백하고 `ai_api_status: "fallback"`을 반환합니다.
+- `guarantee_product_type`으로 `jeonse_return`, `rental_deposit`, `unknown`을 전달할 수 있습니다.
+
+AI API는 별도 터미널에서 예를 들어 다음처럼 실행합니다.
+
+```powershell
+.\ai\run_api.ps1 -Port 8001
+```
+
 ## POST /analyze 예시
 
 ```json
@@ -42,6 +58,7 @@ POST /simulate
   "address_query": "부산광역시 수영구 안심로 24",
   "planned_deposit": 200000000,
   "monthly_rent": 0,
+  "guarantee_product_type": "jeonse_return",
   "user_note": "잔금일에 근저당을 말소한다고 들었습니다."
 }
 ```
@@ -52,10 +69,10 @@ POST /simulate
 |---|---|---|---|
 | P001 | 부산광역시 수영구 | 다세대주택 | 확인 필요 |
 | P002 | 부산광역시 강서구 | 오피스텔 | 가입 어려움 |
-| P003 | 부산광역시 부산진구 | 아파트 | 가입 가능 |
-| P004 | 부산광역시 사하구 | 다가구주택 | 가입 어려움 |
-| P005 | 부산광역시 해운대구 | 오피스텔 | 확인 필요 |
-| P006 | 부산광역시 동래구 | 연립주택 | 가입 가능 |
+| P003 | 부산광역시 부산진구 | 아파트 | 공식 사전확인 완료 |
+| P004 | 부산광역시 사하구 | 다가구주택 | 가입 신청 완료 |
+| P005 | 부산광역시 해운대구 | 오피스텔 | 내부 추정 가능 |
+| P006 | 부산광역시 동래구 | 연립주택 | 가입 완료 |
 
 ## 주의
 

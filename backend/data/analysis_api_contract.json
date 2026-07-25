@@ -94,7 +94,7 @@
             "unknown"
           ],
           "group": [
-            "confirmation_required",
+            "check_required",
             "in_progress",
             "protected",
             "deep_analysis"

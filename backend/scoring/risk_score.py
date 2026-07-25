@@ -11,6 +11,15 @@ HOUSING_TYPE_LABELS = {
     "unknown": "미상",
 }
 
+GUARANTEE_STATUSES = {
+    "estimated_eligible",
+    "officially_eligible",
+    "applied",
+    "enrolled",
+    "ineligible",
+    "unknown",
+}
+
 
 def calculate_risk_signals(property_data: dict[str, Any], planned_deposit: int) -> dict[str, Any]:
     reference_value = int(property_data.get("reference_value") or 0)
@@ -81,11 +90,17 @@ def _rights_score(property_data: dict[str, Any]) -> int:
 
 
 def _guarantee_score(status: str) -> int:
+    if status not in GUARANTEE_STATUSES:
+        raise ValueError(f"지원하지 않는 반환보증 상태입니다: {status}")
     if status == "ineligible":
         return 18
     if status == "unknown":
         return 12
-    return 4
+    if status == "estimated_eligible":
+        return 8
+    if status in {"officially_eligible", "applied"}:
+        return 4
+    return 0
 
 
 def _information_score(property_data: dict[str, Any]) -> int:
@@ -185,6 +200,28 @@ def _build_signals(property_data: dict[str, Any], deposit_ratio: float) -> list[
                 "severity": "high",
                 "explanation": "보호장치가 약한 계약일 가능성이 있어 심층 확인이 필요합니다.",
                 "action": "공식 보증기관을 통해 불가 사유를 먼저 확인하세요.",
+                "included_in_risk_score": True,
+            }
+        )
+    elif guarantee == "estimated_eligible":
+        signals.append(
+            {
+                "code": "GUARANTEE_ESTIMATED_ONLY",
+                "title": "반환보증 가능성은 공식 확인이 필요합니다",
+                "severity": "medium",
+                "explanation": "내부 조건상 가능성이 있어 보여도 공식 사전확인이나 보증서 발급 상태는 아닙니다.",
+                "action": "보증기관의 공식 사전확인 결과를 확인하세요.",
+                "included_in_risk_score": True,
+            }
+        )
+    elif guarantee in {"officially_eligible", "applied"}:
+        signals.append(
+            {
+                "code": "GUARANTEE_ENROLLMENT_NOT_COMPLETED",
+                "title": "반환보증 가입 완료 여부를 확인해야 합니다",
+                "severity": "medium",
+                "explanation": "사전확인 또는 신청 접수는 가입 완료와 다릅니다.",
+                "action": "보증서 발급 또는 가입 완료 증빙을 확인하세요.",
                 "included_in_risk_score": True,
             }
         )
