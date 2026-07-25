@@ -1,48 +1,34 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from schemas import AnalyzeRequest, SimulateRequest
+from errors import ApiError
+from schemas import AnalyzeRequest, AnalyzeResponse, SimulateRequest, SimulateResponse
 from services import analysis_service
 
 
 router = APIRouter(tags=["analysis"])
 
 
-@router.post("/analyze")
+@router.post("/analyze", response_model=AnalyzeResponse)
 def analyze(request: AnalyzeRequest) -> dict:
     try:
         return analysis_service.analyze_contract(request)
     except ValueError as exc:
-        if str(exc) == "PROPERTY_NOT_FOUND":
-            raise HTTPException(status_code=404, detail="매물을 찾을 수 없습니다.") from exc
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise api_error_from_value_error(exc) from exc
 
 
-@router.post("/simulate")
+@router.post("/simulate", response_model=SimulateResponse)
 def simulate(request: SimulateRequest) -> dict:
     try:
-        current = analysis_service.analyze_contract(request.current)
-        changed = analysis_service.analyze_contract(request.changed)
+        return analysis_service.simulate_contract(request)
     except ValueError as exc:
-        if str(exc) == "PROPERTY_NOT_FOUND":
-            raise HTTPException(status_code=404, detail="매물을 찾을 수 없습니다.") from exc
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise api_error_from_value_error(exc) from exc
 
-    return {
-        "current": {
-            "risk_score": current["risk_score"],
-            "risk_stage": current["risk_stage"],
-            "signal_count": current["signal_count"],
-            "property_summary": current["property_summary"],
-        },
-        "changed": {
-            "risk_score": changed["risk_score"],
-            "risk_stage": changed["risk_stage"],
-            "signal_count": changed["signal_count"],
-            "property_summary": changed["property_summary"],
-        },
-        "delta": {
-            "risk_score": changed["risk_score"] - current["risk_score"],
-            "signal_count": changed["signal_count"] - current["signal_count"],
-        },
-        "disclaimer": "시뮬레이션은 법적 안전을 보장하지 않고 위험신호의 변화를 보여줍니다.",
-    }
+
+def api_error_from_value_error(exc: ValueError) -> ApiError:
+    if str(exc) == "PROPERTY_NOT_FOUND":
+        return ApiError(
+            status_code=404,
+            detail="매물을 찾을 수 없습니다.",
+            code="PROPERTY_NOT_FOUND",
+        )
+    return ApiError(status_code=400, detail=str(exc), code="INVALID_REQUEST")

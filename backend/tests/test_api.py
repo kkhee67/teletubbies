@@ -1,6 +1,18 @@
-from main import app
+import json
+from datetime import datetime
+
+from main import app, get_cors_allow_origins
 from fastapi.testclient import TestClient
-from services import ai_client
+from repositories import property_repository
+from services import ai_client, analysis_service
+
+
+def setup_function():
+    property_repository.clear_cache()
+
+
+def teardown_function():
+    property_repository.clear_cache()
 
 
 def api_call(method: str, path: str, **kwargs):
@@ -12,6 +24,62 @@ def test_health():
     response = api_call("get", "/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+
+
+def test_cors_allows_deployed_frontend_origin():
+    response = api_call(
+        "options",
+        "/health",
+        headers={
+            "Origin": "https://dive-2026-teletubbies.hgumax.chatgpt.site",
+            "Access-Control-Request-Method": "GET",
+        },
+    )
+    assert response.status_code == 200
+    assert (
+        response.headers["access-control-allow-origin"]
+        == "https://dive-2026-teletubbies.hgumax.chatgpt.site"
+    )
+
+
+def test_cors_origins_can_be_configured_with_env(monkeypatch):
+    monkeypatch.setenv(
+        "CORS_ALLOW_ORIGINS",
+        "http://localhost:3000, https://example.com ",
+    )
+    assert get_cors_allow_origins() == [
+        "http://localhost:3000",
+        "https://example.com",
+    ]
+
+
+def test_property_repository_uses_json_store_and_refreshes_on_version(tmp_path, monkeypatch):
+    data_path = tmp_path / "properties.json"
+    base_row = {
+        "property_id": "PX01",
+        "address_display": "부산광역시 테스트구 버전로 1",
+        "district": "테스트구",
+        "legal_dong": "테스트동",
+        "housing_type": "apartment",
+        "reference_value": 100000000,
+        "value_source": "test store",
+        "mortgage_status": "none",
+        "seizure_status": "none",
+        "joint_collateral": "none",
+        "guarantee_status": "enrolled",
+        "guarantee_product_type": "jeonse_return",
+    }
+    data_path.write_text(json.dumps([base_row], ensure_ascii=False), encoding="utf-8")
+
+    monkeypatch.setenv("PROPERTY_DATA_PATH", str(data_path))
+    monkeypatch.setenv("PROPERTY_STORE_TTL_SECONDS", "3600")
+
+    assert property_repository.get("PX01")["address_display"].endswith("버전로 1")
+
+    changed_row = {**base_row, "address_display": "부산광역시 테스트구 버전로 22"}
+    data_path.write_text(json.dumps([changed_row], ensure_ascii=False), encoding="utf-8")
+
+    assert property_repository.get("PX01")["address_display"].endswith("버전로 22")
 
 
 def test_search_properties():
@@ -38,9 +106,26 @@ def test_invalid_deposit():
         },
     )
     assert response.status_code == 422
+    assert response.json()["code"] == "VALIDATION_ERROR"
 
 
-def test_analyze_contract():
+def test_property_not_found_error_shape():
+    response = api_call(
+        "post",
+        "/analyze",
+        json={"property_id": "NOPE", "planned_deposit": 100000000},
+    )
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "매물을 찾을 수 없습니다.",
+        "code": "PROPERTY_NOT_FOUND",
+        "extra": {},
+    }
+
+
+def test_analyze_contract(monkeypatch):
+    monkeypatch.setenv("AI_API_ENABLED", "false")
+
     response = api_call(
         "post",
         "/analyze",
@@ -60,7 +145,10 @@ def test_analyze_contract():
     assert "checklist" in body
     assert body["guarantee"]["status"] == "unknown"
     assert body["guarantee"]["group"] == "check_required"
-    assert body["ai_api_status"] in {"ok", "fallback"}
+    assert body["ai_api_status"] == "disabled"
+    assert body["similar_cases"] == []
+    generated_at = datetime.fromisoformat(body["generated_at"])
+    assert generated_at.tzinfo is not None
 
 
 def test_analyze_calls_ai_api_with_product_type(monkeypatch):
@@ -117,14 +205,16 @@ def test_analyze_calls_ai_api_with_product_type(monkeypatch):
     assert calls[0]["json"]["property_data"]["guarantee_product_type"] == "rental_deposit"
     assert calls[0]["json"]["property_data"]["housing_type"] == "다가구주택"
     assert calls[0]["json"]["top_k"] == 3
+    assert calls[0]["timeout"] == 3.0
     assert body["ai_api_status"] == "ok"
     assert body["similar_cases"][0]["case_id"] == "CASE-AI-001"
     assert body["similar_cases"][0]["similarity"] == 87.6
     assert body["similar_cases"][0]["source"] == "AI API 유사 상담사례"
     assert body["easy_explanation"]["plain_explanation"] == "AI API에서 받은 쉬운 설명입니다."
+    assert "SEIZURE_UNKNOWN" in {signal["code"] for signal in body["signals"]}
 
 
-def test_analyze_falls_back_when_ai_api_fails(monkeypatch):
+def test_analyze_returns_empty_cases_when_ai_api_fails(monkeypatch):
     def fail_post(*args, **kwargs):
         raise ai_client.httpx.ConnectError("AI server unavailable")
 
@@ -138,9 +228,10 @@ def test_analyze_falls_back_when_ai_api_fails(monkeypatch):
 
     assert response.status_code == 200
     body = response.json()
-    assert body["ai_api_status"] == "fallback"
-    assert body["similar_cases"]
-    assert body["similar_cases"][0]["source"] == "아이엔 비식별 상담데이터 패턴 기반 모의사례"
+    assert body["ai_api_status"] == "unavailable"
+    assert body["ai_api_message"] == "AI API is unavailable."
+    assert body["similar_cases"] == []
+    assert body["easy_explanation"] is None
 
 
 def test_guarantee_six_status_mapping():
@@ -169,9 +260,25 @@ def test_guarantee_six_status_mapping():
         assert body["guarantee"]["status"] == status
         assert body["guarantee"]["group"] == group
         assert body["guarantee_branch"] == group
+        if status == "applied":
+            assert body["guarantee"] == {
+                "status": "applied",
+                "group": "in_progress",
+                "display_text": "가입 신청 중",
+                "message": "신청은 접수됐지만 보증서 발급 확인이 필요합니다.",
+                "next_actions": ["보증서 발급 여부 확인"],
+            }
 
 
-def test_simulate_contract():
+def test_simulate_contract(monkeypatch):
+    calls = []
+
+    def fail_if_called(**kwargs):
+        calls.append(kwargs)
+        raise AssertionError("simulate must not call AI search")
+
+    monkeypatch.setattr(analysis_service, "fetch_similar_cases", fail_if_called)
+
     response = api_call(
         "post",
         "/simulate",
@@ -194,3 +301,6 @@ def test_simulate_contract():
     assert response.status_code == 200
     body = response.json()
     assert body["changed"]["risk_score"] < body["current"]["risk_score"]
+    assert calls == []
+    generated_at = datetime.fromisoformat(body["generated_at"])
+    assert generated_at.tzinfo is not None

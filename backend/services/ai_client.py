@@ -5,7 +5,7 @@ import httpx
 
 
 DEFAULT_AI_API_BASE_URL = "http://127.0.0.1:8001"
-DEFAULT_TIMEOUT_SECONDS = 0.5
+DEFAULT_TIMEOUT_SECONDS = 3.0
 
 HOUSING_TYPE_LABELS = {
     "apartment": "아파트",
@@ -32,6 +32,14 @@ def fetch_similar_cases(
     guarantee_product_type: str,
     limit: int = 3,
 ) -> dict[str, Any]:
+    if not ai_api_enabled():
+        return {
+            "status": "disabled",
+            "similar_cases": [],
+            "easy_explanation": None,
+            "message": "AI API is disabled.",
+        }
+
     payload = build_similar_cases_payload(
         property_data=property_data,
         risk_result=risk_result,
@@ -55,17 +63,43 @@ def fetch_similar_cases(
             "easy_explanation": build_easy_explanation(similar_cases, risk_result),
             "raw_result_count": body.get("meta", {}).get("result_count", len(similar_cases)),
         }
-    except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
+    except (httpx.ConnectTimeout, httpx.ReadTimeout, httpx.PoolTimeout) as exc:
         return {
-            "status": "fallback",
+            "status": "timeout",
             "similar_cases": [],
             "easy_explanation": None,
             "error": exc.__class__.__name__,
+            "message": "AI API request timed out.",
+        }
+    except httpx.ConnectError as exc:
+        return {
+            "status": "unavailable",
+            "similar_cases": [],
+            "easy_explanation": None,
+            "error": exc.__class__.__name__,
+            "message": "AI API is unavailable.",
+        }
+    except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
+        return {
+            "status": "error",
+            "similar_cases": [],
+            "easy_explanation": None,
+            "error": exc.__class__.__name__,
+            "message": "AI API returned an invalid response.",
         }
 
 
 def ai_api_base_url() -> str:
     return os.getenv("AI_API_BASE_URL", DEFAULT_AI_API_BASE_URL).rstrip("/")
+
+
+def ai_api_enabled() -> bool:
+    return os.getenv("AI_API_ENABLED", "true").strip().lower() not in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }
 
 
 def ai_api_timeout() -> float:
