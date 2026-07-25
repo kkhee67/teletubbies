@@ -1,0 +1,1627 @@
+{
+  "schema_version": 1,
+  "is_synthetic": true,
+  "data_source_count": 7,
+  "data_sources": [
+    {
+      "source_id": "consultation_cases",
+      "source_label": "비식별 임대차 상담사례",
+      "record_count": 938,
+      "role": "similar_case_search",
+      "product_mapping_basis": "explicit_case_text_only",
+      "known_product_counts": {
+        "unknown": 882,
+        "jeonse_return": 48,
+        "rental_deposit": 8
+      }
+    },
+    {
+      "source_id": "rental_guarantee_accidents",
+      "source_label": "임대보증 사고현황",
+      "record_count": 23107,
+      "role": "product_statistics",
+      "product_mapping_basis": "상품명"
+    },
+    {
+      "source_id": "debtor_auction_status",
+      "source_label": "전세·임대 채무자 경매현황",
+      "record_count": 25687,
+      "role": "shared_statistics",
+      "product_mapping_basis": "mixed_file_without_product_column"
+    },
+    {
+      "source_id": "auction_distributions",
+      "source_label": "전세·임대 채무자 배당내역",
+      "record_count": 32542,
+      "role": "product_statistics",
+      "product_mapping_basis": "상품명"
+    },
+    {
+      "source_id": "guarantee_subrogation",
+      "source_label": "전세·임대 대위변제·회수현황",
+      "record_count": 28961,
+      "role": "product_statistics",
+      "product_mapping_basis": "상품명"
+    },
+    {
+      "source_id": "jeonse_accident_status",
+      "source_label": "전세보증 사고현황",
+      "record_count": 66579,
+      "role": "product_statistics",
+      "product_mapping_basis": "상품명"
+    },
+    {
+      "source_id": "jeonse_housing_value_ratio",
+      "source_label": "전세사고 주택유형·보증금비율",
+      "record_count": 69435,
+      "role": "product_statistics",
+      "product_mapping_basis": "file_scope:전세사고"
+    }
+  ],
+  "products": {
+    "rental_deposit": {
+      "label": "임대보증금보증",
+      "sources": [
+        {
+          "source_id": "rental_guarantee_accidents",
+          "source_label": "임대보증 사고현황",
+          "product_scope": "rental_deposit",
+          "record_count": 23107,
+          "housing_type_counts": {
+            "다세대주택": 7820,
+            "아파트": 7532,
+            "오피스텔": 7224,
+            "다가구주택": 298,
+            "연립주택": 174,
+            "다중주택": 31,
+            "오피스텔(주거용)": 15,
+            "단독주택": 13
+          },
+          "housing_type_details": {
+            "다가구주택": {
+              "record_count": 298,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 298,
+                  "median": 105000000.0,
+                  "p25": 75000000.0,
+                  "p75": 150000000.0
+                }
+              }
+            },
+            "다세대주택": {
+              "record_count": 7820,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 7820,
+                  "median": 255000000.0,
+                  "p25": 136500000.0,
+                  "p75": 310000000.0
+                }
+              }
+            },
+            "다중주택": {
+              "record_count": 31,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 31,
+                  "median": 120000000.0,
+                  "p25": 104200000.0,
+                  "p75": 137500000.0
+                }
+              }
+            },
+            "단독주택": {
+              "record_count": 13,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 13,
+                  "median": 120000000.0,
+                  "p25": 70000000.0,
+                  "p75": 241000000.0
+                }
+              }
+            },
+            "아파트": {
+              "record_count": 7532,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 7532,
+                  "median": 97400000.0,
+                  "p25": 49537250.0,
+                  "p75": 173200000.0
+                }
+              }
+            },
+            "연립주택": {
+              "record_count": 174,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 174,
+                  "median": 145000000.0,
+                  "p25": 101107500.0,
+                  "p75": 200000000.0
+                }
+              }
+            },
+            "오피스텔": {
+              "record_count": 7224,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 7224,
+                  "median": 189000000.0,
+                  "p25": 110237500.0,
+                  "p75": 271000000.0
+                }
+              }
+            },
+            "오피스텔(주거용)": {
+              "record_count": 15,
+              "metrics": {
+                "subrogation_amount": {
+                  "count": 15,
+                  "median": 290000000.0,
+                  "p25": 267625000.0,
+                  "p75": 300500000.0
+                }
+              }
+            }
+          },
+          "region_sido_counts": {},
+          "categories": {
+            "business_type": {
+              "개인사업자": 13358,
+              "법인사업자": 9749
+            }
+          },
+          "metrics": {
+            "subrogation_amount": {
+              "count": 23107,
+              "median": 173300000.0,
+              "p25": 86375500.0,
+              "p75": 264000000.0
+            }
+          },
+          "reference_period": {
+            "from": "2018-10-05",
+            "to": "2026-05-14"
+          },
+          "reference_date": "2026-05-14",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        },
+        {
+          "source_id": "auction_distributions",
+          "source_label": "전세·임대 채무자 배당내역",
+          "product_scope": "rental_deposit",
+          "record_count": 7916,
+          "housing_type_counts": {
+            "다세대주택": 4287,
+            "단독주택": 2211,
+            "아파트": 547,
+            "오피스텔": 509,
+            "연립주택": 99,
+            "기타건물": 96,
+            "주거용오피스텔": 65,
+            "다가구주택": 59,
+            "원룸·도시형": 24,
+            "주택": 11,
+            "대지": 4,
+            "업무용빌딩": 3,
+            "아파트(임대)": 1
+          },
+          "housing_type_details": {
+            "기타건물": {
+              "record_count": 96,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 96,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 96,
+                  "median": 264500000.0,
+                  "p25": 240000000.0,
+                  "p75": 311250000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 96,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "다가구주택": {
+              "record_count": 59,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 59,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 59,
+                  "median": 103000000.0,
+                  "p25": 74250000.0,
+                  "p75": 127500000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 59,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "다세대주택": {
+              "record_count": 4287,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 4287,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 4287,
+                  "median": 259000000.0,
+                  "p25": 179900000.0,
+                  "p75": 300000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 4287,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "단독주택": {
+              "record_count": 2211,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 2211,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 2211,
+                  "median": 253000000.0,
+                  "p25": 162930000.0,
+                  "p75": 304000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 2211,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "대지": {
+              "record_count": 4,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 4,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 4,
+                  "median": 110000000.0,
+                  "p25": 87500000.0,
+                  "p75": 135000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 4,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "아파트": {
+              "record_count": 547,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 547,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 142380346.0
+                },
+                "subrogation_amount": {
+                  "count": 547,
+                  "median": 247000000.0,
+                  "p25": 200000000.0,
+                  "p75": 291000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 547,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 58.99
+                }
+              }
+            },
+            "아파트(임대)": {
+              "record_count": 1,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 1,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 1,
+                  "median": 265000000.0,
+                  "p25": 265000000.0,
+                  "p75": 265000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 1,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "업무용빌딩": {
+              "record_count": 3,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 3,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 3,
+                  "median": 339000000.0,
+                  "p25": 289500000.0,
+                  "p75": 409000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 3,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "연립주택": {
+              "record_count": 99,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 99,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 31897144.0
+                },
+                "subrogation_amount": {
+                  "count": 99,
+                  "median": 210000000.0,
+                  "p25": 130000000.0,
+                  "p75": 274000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 99,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 23.2
+                }
+              }
+            },
+            "오피스텔": {
+              "record_count": 509,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 509,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 509,
+                  "median": 235000000.0,
+                  "p25": 181000000.0,
+                  "p75": 271950000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 509,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "원룸·도시형": {
+              "record_count": 24,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 24,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 24,
+                  "median": 276500000.0,
+                  "p25": 249750000.0,
+                  "p75": 287500000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 24,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "주거용오피스텔": {
+              "record_count": 65,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 65,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 65,
+                  "median": 249000000.0,
+                  "p25": 233000000.0,
+                  "p75": 278250000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 65,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "주택": {
+              "record_count": 11,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 11,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 207935.0
+                },
+                "subrogation_amount": {
+                  "count": 11,
+                  "median": 249000000.0,
+                  "p25": 200650000.0,
+                  "p75": 278500000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 11,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.2
+                }
+              }
+            }
+          },
+          "region_sido_counts": {
+            "서울특별시": 3086,
+            "미상": 1897,
+            "인천광역시": 1381,
+            "경기도": 708,
+            "부산광역시": 446,
+            "대구광역시": 71,
+            "전라남도": 70,
+            "충청남도": 59,
+            "경상남도": 58,
+            "경상북도": 44,
+            "울산광역시": 34,
+            "대전광역시": 20,
+            "제주특별자치도": 15,
+            "광주광역시": 13,
+            "세종특별자치시": 9,
+            "충청북도": 5
+          },
+          "categories": {
+            "auction_type": {
+              "강제경매": 6357,
+              "임의경매": 1549,
+              "강제관리": 6,
+              "공매": 4
+            }
+          },
+          "metrics": {
+            "distribution_amount": {
+              "count": 7916,
+              "median": 0.0,
+              "p25": 0.0,
+              "p75": 0.0
+            },
+            "subrogation_amount": {
+              "count": 7916,
+              "median": 253000000.0,
+              "p25": 175750000.0,
+              "p75": 299000000.0
+            },
+            "distribution_to_subrogation_ratio_pct": {
+              "count": 7916,
+              "median": 0.0,
+              "p25": 0.0,
+              "p75": 0.0
+            }
+          },
+          "reference_period": {
+            "from": "2020-02-27",
+            "to": "2025-12-29"
+          },
+          "reference_date": "2025-12-29",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        },
+        {
+          "source_id": "guarantee_subrogation",
+          "source_label": "전세·임대 대위변제·회수현황",
+          "product_scope": "rental_deposit",
+          "record_count": 2995,
+          "housing_type_counts": {},
+          "housing_type_details": {},
+          "region_sido_counts": {},
+          "categories": {
+            "claim_type": {
+              "소송대지급금": 2006,
+              "구상채권": 938,
+              "구상채권(신상품)": 51
+            }
+          },
+          "metrics": {
+            "claim_amount": {
+              "count": 2995,
+              "median": 254000000.0,
+              "p25": 195000000.0,
+              "p75": 300000000.0
+            },
+            "occurrence_amount": {
+              "count": 2995,
+              "median": 2964100.0,
+              "p25": 718550.0,
+              "p75": 215000000.0
+            },
+            "total_recovery_ratio_pct": {
+              "count": 2995,
+              "median": 100.0,
+              "p25": 66.03,
+              "p75": 100.0
+            },
+            "days_from_application_to_distribution": {
+              "count": 2995,
+              "median": 441.0,
+              "p25": 372.0,
+              "p75": 513.0
+            }
+          },
+          "reference_period": {
+            "from": "2020-03-24",
+            "to": "2026-05-28"
+          },
+          "reference_date": "2026-05-28",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        }
+      ]
+    },
+    "jeonse_return": {
+      "label": "전세보증금반환보증",
+      "sources": [
+        {
+          "source_id": "auction_distributions",
+          "source_label": "전세·임대 채무자 배당내역",
+          "product_scope": "jeonse_return",
+          "record_count": 24626,
+          "housing_type_counts": {
+            "다세대주택": 14773,
+            "오피스텔": 5244,
+            "아파트": 3556,
+            "연립주택": 589,
+            "다가구주택": 129,
+            "단독주택": 129,
+            "원룸·도시형": 83,
+            "기타건물": 64,
+            "주택": 25,
+            "주거용오피스텔": 15,
+            "업무용빌딩": 11,
+            "대지": 4,
+            "상가": 4
+          },
+          "housing_type_details": {
+            "기타건물": {
+              "record_count": 64,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 64,
+                  "median": 50852509.0,
+                  "p25": 0.0,
+                  "p75": 150046054.25
+                },
+                "subrogation_amount": {
+                  "count": 64,
+                  "median": 190000000.0,
+                  "p25": 139541591.0,
+                  "p75": 230000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 64,
+                  "median": 29.25,
+                  "p25": 0.0,
+                  "p75": 76.68
+                }
+              }
+            },
+            "다가구주택": {
+              "record_count": 129,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 129,
+                  "median": 33205650.0,
+                  "p25": 0.0,
+                  "p75": 132531576.0
+                },
+                "subrogation_amount": {
+                  "count": 129,
+                  "median": 163000000.0,
+                  "p25": 120000000.0,
+                  "p75": 205000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 129,
+                  "median": 23.57,
+                  "p25": 0.0,
+                  "p75": 81.61
+                }
+              }
+            },
+            "다세대주택": {
+              "record_count": 14773,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 14773,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 134545311.0
+                },
+                "subrogation_amount": {
+                  "count": 14773,
+                  "median": 209000000.0,
+                  "p25": 160000000.0,
+                  "p75": 259000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 14773,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 69.16
+                }
+              }
+            },
+            "단독주택": {
+              "record_count": 129,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 129,
+                  "median": 161100267.0,
+                  "p25": 0.0,
+                  "p75": 221635621.0
+                },
+                "subrogation_amount": {
+                  "count": 129,
+                  "median": 217000000.0,
+                  "p25": 125000000.0,
+                  "p75": 285000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 129,
+                  "median": 64.08,
+                  "p25": 0.0,
+                  "p75": 90.91
+                }
+              }
+            },
+            "대지": {
+              "record_count": 4,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 4,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 1855580.0
+                },
+                "subrogation_amount": {
+                  "count": 4,
+                  "median": 228000000.0,
+                  "p25": 162500000.0,
+                  "p75": 289500000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 4,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 1.33
+                }
+              }
+            },
+            "상가": {
+              "record_count": 4,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 4,
+                  "median": 59216385.5,
+                  "p25": 0.0,
+                  "p75": 168965998.5
+                },
+                "subrogation_amount": {
+                  "count": 4,
+                  "median": 179500000.0,
+                  "p25": 177750000.0,
+                  "p75": 197250000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 4,
+                  "median": 34.03,
+                  "p25": 0.0,
+                  "p75": 95.57
+                }
+              }
+            },
+            "아파트": {
+              "record_count": 3556,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 3556,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 153692298.75
+                },
+                "subrogation_amount": {
+                  "count": 3556,
+                  "median": 190000000.0,
+                  "p25": 139590036.0,
+                  "p75": 250000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 3556,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 77.4
+                }
+              }
+            },
+            "업무용빌딩": {
+              "record_count": 11,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 11,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 161076768.0
+                },
+                "subrogation_amount": {
+                  "count": 11,
+                  "median": 225000000.0,
+                  "p25": 192890000.0,
+                  "p75": 233500000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 11,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 78.11
+                }
+              }
+            },
+            "연립주택": {
+              "record_count": 589,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 589,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 117230143.0
+                },
+                "subrogation_amount": {
+                  "count": 589,
+                  "median": 185000000.0,
+                  "p25": 145000000.0,
+                  "p75": 228000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 589,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 65.84
+                }
+              }
+            },
+            "오피스텔": {
+              "record_count": 5244,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 5244,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                },
+                "subrogation_amount": {
+                  "count": 5244,
+                  "median": 210000000.0,
+                  "p25": 165000000.0,
+                  "p75": 250000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 5244,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 0.0
+                }
+              }
+            },
+            "원룸·도시형": {
+              "record_count": 83,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 83,
+                  "median": 76388127.0,
+                  "p25": 0.0,
+                  "p75": 172799058.5
+                },
+                "subrogation_amount": {
+                  "count": 83,
+                  "median": 193000000.0,
+                  "p25": 142500000.0,
+                  "p75": 241500000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 83,
+                  "median": 50.45,
+                  "p25": 0.0,
+                  "p75": 81.9
+                }
+              }
+            },
+            "주거용오피스텔": {
+              "record_count": 15,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 15,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 80875525.5
+                },
+                "subrogation_amount": {
+                  "count": 15,
+                  "median": 165000000.0,
+                  "p25": 137000000.0,
+                  "p75": 240000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 15,
+                  "median": 0.0,
+                  "p25": 0.0,
+                  "p75": 44.47
+                }
+              }
+            },
+            "주택": {
+              "record_count": 25,
+              "metrics": {
+                "distribution_amount": {
+                  "count": 25,
+                  "median": 536736288.0,
+                  "p25": 3120518.0,
+                  "p75": 772218418.0
+                },
+                "subrogation_amount": {
+                  "count": 25,
+                  "median": 155000000.0,
+                  "p25": 74000000.0,
+                  "p75": 210000000.0
+                },
+                "distribution_to_subrogation_ratio_pct": {
+                  "count": 25,
+                  "median": 267.84,
+                  "p25": 6.12,
+                  "p75": 894.56
+                }
+              }
+            }
+          },
+          "region_sido_counts": {
+            "서울특별시": 9549,
+            "미상": 5957,
+            "인천광역시": 4246,
+            "경기도": 2238,
+            "부산광역시": 1354,
+            "대구광역시": 227,
+            "전라남도": 201,
+            "경상북도": 178,
+            "경상남도": 172,
+            "충청남도": 146,
+            "울산광역시": 109,
+            "제주특별자치도": 77,
+            "대전광역시": 71,
+            "광주광역시": 54,
+            "세종특별자치시": 28,
+            "충청북도": 19
+          },
+          "categories": {
+            "auction_type": {
+              "강제경매": 23265,
+              "임의경매": 1030,
+              "강제관리": 286,
+              "공매": 45
+            }
+          },
+          "metrics": {
+            "distribution_amount": {
+              "count": 24626,
+              "median": 0.0,
+              "p25": 0.0,
+              "p75": 122868572.5
+            },
+            "subrogation_amount": {
+              "count": 24626,
+              "median": 205000000.0,
+              "p25": 156000000.0,
+              "p75": 254000000.0
+            },
+            "distribution_to_subrogation_ratio_pct": {
+              "count": 24626,
+              "median": 0.0,
+              "p25": 0.0,
+              "p75": 64.08
+            }
+          },
+          "reference_period": {
+            "from": "2017-01-01",
+            "to": "2025-12-29"
+          },
+          "reference_date": "2025-12-29",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        },
+        {
+          "source_id": "guarantee_subrogation",
+          "source_label": "전세·임대 대위변제·회수현황",
+          "product_scope": "jeonse_return",
+          "record_count": 25966,
+          "housing_type_counts": {},
+          "housing_type_details": {},
+          "region_sido_counts": {},
+          "categories": {
+            "claim_type": {
+              "소송대지급금": 15603,
+              "구상채권(신상품)": 10263,
+              "구상채권": 100
+            }
+          },
+          "metrics": {
+            "claim_amount": {
+              "count": 25966,
+              "median": 209632875.0,
+              "p25": 150000000.0,
+              "p75": 267906848.0
+            },
+            "occurrence_amount": {
+              "count": 25966,
+              "median": 3415290.0,
+              "p25": 1215500.0,
+              "p75": 170000000.0
+            },
+            "total_recovery_ratio_pct": {
+              "count": 25966,
+              "median": 100.0,
+              "p25": 74.67,
+              "p75": 100.0
+            },
+            "days_from_application_to_distribution": {
+              "count": 25966,
+              "median": 457.0,
+              "p25": 383.0,
+              "p75": 559.0
+            }
+          },
+          "reference_period": {
+            "from": "2017-10-13",
+            "to": "2026-05-26"
+          },
+          "reference_date": "2026-05-26",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        },
+        {
+          "source_id": "jeonse_accident_status",
+          "source_label": "전세보증 사고현황",
+          "product_scope": "jeonse_return",
+          "record_count": 59848,
+          "housing_type_counts": {},
+          "housing_type_details": {},
+          "region_sido_counts": {
+            "경기도": 17367,
+            "서울특별시": 14727,
+            "인천광역시": 13105,
+            "미상": 5150,
+            "부산광역시": 2392,
+            "경상북도": 1447,
+            "경상남도": 1318,
+            "대구광역시": 1006,
+            "충청남도": 936,
+            "울산광역시": 480,
+            "충청북도": 411,
+            "전라남도": 356,
+            "광주광역시": 349,
+            "대전광역시": 332,
+            "제주특별자치도": 299,
+            "세종특별자치시": 173
+          },
+          "categories": {
+            "guarantee_status": {
+              "해지": 59763,
+              "정상": 85
+            }
+          },
+          "metrics": {
+            "subrogation_amount": {
+              "count": 59848,
+              "median": 205000000.0,
+              "p25": 150000000.0,
+              "p75": 262000000.0
+            }
+          },
+          "reference_period": {
+            "from": "2021-05-31",
+            "to": "2026-05-27"
+          },
+          "reference_date": "2026-05-27",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        },
+        {
+          "source_id": "jeonse_housing_value_ratio",
+          "source_label": "전세사고 주택유형·보증금비율",
+          "product_scope": "jeonse_return",
+          "record_count": 69435,
+          "housing_type_counts": {
+            "다세대주택": 30210,
+            "아파트": 20124,
+            "오피스텔": 15010,
+            "연립주택": 1719,
+            "다가구주택": 1596,
+            "단독주택": 756,
+            "단독다가구다중주택(확인서미제출)": 7,
+            "노인복지주택": 6,
+            "다중주택": 4,
+            "원룸·도시형": 3
+          },
+          "housing_type_details": {
+            "노인복지주택": {
+              "record_count": 6,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 6,
+                  "median": 372500000.0,
+                  "p25": 310000000.0,
+                  "p75": 393750000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 6,
+                  "median": 92.85,
+                  "p25": 81.43,
+                  "p75": 100.0
+                }
+              }
+            },
+            "다가구주택": {
+              "record_count": 1596,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 1596,
+                  "median": 135000000.0,
+                  "p25": 100000000.0,
+                  "p75": 200000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 1596,
+                  "median": 100.0,
+                  "p25": 80.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "다세대주택": {
+              "record_count": 30210,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 30210,
+                  "median": 200000000.0,
+                  "p25": 146475000.0,
+                  "p75": 250000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 30210,
+                  "median": 100.0,
+                  "p25": 100.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "다중주택": {
+              "record_count": 4,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 4,
+                  "median": 92500000.0,
+                  "p25": 85000000.0,
+                  "p75": 110000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 4,
+                  "median": 100.0,
+                  "p25": 100.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "단독다가구다중주택(확인서미제출)": {
+              "record_count": 7,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 7,
+                  "median": 279000000.0,
+                  "p25": 196000000.0,
+                  "p75": 338000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 7,
+                  "median": 100.0,
+                  "p25": 100.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "단독주택": {
+              "record_count": 756,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 756,
+                  "median": 170000000.0,
+                  "p25": 105750000.0,
+                  "p75": 250000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 756,
+                  "median": 100.0,
+                  "p25": 80.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "아파트": {
+              "record_count": 20124,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 20124,
+                  "median": 210000000.0,
+                  "p25": 140000000.0,
+                  "p75": 300000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 20124,
+                  "median": 100.0,
+                  "p25": 100.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "연립주택": {
+              "record_count": 1719,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 1719,
+                  "median": 190000000.0,
+                  "p25": 140000000.0,
+                  "p75": 243000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 1719,
+                  "median": 100.0,
+                  "p25": 100.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "오피스텔": {
+              "record_count": 15010,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 15010,
+                  "median": 190000000.0,
+                  "p25": 130000000.0,
+                  "p75": 240000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 15010,
+                  "median": 100.0,
+                  "p25": 100.0,
+                  "p75": 100.0
+                }
+              }
+            },
+            "원룸·도시형": {
+              "record_count": 3,
+              "metrics": {
+                "deposit_amount": {
+                  "count": 3,
+                  "median": 120000000.0,
+                  "p25": 85000000.0,
+                  "p75": 135000000.0
+                },
+                "accident_amount_ratio_pct": {
+                  "count": 3,
+                  "median": 80.0,
+                  "p25": 74.09,
+                  "p75": 80.0
+                }
+              }
+            }
+          },
+          "region_sido_counts": {
+            "세종특별자치시": 69435
+          },
+          "categories": {},
+          "metrics": {
+            "deposit_amount": {
+              "count": 69435,
+              "median": 200000000.0,
+              "p25": 140000000.0,
+              "p75": 258000000.0
+            },
+            "accident_amount_ratio_pct": {
+              "count": 69435,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            }
+          },
+          "reference_period": {
+            "from": "2018-03-16",
+            "to": "2028-04-28"
+          },
+          "reference_date": "2026-07-24",
+          "future_date_count": 1278,
+          "data_quality_notes": [
+            "합성데이터에 현재 기준일보다 뒤인 날짜가 있어 최신 기준일 계산에서 제외했습니다."
+          ]
+        }
+      ]
+    },
+    "jeonse_loan": {
+      "label": "전세자금대출특약보증",
+      "sources": [
+        {
+          "source_id": "jeonse_accident_status",
+          "source_label": "전세보증 사고현황",
+          "product_scope": "jeonse_loan",
+          "record_count": 6731,
+          "housing_type_counts": {},
+          "housing_type_details": {},
+          "region_sido_counts": {
+            "경기도": 1964,
+            "서울특별시": 1627,
+            "인천광역시": 1511,
+            "미상": 580,
+            "부산광역시": 257,
+            "경상북도": 161,
+            "경상남도": 144,
+            "충청남도": 109,
+            "대구광역시": 105,
+            "울산광역시": 60,
+            "충청북도": 49,
+            "광주광역시": 38,
+            "제주특별자치도": 36,
+            "대전광역시": 36,
+            "전라남도": 35,
+            "세종특별자치시": 19
+          },
+          "categories": {
+            "guarantee_status": {
+              "해지": 6723,
+              "정상": 8
+            }
+          },
+          "metrics": {
+            "subrogation_amount": {
+              "count": 6731,
+              "median": 120000000.0,
+              "p25": 83220443.0,
+              "p75": 174140405.0
+            }
+          },
+          "reference_period": {
+            "from": "2021-11-18",
+            "to": "2026-04-28"
+          },
+          "reference_date": "2026-04-28",
+          "future_date_count": 0,
+          "data_quality_notes": []
+        }
+      ]
+    }
+  },
+  "shared_sources": [
+    {
+      "source_id": "debtor_auction_status",
+      "source_label": "전세·임대 채무자 경매현황",
+      "product_scope": "combined",
+      "record_count": 25687,
+      "housing_type_counts": {
+        "오피스텔": 8561,
+        "다세대주택": 8370,
+        "아파트": 8079,
+        "다가구주택": 394,
+        "연립주택": 203,
+        "단독주택": 37,
+        "다중주택": 33,
+        "오피스텔(주거용)": 10
+      },
+      "housing_type_details": {
+        "다가구주택": {
+          "record_count": 394,
+          "metrics": {
+            "deposit_amount": {
+              "count": 394,
+              "median": 109000000.0,
+              "p25": 80000000.0,
+              "p75": 150000000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 394,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 394,
+              "median": -1.5,
+              "p25": -140.0,
+              "p75": 62.0
+            }
+          }
+        },
+        "다세대주택": {
+          "record_count": 8370,
+          "metrics": {
+            "deposit_amount": {
+              "count": 8370,
+              "median": 253000000.0,
+              "p25": 140000000.0,
+              "p75": 308000000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 8370,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 8370,
+              "median": 20.0,
+              "p25": -82.0,
+              "p75": 62.0
+            }
+          }
+        },
+        "다중주택": {
+          "record_count": 33,
+          "metrics": {
+            "deposit_amount": {
+              "count": 33,
+              "median": 115500000.0,
+              "p25": 85000000.0,
+              "p75": 150000000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 33,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 33,
+              "median": 6.0,
+              "p25": -120.0,
+              "p75": 62.0
+            }
+          }
+        },
+        "단독주택": {
+          "record_count": 37,
+          "metrics": {
+            "deposit_amount": {
+              "count": 37,
+              "median": 120000000.0,
+              "p25": 80000000.0,
+              "p75": 130000000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 37,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 37,
+              "median": -72.0,
+              "p25": -204.0,
+              "p75": 44.0
+            }
+          }
+        },
+        "아파트": {
+          "record_count": 8079,
+          "metrics": {
+            "deposit_amount": {
+              "count": 8079,
+              "median": 150168500.0,
+              "p25": 115000000.0,
+              "p75": 188100000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 8079,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 8079,
+              "median": -17.0,
+              "p25": -151.0,
+              "p75": 37.0
+            }
+          }
+        },
+        "연립주택": {
+          "record_count": 203,
+          "metrics": {
+            "deposit_amount": {
+              "count": 203,
+              "median": 150168500.0,
+              "p25": 120000000.0,
+              "p75": 191000000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 203,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 203,
+              "median": 32.0,
+              "p25": -97.5,
+              "p75": 62.0
+            }
+          }
+        },
+        "오피스텔": {
+          "record_count": 8561,
+          "metrics": {
+            "deposit_amount": {
+              "count": 8561,
+              "median": 184300000.0,
+              "p25": 121000000.0,
+              "p75": 268000000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 8561,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 8561,
+              "median": 50.0,
+              "p25": -52.0,
+              "p75": 62.0
+            }
+          }
+        },
+        "오피스텔(주거용)": {
+          "record_count": 10,
+          "metrics": {
+            "deposit_amount": {
+              "count": 10,
+              "median": 250015000.0,
+              "p25": 162851375.0,
+              "p75": 293250000.0
+            },
+            "accident_to_deposit_ratio_pct": {
+              "count": 10,
+              "median": 100.0,
+              "p25": 100.0,
+              "p75": 100.0
+            },
+            "days_from_guarantee_end_to_accident": {
+              "count": 10,
+              "median": 60.0,
+              "p25": 32.75,
+              "p75": 62.0
+            }
+          }
+        }
+      },
+      "region_sido_counts": {
+        "서울특별시": 8487,
+        "부산광역시": 3949,
+        "경기도": 3031,
+        "광주광역시": 2577,
+        "전라남도": 2063,
+        "미상": 1313,
+        "경상북도": 1089,
+        "충청북도": 986,
+        "충청남도": 690,
+        "대구광역시": 669,
+        "경상남도": 443,
+        "인천광역시": 347,
+        "대전광역시": 39,
+        "세종특별자치시": 3,
+        "울산광역시": 1
+      },
+      "categories": {
+        "debtor_business_type": {
+          "개인사업자": 14510,
+          "법인사업자": 11177
+        },
+        "accident_reason": {
+          "기간만료미반환": 24815,
+          "공사인정사유": 838,
+          "경공매미반환": 34
+        }
+      },
+      "metrics": {
+        "deposit_amount": {
+          "count": 25687,
+          "median": 181000000.0,
+          "p25": 120000000.0,
+          "p75": 265000000.0
+        },
+        "accident_to_deposit_ratio_pct": {
+          "count": 25687,
+          "median": 100.0,
+          "p25": 100.0,
+          "p75": 100.0
+        },
+        "days_from_guarantee_end_to_accident": {
+          "count": 25687,
+          "median": 11.0,
+          "p25": -94.0,
+          "p75": 61.0
+        }
+      },
+      "reference_period": {
+        "from": "2021-01-31",
+        "to": "2027-05-25"
+      },
+      "reference_date": "2026-07-25",
+      "future_date_count": 741,
+      "data_quality_notes": [
+        "합성데이터에 현재 기준일보다 뒤인 날짜가 있어 최신 기준일 계산에서 제외했습니다."
+      ]
+    }
+  ],
+  "notice": "발제사 제공 합성데이터를 상품별·주택유형별로 집계한 참고정보이며 위험도나 사고확률을 의미하지 않습니다."
+}

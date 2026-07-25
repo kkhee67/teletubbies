@@ -1,0 +1,39 @@
+{
+  "input_file": "consultations_clean.csv",
+  "output_file": "structured_cases.jsonl",
+  "case_count": 938,
+  "duplicate_case_ids": 0,
+  "empty_search_texts": 0,
+  "guarantee_status_counts": {
+    "applied": 1,
+    "enrolled": 341,
+    "ineligible": 7,
+    "unknown": 589
+  },
+  "guarantee_product_type_counts": {
+    "jeonse_return": 48,
+    "rental_deposit": 8,
+    "unknown": 882
+  },
+  "cases_with_confirmed_risks": 571,
+  "cases_with_required_checks": 928,
+  "confirmed_risk_tag_counts": {
+    "근저당": 138,
+    "공동담보": 7,
+    "후순위": 27,
+    "경매·공매": 227,
+    "압류·가압류": 111,
+    "임차권등기": 246,
+    "선순위권리": 91,
+    "말소 약속": 7,
+    "신탁": 4
+  },
+  "required_check_tag_counts": {
+    "보증상품 유형 확인": 882,
+    "주택유형 확인": 565,
+    "반환보증 확인": 589,
+    "선순위권리 확인": 598,
+    "보증금 확인": 21,
+    "계약상태 확인": 8
+  }
+}
