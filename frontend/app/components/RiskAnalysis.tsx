@@ -102,13 +102,6 @@ function SignalList({
 
 export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
   const tone = stageTone(analysis.riskStage);
-  const confidence =
-    analysis.analysisConfidence === null
-      ? null
-      : Math.round(
-          Math.min(100, Math.max(0, analysis.analysisConfidence)),
-        );
-
   return (
     <section
       className={`analysis-section analysis-section--${tone}`}
@@ -123,8 +116,7 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
           </h2>
           <p>
             위험단계를 유지하면서 확인된 사실과 아직 확인되지 않은 정보를
-            구분합니다. 분석 신뢰도는 안전점수가 아니라 필수정보의 확인
-            정도입니다.
+            구분합니다.
           </p>
         </div>
 
@@ -230,24 +222,6 @@ export function RiskAnalysis({ analysis }: RiskAnalysisProps) {
             </section>
           ) : null}
         </div>
-
-        <article className="confidence-card">
-          <div className="confidence-copy">
-            <span>분석 신뢰도</span>
-            <strong>{confidence === null ? "정보 부족" : `${confidence}%`}</strong>
-          </div>
-          <div className="confidence-detail">
-            <div className="confidence-track" aria-hidden="true">
-              <span style={{ width: `${confidence ?? 0}%` }} />
-            </div>
-            <p>
-              <strong>안전점수나 사고확률이 아닙니다.</strong>{" "}
-              {confidence === null
-                ? "현재 API 응답에 신뢰도 정보가 없어 계산하지 않았습니다."
-                : "공식자료 또는 사용자가 확인한 자료가 필수정보를 얼마나 채우는지 보여줍니다."}
-            </p>
-          </div>
-        </article>
 
         <article className="analysis-recommendation">
           <div>

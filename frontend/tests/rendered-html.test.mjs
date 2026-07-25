@@ -417,7 +417,10 @@ test("keeps the UI wired to live integration without sample data imports", async
   assert.match(similar, /로컬 모의 유사사례/);
   assert.match(risk, /확정 위험/);
   assert.match(risk, /확인 필요/);
-  assert.match(risk, /분석 신뢰도/);
+  assert.doesNotMatch(
+    risk,
+    /분석 신뢰도|confidence-card|analysisConfidence/,
+  );
   assert.doesNotMatch(risk, /riskScore|risk_score|참고 위험신호 점수|risk-score/);
   assert.doesNotMatch(risk, /\/\s*100/);
   assert.doesNotMatch(

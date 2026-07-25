@@ -154,7 +154,6 @@
 
 .analysis-stat--risk > strong { color: #a63f2b; }
 .analysis-stat--check > strong { color: #aa7610; }
-.analysis-stat--confidence > strong { color: #2e8060; }
 
 .analysis-lists {
   display: grid;
@@ -285,58 +284,6 @@
   padding-top: 11px;
 }
 
-.confidence-card {
-  align-items: center;
-  background: white;
-  border: 1px solid #dce2dd;
-  border-radius: 19px;
-  display: grid;
-  gap: 34px;
-  grid-template-columns: 160px 1fr;
-  margin-top: 18px;
-  padding: 25px;
-}
-
-.confidence-copy {
-  display: grid;
-  gap: 6px;
-}
-
-.confidence-copy span {
-  color: #7e8881;
-  font-size: 12px;
-}
-
-.confidence-copy strong {
-  color: #2e8060;
-  font-size: 35px;
-}
-
-.confidence-track {
-  background: #e3e9e5;
-  border-radius: 999px;
-  height: 9px;
-  overflow: hidden;
-}
-
-.confidence-track span {
-  background: #2e8060;
-  border-radius: inherit;
-  display: block;
-  height: 100%;
-}
-
-.confidence-detail p {
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.55;
-  margin: 12px 0 0;
-}
-
-.confidence-detail p strong {
-  color: #345446;
-}
-
 .analysis-notice {
   align-items: baseline;
   border-top: 1px solid #d5ddd7;
@@ -397,11 +344,6 @@
   .confirmed-risk-panel,
   .required-check-panel {
     padding: 20px;
-  }
-
-  .confidence-card {
-    gap: 18px;
-    grid-template-columns: 1fr;
   }
 
   .analysis-notice {
