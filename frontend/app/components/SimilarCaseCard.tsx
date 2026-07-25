@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type {
+  AiApiStatus,
   SimilarCaseFactorViewModel,
   SimilarCaseViewModel,
 } from "../integration";
@@ -11,7 +12,56 @@ import "./similar-case-live.css";
 type SimilarCaseCardProps = {
   cases: SimilarCaseViewModel[];
   generatedAt: string | null;
+  aiApiStatus: AiApiStatus;
+  aiApiMessage: string | null;
 };
+
+function aiStatusNotice(
+  status: AiApiStatus,
+  apiMessage: string | null,
+) {
+  if (status === "ok") return null;
+
+  if (status === "local_mock") {
+    return {
+      tone: "demo",
+      title: "현재 모의 유사사례를 표시하고 있습니다",
+      message:
+        apiMessage ??
+        "실제 AI 서비스 대신 백엔드의 로컬 모의사례가 반환되었습니다. 발표용 예시로만 확인해 주세요.",
+    };
+  }
+
+  if (status === "disabled") {
+    return {
+      tone: "neutral",
+      title: "AI 유사사례 기능이 비활성화되어 있습니다",
+      message:
+        apiMessage ??
+        "매물정보·반환보증·위험 분석 결과는 정상적으로 확인할 수 있습니다.",
+    };
+  }
+
+  const titles: Record<string, string> = {
+    fallback: "AI가 제한된 대체 결과를 반환했습니다",
+    unavailable: "AI 유사사례 서비스에 현재 연결되지 않았습니다",
+    timeout: "AI 유사사례 응답 시간이 초과되었습니다",
+    error: "AI 유사사례 분석 중 오류가 발생했습니다",
+    unsupported_product_type: "현재 보증상품은 AI 유사사례를 지원하지 않습니다",
+    unknown: "AI 유사사례 연결 상태를 확인할 수 없습니다",
+  };
+
+  return {
+    tone: status === "unknown" ? "neutral" : "warning",
+    title: titles[status] ?? titles.unknown,
+    message: [
+      apiMessage,
+      "핵심 매물정보·반환보증·위험 분석은 백엔드 규칙 분석 결과로 계속 표시됩니다.",
+    ]
+      .filter(Boolean)
+      .join(" "),
+  };
+}
 
 function caseTitle(item: SimilarCaseViewModel, index: number) {
   return (
@@ -59,9 +109,12 @@ function formatDate(value: string | null) {
 export function SimilarCaseCard({
   cases,
   generatedAt,
+  aiApiStatus,
+  aiApiMessage,
 }: SimilarCaseCardProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedCase = cases[selectedIndex] ?? cases[0] ?? null;
+  const statusNotice = aiStatusNotice(aiApiStatus, aiApiMessage);
 
   return (
     <section
@@ -74,7 +127,7 @@ export function SimilarCaseCard({
           <div>
             <p className="eyebrow">STEP 05 · 유사사례 설명</p>
             <h2 id="similar-case-title">
-              API가 찾은 상담사례를 쉬운 말로 설명합니다
+              AI 연결 상태와 유사사례 결과를 함께 확인합니다
             </h2>
           </div>
           <p>
@@ -83,10 +136,26 @@ export function SimilarCaseCard({
           </p>
         </div>
 
+        {statusNotice ? (
+          <div
+            className={`ai-status-notice ai-status-notice--${statusNotice.tone}`}
+            role="status"
+          >
+            <span aria-hidden="true">AI</span>
+            <div>
+              <strong>{statusNotice.title}</strong>
+              <p>{statusNotice.message}</p>
+            </div>
+          </div>
+        ) : null}
+
         {selectedCase ? (
           <div className="similar-case-layout">
             <nav className="case-selector" aria-label="유사 상담사례 선택">
-              <span>API 유사사례 {cases.length}건</span>
+              <span>
+                {aiApiStatus === "local_mock" ? "모의" : "AI"} 유사사례{" "}
+                {cases.length}건
+              </span>
               {cases.map((item, index) => {
                 const isSelected = index === selectedIndex;
 
@@ -114,7 +183,11 @@ export function SimilarCaseCard({
             <article className="case-detail">
               <header className="case-detail-header">
                 <div>
-                  <span className="ai-label">분석 API 유사사례</span>
+                  <span className="ai-label">
+                    {aiApiStatus === "local_mock"
+                      ? "로컬 모의 유사사례"
+                      : "AI 분석 유사사례"}
+                  </span>
                   <p>{caseCategory(selectedCase)}</p>
                   <h3>{caseTitle(selectedCase, selectedIndex)}</h3>
                 </div>
@@ -225,10 +298,14 @@ export function SimilarCaseCard({
           <div className="case-empty-state" role="status">
             <span aria-hidden="true">i</span>
             <div>
-              <h3>분석 API가 반환한 유사사례가 없습니다</h3>
+              <h3>
+                {aiApiStatus === "ok"
+                  ? "AI가 반환한 유사사례가 없습니다"
+                  : "AI 유사사례 결과를 표시할 수 없습니다"}
+              </h3>
               <p>
-                화면에서 임의의 사례를 채우지 않습니다. 다른 분석 결과와
-                행동 체크리스트를 기준으로 확인을 이어가세요.
+                화면에서 임의의 사례를 채우지 않습니다. 위의 연결 상태를
+                확인하고, 다른 분석 결과와 행동 체크리스트를 이용해 주세요.
               </p>
             </div>
           </div>

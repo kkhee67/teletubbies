@@ -7,12 +7,17 @@ import { PropertySummary } from "./components/PropertySummary";
 import { RiskAnalysis } from "./components/RiskAnalysis";
 import { SimilarCaseCard } from "./components/SimilarCaseCard";
 import {
+  analyzeSelectedProperty,
   ApiError,
-  searchAndAnalyze,
+  searchProperties,
   type ChecklistItemViewModel,
+  type PropertySearchItem,
   type RecommendedActionViewModel,
+  type SearchAndAnalyzeInput,
   type SearchAndAnalyzeResult,
 } from "./integration";
+
+type RequestStage = "idle" | "searching" | "selecting" | "analyzing";
 
 function formatWon(value: string | number) {
   const amount =
@@ -20,6 +25,35 @@ function formatWon(value: string | number) {
   return Number.isFinite(amount) && amount > 0
     ? new Intl.NumberFormat("ko-KR").format(amount)
     : "";
+}
+
+function housingTypeLabel(value: string | null) {
+  const labels: Record<string, string> = {
+    apartment: "아파트",
+    multi_unit: "다세대주택",
+    multi_household: "다가구주택",
+    officetel: "오피스텔",
+    row_house: "연립주택",
+  };
+  return value ? (labels[value] ?? value) : "주택유형 미제공";
+}
+
+function guaranteeStatusLabel(value: string | null) {
+  const labels: Record<string, string> = {
+    estimated_eligible: "가입 가능성 추정",
+    officially_eligible: "공식 가입 가능",
+    applied: "가입 신청",
+    enrolled: "가입 완료",
+    ineligible: "가입 불가",
+    unknown: "확인 필요",
+  };
+  return value ? (labels[value] ?? value) : "보증 상태 미제공";
+}
+
+function guaranteeProductLabel(value: PropertySearchItem["guaranteeProductType"]) {
+  if (value === "jeonse_return") return "전세보증금 반환보증";
+  if (value === "rental_deposit") return "임대보증금 보증";
+  return "보증상품 확인 필요";
 }
 
 function toErrorMessage(error: unknown) {
@@ -62,16 +96,65 @@ export default function Home() {
   const [deposit, setDeposit] = useState("200000000");
   const [situation, setSituation] = useState("");
   const [result, setResult] = useState<SearchAndAnalyzeResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [requestStage, setRequestStage] = useState<RequestStage>("idle");
+  const [searchResults, setSearchResults] = useState<PropertySearchItem[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
+    null,
+  );
+  const [pendingInput, setPendingInput] =
+    useState<SearchAndAnalyzeInput | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isLoading =
+    requestStage === "searching" || requestStage === "analyzing";
 
   function invalidateAnalysis() {
     abortControllerRef.current?.abort();
     abortControllerRef.current = null;
-    setIsLoading(false);
+    setRequestStage("idle");
+    setSearchResults([]);
+    setSelectedPropertyId(null);
+    setPendingInput(null);
     setResult(null);
     setErrorMessage(null);
+  }
+
+  async function runAnalysis(
+    searchItem: PropertySearchItem,
+    input: SearchAndAnalyzeInput,
+    returnToSelection: boolean,
+  ) {
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    setRequestStage("analyzing");
+    setResult(null);
+    setErrorMessage(null);
+
+    try {
+      const nextResult = await analyzeSelectedProperty(searchItem, input, {
+        signal: controller.signal,
+      });
+      if (abortControllerRef.current !== controller) return;
+
+      setResult(nextResult);
+      setSearchResults([]);
+      setSelectedPropertyId(null);
+      setPendingInput(null);
+      setRequestStage("idle");
+    } catch (error) {
+      if (
+        abortControllerRef.current === controller &&
+        !isAbortError(error)
+      ) {
+        setErrorMessage(toErrorMessage(error));
+        setRequestStage(returnToSelection ? "selecting" : "idle");
+      }
+    } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -83,34 +166,67 @@ export default function Home() {
       return;
     }
 
+    const input: SearchAndAnalyzeInput = {
+      address: address.trim(),
+      plannedDeposit,
+      monthlyRent: 0,
+      userNote: situation,
+    };
     abortControllerRef.current?.abort();
     const controller = new AbortController();
     abortControllerRef.current = controller;
-    setIsLoading(true);
+    setRequestStage("searching");
     setResult(null);
+    setSearchResults([]);
+    setSelectedPropertyId(null);
+    setPendingInput(input);
     setErrorMessage(null);
 
     try {
-      const nextResult = await searchAndAnalyze(
-        {
-          address,
-          plannedDeposit,
-          monthlyRent: 0,
-          userNote: situation,
-        },
-        { signal: controller.signal },
-      );
-      setResult(nextResult);
-    } catch (error) {
-      if (!isAbortError(error)) {
-        setErrorMessage(toErrorMessage(error));
+      const items = await searchProperties(input.address, {
+        signal: controller.signal,
+      });
+      if (abortControllerRef.current !== controller) return;
+
+      if (items.length === 0) {
+        throw new ApiError("주소와 일치하는 매물을 찾지 못했습니다.", {
+          status: 404,
+          code: "PROPERTY_NOT_FOUND",
+        });
       }
-    } finally {
-      if (abortControllerRef.current === controller) {
+
+      if (items.length === 1) {
         abortControllerRef.current = null;
-        setIsLoading(false);
+        await runAnalysis(items[0], input, false);
+        return;
+      }
+
+      setSearchResults(items);
+      setSelectedPropertyId(null);
+      setRequestStage("selecting");
+      abortControllerRef.current = null;
+    } catch (error) {
+      if (
+        abortControllerRef.current === controller &&
+        !isAbortError(error)
+      ) {
+        setErrorMessage(toErrorMessage(error));
+        setRequestStage("idle");
+        abortControllerRef.current = null;
       }
     }
+  }
+
+  async function handleAnalyzeSelected() {
+    const selected = searchResults.find(
+      (item) => item.propertyId === selectedPropertyId,
+    );
+    if (!selected || !pendingInput) {
+      setErrorMessage("분석할 매물을 하나 선택해 주세요.");
+      return;
+    }
+
+    await runAnalysis(selected, pendingInput, true);
   }
 
   useEffect(
@@ -187,7 +303,8 @@ export default function Home() {
               required
             />
             <p className="field-help">
-              입력한 주소로 매물을 검색하고, 첫 번째 검색 결과를 분석합니다.
+              한 건이면 바로 분석하고, 여러 건이면 계약할 매물을 직접
+              선택합니다.
             </p>
 
             <label htmlFor="deposit">계약 예정 보증금</label>
@@ -227,20 +344,85 @@ export default function Home() {
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? "매물 검색·분석 중" : "매물정보 확인하기"}
+              {requestStage === "searching"
+                ? "매물 검색 중"
+                : requestStage === "analyzing"
+                  ? "위험 분석 중"
+                  : "매물정보 확인하기"}
               <span aria-hidden="true">{isLoading ? "…" : "→"}</span>
             </button>
           </form>
 
+          {requestStage === "selecting" ? (
+            <fieldset className="property-search-results">
+              <legend>검색 결과 {searchResults.length}건</legend>
+              <p>실제로 계약할 매물을 선택한 뒤 분석을 시작해 주세요.</p>
+              <div className="property-choice-list">
+                {searchResults.map((item) => {
+                  const isSelected = selectedPropertyId === item.propertyId;
+
+                  return (
+                    <label
+                      className={`property-choice${isSelected ? " is-selected" : ""}`}
+                      key={item.propertyId}
+                    >
+                      <input
+                        type="radio"
+                        name="selected-property"
+                        value={item.propertyId}
+                        checked={isSelected}
+                        onChange={() => {
+                          setSelectedPropertyId(item.propertyId);
+                          setErrorMessage(null);
+                        }}
+                      />
+                      <span className="property-choice-body">
+                        <strong>
+                          {item.addressDisplay ?? "주소 정보가 없는 매물"}
+                        </strong>
+                        <span>
+                          {item.district ?? "지역 미제공"} ·{" "}
+                          {housingTypeLabel(item.housingType)}
+                        </span>
+                        <span>
+                          참고가액{" "}
+                          {item.referenceValue === null
+                            ? "미제공"
+                            : `${formatWon(item.referenceValue)}원`}
+                        </span>
+                        <small>
+                          {guaranteeStatusLabel(item.guaranteeStatus)} ·{" "}
+                          {guaranteeProductLabel(item.guaranteeProductType)} ·{" "}
+                          {item.propertyId}
+                        </small>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                className="primary-button property-analyze-button"
+                disabled={!selectedPropertyId}
+                onClick={handleAnalyzeSelected}
+              >
+                선택한 매물 분석하기
+                <span aria-hidden="true">→</span>
+              </button>
+            </fieldset>
+          ) : null}
+
           {isLoading ? (
             <p className="api-progress" role="status" aria-live="polite">
-              주소 검색 후 분석 API 응답을 기다리고 있습니다.
+              {requestStage === "searching"
+                ? "입력한 주소와 일치하는 매물을 찾고 있습니다."
+                : "선택한 매물의 보증 상태와 위험 신호를 분석하고 있습니다."}
             </p>
           ) : null}
 
           {errorMessage ? (
             <div className="api-error" role="alert">
-              <strong>분석을 완료하지 못했습니다.</strong>
+              <strong>요청을 완료하지 못했습니다.</strong>
               <span>{errorMessage}</span>
             </div>
           ) : null}
@@ -261,7 +443,7 @@ export default function Home() {
             plannedDeposit={Number(deposit)}
             generatedAt={result.analysis.generatedAt}
             onEdit={() => {
-              setResult(null);
+              invalidateAnalysis();
               document
                 .getElementById("address")
                 ?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -275,6 +457,8 @@ export default function Home() {
           <SimilarCaseCard
             cases={result.analysis.similarCases}
             generatedAt={result.analysis.generatedAt}
+            aiApiStatus={result.analysis.aiApiStatus}
+            aiApiMessage={result.analysis.aiApiMessage}
           />
           <ActionChecklist
             checklist={checklist}
@@ -313,7 +497,7 @@ export default function Home() {
           <li>
             <span>05</span>
             <strong>유사사례 설명</strong>
-            <p>API가 찾은 상담사례와 놓친 확인 항목을 보여줍니다.</p>
+            <p>AI 연결 상태와 반환된 상담사례를 구분해 보여줍니다.</p>
           </li>
           <li>
             <span>06</span>

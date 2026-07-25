@@ -115,7 +115,7 @@ export function PropertySummary({
             <p className="eyebrow">STEP 02 · 매물정보 확인</p>
             <h2 id="property-title">분석에 사용한 실제 API 응답입니다</h2>
             <p>
-              주소 검색의 첫 번째 매물 ID로 분석을 요청했습니다. 값이 없는
+              주소 검색에서 선택한 매물 ID로 분석을 요청했습니다. 값이 없는
               항목은 임의로 채우지 않고 ‘응답 없음’으로 표시합니다.
             </p>
           </div>
@@ -174,7 +174,7 @@ export function PropertySummary({
           <div>
             <strong>검색 → 분석 연결 완료</strong>
             <p>
-              첫 번째 검색 결과 <code>{searchItem.propertyId}</code>를 분석
+              선택한 검색 결과 <code>{searchItem.propertyId}</code>를 분석
               요청의 <code>property_id</code>로 사용했습니다.
               <br />
               분석 생성 시각 ·{" "}

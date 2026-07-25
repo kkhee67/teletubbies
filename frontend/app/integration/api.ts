@@ -167,11 +167,35 @@ export async function searchAndAnalyze(
   }
 
   const searchItems = await searchProperties(address, options);
-  const searchItem = searchItems[0];
-  if (!searchItem) {
+  if (searchItems.length === 0) {
     throw new ApiError("주소와 일치하는 매물을 찾지 못했습니다.", {
       status: 404,
       code: "PROPERTY_NOT_FOUND",
+    });
+  }
+  if (searchItems.length > 1) {
+    throw new ApiError("검색 결과에서 분석할 매물을 선택해 주세요.", {
+      code: "PROPERTY_SELECTION_REQUIRED",
+      details: searchItems,
+    });
+  }
+
+  return analyzeSelectedProperty(searchItems[0], input, options);
+}
+
+export async function analyzeSelectedProperty(
+  searchItem: PropertySearchItem,
+  input: SearchAndAnalyzeInput,
+  options: ApiClientOptions = {},
+): Promise<SearchAndAnalyzeResult> {
+  const address = input.address.trim();
+  if (
+    !searchItem.propertyId.trim() ||
+    !address ||
+    !Number.isFinite(input.plannedDeposit)
+  ) {
+    throw new ApiError("매물 ID, 주소와 올바른 보증금을 입력해 주세요.", {
+      code: "INVALID_INPUT",
     });
   }
 
@@ -182,6 +206,9 @@ export async function searchAndAnalyze(
     monthly_rent: input.monthlyRent ?? 0,
     user_note: input.userNote ?? "",
   };
+  if (searchItem.guaranteeProductType) {
+    request.guarantee_product_type = searchItem.guaranteeProductType;
+  }
   if (input.userCorrections) {
     request.user_corrections = input.userCorrections;
   }
