@@ -20,6 +20,13 @@ function getConfiguredApiBaseUrl(): string | undefined {
   );
 }
 
+function isSitesHost(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.location.hostname.endsWith(".chatgpt.site")
+  );
+}
+
 export class ApiError extends Error {
   readonly status: number | null;
   readonly code: string | null;
@@ -45,7 +52,7 @@ export class ApiError extends Error {
 export function getApiBaseUrl(explicitBaseUrl?: string): string {
   const configured =
     explicitBaseUrl?.trim() ||
-    getConfiguredApiBaseUrl() ||
+    (isSitesHost() ? DEFAULT_API_BASE_URL : getConfiguredApiBaseUrl()) ||
     DEFAULT_API_BASE_URL;
   return configured.replace(/\/+$/, "");
 }

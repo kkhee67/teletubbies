@@ -164,6 +164,34 @@ test("uses the configured API base URL and trims trailing slashes", () => {
   }
 });
 
+test("forces the Sites deployment to use the same-origin API proxy", () => {
+  const previousEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const previousWindow = globalThis.window;
+
+  try {
+    process.env.NEXT_PUBLIC_API_BASE_URL = "https://api.example.com";
+    globalThis.window = {
+      location: {
+        hostname: "teletubbies-radar-2026.qetuo956614.chatgpt.site",
+      },
+    };
+
+    assert.equal(integration.getApiBaseUrl(), "/api/backend");
+  } finally {
+    if (previousEnv === undefined) {
+      delete process.env.NEXT_PUBLIC_API_BASE_URL;
+    } else {
+      process.env.NEXT_PUBLIC_API_BASE_URL = previousEnv;
+    }
+
+    if (previousWindow === undefined) {
+      delete globalThis.window;
+    } else {
+      globalThis.window = previousWindow;
+    }
+  }
+});
+
 test("searches by address, selects the first property, then posts analyze", async () => {
   const calls = [];
   const fetcher = async (input, init) => {
