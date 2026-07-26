@@ -7,7 +7,7 @@ import type {
   SearchAndAnalyzeResult,
 } from "./types";
 
-export const DEFAULT_API_BASE_URL = "https://teletubbies-kimf.onrender.com";
+export const DEFAULT_API_BASE_URL = "/api/backend";
 
 function getConfiguredApiBaseUrl(): string | undefined {
   const nextPublicValue = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
