@@ -151,6 +151,136 @@ def test_analyze_contract(monkeypatch):
     assert generated_at.tzinfo is not None
 
 
+def test_analyze_address_only_request(monkeypatch):
+    monkeypatch.setenv("AI_API_ENABLED", "false")
+
+    response = api_call(
+        "post",
+        "/analyze",
+        json={
+            "address_query": "서울특별시 강남구 테헤란로 152",
+            "planned_deposit": 200000000,
+            "user_note": "등기부 확인 전입니다.",
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    summary = body["property_summary"]
+    assert summary["property_id"].startswith("ADDR-")
+    assert summary["address_display"] == "서울특별시 강남구 테헤란로 152"
+    assert summary["district"] == "강남구"
+    assert summary["housing_type"] == "unknown"
+    assert summary["mortgage_status"] == "unknown"
+    assert summary["seizure_status"] == "unknown"
+    assert summary["joint_collateral"] == "unknown"
+    assert summary["guarantee_status"] == "unknown"
+    assert body["ai_api_status"] == "disabled"
+    assert {
+        "MORTGAGE_UNKNOWN",
+        "SEIZURE_UNKNOWN",
+        "JOINT_COLLATERAL_UNKNOWN",
+        "GUARANTEE_UNKNOWN",
+    }.issubset({signal["code"] for signal in body["signals"]})
+
+
+def test_address_only_uses_market_reference_for_deposit_ratio(monkeypatch):
+    monkeypatch.setenv("AI_API_ENABLED", "false")
+
+    def fake_reference(address, housing_type=None, address_meta=None):
+        return {
+            "reference_value": 400000000,
+            "source_name": "MOLIT apartment rent actual transaction API",
+            "source_type": "public_api",
+            "note": "test market reference",
+            "lawd_cd": "11680",
+            "deal_months": ["202606"],
+            "sample_count": 3,
+        }
+
+    monkeypatch.setattr(
+        analysis_service.market_reference,
+        "estimate_reference_value",
+        fake_reference,
+    )
+
+    low = api_call(
+        "post",
+        "/analyze",
+        json={
+            "address_query": "Seoul Gangnam-gu Teheran-ro 152",
+            "planned_deposit": 200000000,
+        },
+    )
+    high = api_call(
+        "post",
+        "/analyze",
+        json={
+            "address_query": "Seoul Gangnam-gu Teheran-ro 152",
+            "planned_deposit": 380000000,
+        },
+    )
+
+    assert low.status_code == 200
+    assert high.status_code == 200
+    low_body = low.json()
+    high_body = high.json()
+    assert low_body["property_summary"]["reference_value"] == 400000000
+    assert high_body["property_summary"]["reference_value"] == 400000000
+    assert low_body["property_summary"]["deposit_ratio"] == 50.0
+    assert high_body["property_summary"]["deposit_ratio"] == 95.0
+    assert high_body["risk_score"] > low_body["risk_score"]
+    assert (
+        high_body["property_summary"]["value_source"]
+        == "MOLIT apartment rent actual transaction API"
+    )
+    assert high_body["market_context"][0]["included_in_risk_score"] is True
+
+
+def test_address_only_without_market_reference_uses_provisional_reference(monkeypatch):
+    monkeypatch.setenv("AI_API_ENABLED", "false")
+    monkeypatch.setenv("MARKET_REFERENCE_ENABLED", "false")
+
+    def fake_search(query):
+        return [
+            {"reference_value": 300000000},
+            {"reference_value": 500000000},
+        ]
+
+    monkeypatch.setattr(analysis_service.property_repository, "search", fake_search)
+
+    low = api_call(
+        "post",
+        "/analyze",
+        json={
+            "address_query": "Seoul Gangnam-gu Teheran-ro 152",
+            "planned_deposit": 200000000,
+        },
+    )
+    high = api_call(
+        "post",
+        "/analyze",
+        json={
+            "address_query": "Seoul Gangnam-gu Teheran-ro 152",
+            "planned_deposit": 380000000,
+        },
+    )
+
+    assert low.status_code == 200
+    assert high.status_code == 200
+    low_body = low.json()
+    high_body = high.json()
+    assert low_body["property_summary"]["reference_value"] == 400000000
+    assert high_body["property_summary"]["reference_value"] == 400000000
+    assert low_body["property_summary"]["deposit_ratio"] == 50.0
+    assert high_body["property_summary"]["deposit_ratio"] == 95.0
+    assert high_body["risk_score"] > low_body["risk_score"]
+    assert (
+        high_body["property_summary"]["value_source"]
+        == "Address-only provisional datastore median"
+    )
+
+
 def test_analyze_calls_ai_api_with_product_type(monkeypatch):
     calls = []
 

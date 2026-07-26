@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActionChecklist } from "./components/ActionChecklist";
 import { GuaranteeStatusCard } from "./components/GuaranteeStatusCard";
 import { PropertySummary } from "./components/PropertySummary";
@@ -13,6 +13,28 @@ import {
   type RecommendedActionViewModel,
   type SearchAndAnalyzeResult,
 } from "./integration";
+
+const POSTCODE_SCRIPT_ID = "daum-postcode-script";
+const POSTCODE_SCRIPT_URL =
+  "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+
+type PostcodeResult = {
+  address?: string;
+  roadAddress?: string;
+  jibunAddress?: string;
+};
+
+declare global {
+  interface Window {
+    daum?: {
+      Postcode: new (options: {
+        oncomplete: (data: PostcodeResult) => void;
+      }) => {
+        open: (options?: { q?: string }) => void;
+      };
+    };
+  }
+}
 
 function formatWon(value: string | number) {
   const amount =
@@ -35,6 +57,28 @@ function toErrorMessage(error: unknown) {
 
 function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
+}
+
+function loadPostcodeScript() {
+  if (typeof window === "undefined") return Promise.reject();
+  if (window.daum?.Postcode) return Promise.resolve();
+
+  return new Promise<void>((resolve, reject) => {
+    const existingScript = document.getElementById(POSTCODE_SCRIPT_ID);
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(), { once: true });
+      existingScript.addEventListener("error", () => reject(), { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = POSTCODE_SCRIPT_ID;
+    script.src = POSTCODE_SCRIPT_URL;
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject();
+    document.head.appendChild(script);
+  });
 }
 
 function toChecklistItems(items: ChecklistItemViewModel[]) {
@@ -63,6 +107,7 @@ export default function Home() {
   const [situation, setSituation] = useState("");
   const [result, setResult] = useState<SearchAndAnalyzeResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressLookupLoading, setIsAddressLookupLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -74,9 +119,35 @@ export default function Home() {
     setErrorMessage(null);
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleOpenAddressSearch() {
+    setErrorMessage(null);
+    setIsAddressLookupLoading(true);
 
+    try {
+      await loadPostcodeScript();
+      const Postcode = window.daum?.Postcode;
+      if (!Postcode) throw new Error("Postcode API unavailable");
+
+      new Postcode({
+        oncomplete(data) {
+          const selectedAddress =
+            data.roadAddress || data.jibunAddress || data.address || "";
+          if (selectedAddress) {
+            setAddress(selectedAddress);
+            invalidateAnalysis();
+          }
+        },
+      }).open({ q: address.trim() || undefined });
+    } catch {
+      setErrorMessage(
+        "주소 검색창을 열지 못했습니다. 주소를 직접 입력해서 계속 진행할 수 있습니다.",
+      );
+    } finally {
+      setIsAddressLookupLoading(false);
+    }
+  }
+
+  async function handleAnalyze() {
     const plannedDeposit = Number(deposit);
     if (!Number.isFinite(plannedDeposit) || plannedDeposit <= 0) {
       setErrorMessage("0원보다 큰 계약 예정 보증금을 입력해 주세요.");
@@ -170,24 +241,34 @@ export default function Home() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} aria-busy={isLoading}>
+          <div className="analysis-form" role="form" aria-busy={isLoading}>
             <label htmlFor="address">계약할 주택의 실제 주소</label>
-            <input
-              id="address"
-              type="text"
-              value={address}
-              onChange={(event) => {
-                setAddress(event.target.value);
-                invalidateAnalysis();
-              }}
-              placeholder="도로명 주소 또는 지번 주소를 입력하세요"
-              autoComplete="street-address"
-              minLength={2}
-              disabled={isLoading}
-              required
-            />
+            <div className="address-input-row">
+              <input
+                id="address"
+                type="text"
+                value={address}
+                onChange={(event) => {
+                  setAddress(event.target.value);
+                  invalidateAnalysis();
+                }}
+                placeholder="도로명 주소 또는 지번 주소를 입력하세요"
+                autoComplete="street-address"
+                minLength={2}
+                disabled={isLoading}
+                required
+              />
+              <button
+                className="address-search-button"
+                type="button"
+                onClick={handleOpenAddressSearch}
+                disabled={isLoading || isAddressLookupLoading}
+              >
+                {isAddressLookupLoading ? "검색 준비 중" : "주소 검색"}
+              </button>
+            </div>
             <p className="field-help">
-              입력한 주소로 매물을 검색하고, 첫 번째 검색 결과를 분석합니다.
+              등록된 매물이 없으면 입력한 주소만으로 임시 분석을 진행합니다.
             </p>
 
             <label htmlFor="deposit">계약 예정 보증금</label>
@@ -224,13 +305,14 @@ export default function Home() {
 
             <button
               className="primary-button"
-              type="submit"
+              type="button"
+              onClick={handleAnalyze}
               disabled={isLoading}
             >
               {isLoading ? "매물 검색·분석 중" : "매물정보 확인하기"}
               <span aria-hidden="true">{isLoading ? "…" : "→"}</span>
             </button>
-          </form>
+          </div>
 
           {isLoading ? (
             <p className="api-progress" role="status" aria-live="polite">

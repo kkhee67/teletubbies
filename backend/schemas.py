@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class GuaranteeStatus(str, Enum):
@@ -17,13 +17,23 @@ GUARANTEE_STATUS_VALUES = {status.value for status in GuaranteeStatus}
 
 
 class AnalyzeRequest(BaseModel):
-    property_id: str = Field(min_length=2, max_length=20)
+    property_id: Optional[str] = Field(default=None, min_length=2, max_length=50)
     address_query: Optional[str] = Field(default=None, max_length=200)
     planned_deposit: int = Field(gt=0)
     monthly_rent: int = Field(default=0, ge=0)
     guarantee_product_type: Literal["jeonse_return", "rental_deposit", "unknown"] | None = None
     user_note: str = Field(default="", max_length=1000)
     user_corrections: dict[str, str | int | bool] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def require_property_or_address(self):
+        if self.property_id:
+            self.property_id = self.property_id.strip()
+        if self.address_query:
+            self.address_query = " ".join(self.address_query.split())
+        if not self.property_id and not self.address_query:
+            raise ValueError("property_id 또는 address_query가 필요합니다.")
+        return self
 
 
 class SimulateRequest(BaseModel):
@@ -91,7 +101,10 @@ class PropertySummary(BaseModel):
     property_id: str | None = None
     address_display: str | None = None
     district: str | None = None
+    legal_dong: str | None = None
     housing_type: str | None = None
+    built_year: int | None = None
+    address_verified: bool = False
     reference_value: int
     planned_deposit: int
     monthly_rent: int

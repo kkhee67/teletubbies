@@ -102,6 +102,8 @@ export function PropertySummary({
     property.addressDisplay ?? searchItem.addressDisplay ?? searchedAddress;
   const displayDeposit = property.plannedDeposit ?? plannedDeposit;
   const propertyId = property.propertyId ?? searchItem.propertyId;
+  const isAddressOnly =
+    searchItem.propertyId === "ADDRESS_ONLY" || propertyId.startsWith("ADDR-");
 
   return (
     <section
@@ -115,8 +117,9 @@ export function PropertySummary({
             <p className="eyebrow">STEP 02 · 매물정보 확인</p>
             <h2 id="property-title">분석에 사용한 실제 API 응답입니다</h2>
             <p>
-              주소 검색의 첫 번째 매물 ID로 분석을 요청했습니다. 값이 없는
-              항목은 임의로 채우지 않고 ‘응답 없음’으로 표시합니다.
+              {isAddressOnly
+                ? "등록된 매물이 없어 입력 주소 기반 임시 분석을 요청했습니다. 값이 없는 항목은 임의로 확정하지 않고 확인 필요로 표시합니다."
+                : "주소 검색의 첫 번째 매물 ID로 분석을 요청했습니다. 값이 없는 항목은 임의로 채우지 않고 ‘응답 없음’으로 표시합니다."}
             </p>
           </div>
           <span className="api-data-badge">LIVE API 응답</span>
@@ -126,7 +129,9 @@ export function PropertySummary({
           <div>
             <span>분석 주소</span>
             <strong>{displayAddress}</strong>
-            <small>매물 ID · {propertyId}</small>
+            <small>
+              {isAddressOnly ? "주소 기반 임시 ID" : "매물 ID"} · {propertyId}
+            </small>
           </div>
           <div>
             <span>계약 예정 보증금</span>
@@ -174,8 +179,17 @@ export function PropertySummary({
           <div>
             <strong>검색 → 분석 연결 완료</strong>
             <p>
-              첫 번째 검색 결과 <code>{searchItem.propertyId}</code>를 분석
-              요청의 <code>property_id</code>로 사용했습니다.
+              {isAddressOnly ? (
+                <>
+                  등록된 매물 ID 없이 입력 주소를 분석 요청의{" "}
+                  <code>address_query</code>로 사용했습니다.
+                </>
+              ) : (
+                <>
+                  첫 번째 검색 결과 <code>{searchItem.propertyId}</code>를 분석
+                  요청의 <code>property_id</code>로 사용했습니다.
+                </>
+              )}
               <br />
               분석 생성 시각 ·{" "}
               {generatedAt ? formatDate(generatedAt) : "API 응답에 분석 시각 없음"}

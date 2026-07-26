@@ -1,11 +1,15 @@
 from copy import deepcopy
 from datetime import datetime
+import hashlib
 import os
+import re
+from statistics import median
 from typing import Any
 
 from repositories import property_repository
 from schemas import GUARANTEE_STATUS_VALUES, AnalyzeRequest
 from scoring.risk_score import calculate_risk_signals
+from services import market_reference
 from services.ai_client import fetch_similar_cases
 from services.guarantee_service import resolve_guarantee_branch
 from similarity.checklist import build_checklist
@@ -28,11 +32,11 @@ STATUS_VALUES = {
     "guarantee_status": GUARANTEE_STATUS_VALUES,
 }
 
+DEFAULT_ADDRESS_REFERENCE_VALUE = 300_000_000
+
 
 def analyze_contract(request: AnalyzeRequest, *, include_ai: bool = True) -> dict[str, Any]:
-    base = property_repository.get(request.property_id)
-    if base is None:
-        raise ValueError("PROPERTY_NOT_FOUND")
+    base = resolve_base_property(request)
 
     property_data = apply_user_corrections(base, request.user_corrections)
     guarantee = resolve_guarantee_branch(property_data)
@@ -104,6 +108,104 @@ def analyze_contract(request: AnalyzeRequest, *, include_ai: bool = True) -> dic
         "generated_at": generated_at(),
         "disclaimer": "법률적 확정판정이나 보증 가입 승인이 아닙니다. 계약 전 공식 서류와 전문가 확인이 필요합니다.",
     }
+
+
+def resolve_base_property(request: AnalyzeRequest) -> dict[str, Any]:
+    if request.property_id:
+        base = property_repository.get(request.property_id)
+        if base is None:
+            raise ValueError("PROPERTY_NOT_FOUND")
+        return base
+
+    if request.address_query:
+        return build_address_only_property(request.address_query, request.planned_deposit)
+
+    raise ValueError("PROPERTY_OR_ADDRESS_REQUIRED")
+
+
+def build_address_only_property(address: str, planned_deposit: int) -> dict[str, Any]:
+    normalized_address = " ".join(address.split())
+    property_hash = hashlib.sha1(normalized_address.encode("utf-8")).hexdigest()[:10]
+    official_data = market_reference.lookup_official_property_data(normalized_address)
+    address_meta = official_data.get("address") or {}
+    building_meta = official_data.get("building") or {}
+    district = address_meta.get("district") or extract_district(normalized_address)
+    legal_dong = address_meta.get("legal_dong") or extract_legal_dong(normalized_address)
+    housing_type = official_data.get("housing_type") or "unknown"
+    reference = official_data.get("market_reference")
+    reference_value = (
+        int(reference["reference_value"])
+        if reference
+        else estimate_provisional_reference_value(district)
+    )
+    value_source = (
+        reference["source_name"]
+        if reference
+        else "Address-only provisional datastore median"
+    )
+    market_note = (
+        reference["note"]
+        if reference
+        else (
+            "Only an address was provided. Registry, building ledger, guarantee "
+            "eligibility, and market reference data still need official checks."
+        )
+    )
+
+    property_data = {
+        "property_id": f"ADDR-{property_hash}",
+        "address_display": address_meta.get("road_address") or normalized_address,
+        "district": district,
+        "legal_dong": legal_dong,
+        "housing_type": housing_type,
+        "reference_value": planned_deposit,
+        "value_source": "주소 입력 기반 임시 기준값",
+        "mortgage_status": "unknown",
+        "seizure_status": "unknown",
+        "joint_collateral": "unknown",
+        "guarantee_status": "unknown",
+        "guarantee_product_type": "jeonse_return",
+        "market_note": "주소만 확인된 상태입니다. 등기부, 건축물대장, 보증 가능 여부는 공식 자료로 추가 확인해야 합니다.",
+        "user_corrections_applied": {},
+    }
+    property_data["reference_value"] = reference_value
+    property_data["value_source"] = value_source
+    property_data["market_note"] = market_note
+    if reference:
+        property_data["market_reference"] = reference
+    if address_meta:
+        property_data["address_verified"] = True
+        property_data["official_address"] = address_meta
+    if building_meta:
+        property_data["building_register"] = building_meta
+        if building_meta.get("built_year"):
+            property_data["built_year"] = building_meta["built_year"]
+    return property_data
+
+
+def estimate_provisional_reference_value(district: str) -> int:
+    rows = property_repository.search(district) if district else []
+    if not rows:
+        rows = property_repository.search("")
+    values = [
+        int(row.get("reference_value") or 0)
+        for row in rows
+        if int(row.get("reference_value") or 0) > 0
+    ]
+    return int(round(median(values))) if values else DEFAULT_ADDRESS_REFERENCE_VALUE
+
+
+def extract_district(address: str) -> str:
+    match = re.search(r"([가-힣A-Za-z0-9]+(?:구|군))\b", address)
+    if match:
+        return match.group(1)
+    match = re.search(r"([가-힣A-Za-z0-9]+시)\b", address)
+    return match.group(1) if match else ""
+
+
+def extract_legal_dong(address: str) -> str:
+    match = re.search(r"([가-힣A-Za-z0-9]+(?:동|읍|면|리))\b", address)
+    return match.group(1) if match else ""
 
 
 def simulate_contract(request) -> dict[str, Any]:
@@ -185,7 +287,10 @@ def build_property_summary(property_data: dict[str, Any], request: AnalyzeReques
         "property_id": property_data.get("property_id"),
         "address_display": property_data.get("address_display"),
         "district": property_data.get("district"),
+        "legal_dong": property_data.get("legal_dong"),
         "housing_type": property_data.get("housing_type"),
+        "built_year": property_data.get("built_year"),
+        "address_verified": bool(property_data.get("address_verified")),
         "reference_value": reference_value,
         "planned_deposit": request.planned_deposit,
         "monthly_rent": request.monthly_rent,
@@ -221,6 +326,44 @@ def build_recommended_action(risk_result: dict[str, Any], guarantee: dict[str, A
 
 
 def build_market_context(property_data: dict[str, Any]) -> list[dict[str, Any]]:
+    contexts: list[dict[str, Any]] = []
+    official_address = property_data.get("official_address")
+    if isinstance(official_address, dict):
+        contexts.append(
+            {
+                "title": "Official address",
+                "status": official_address.get("road_address")
+                or property_data.get("address_display"),
+                "source": "Juso road-name address API",
+                "included_in_risk_score": False,
+            }
+        )
+
+    building = property_data.get("building_register")
+    if isinstance(building, dict):
+        contexts.append(
+            {
+                "title": "Building register",
+                "status": building.get("main_purpose") or "Building metadata found",
+                "source": building.get("source_name") or "MOLIT building register API",
+                "included_in_risk_score": False,
+            }
+        )
+
+    reference = property_data.get("market_reference")
+    if isinstance(reference, dict):
+        contexts.append(
+            {
+                "title": "Market reference",
+                "status": reference.get("note") or property_data.get("market_note"),
+                "source": reference.get("source_name") or "MOLIT public data API",
+                "included_in_risk_score": True,
+            }
+        )
+
+    if contexts:
+        return contexts
+
     note = property_data.get("market_note") or "공식 자료 연동 전"
     return [
         {

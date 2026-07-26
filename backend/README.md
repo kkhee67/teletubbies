@@ -86,6 +86,13 @@ $env:PROPERTY_STORE_TTL_SECONDS="60"
 $env:AI_API_BASE_URL="https://your-ai-api.example.com"
 $env:AI_API_TIMEOUT_SECONDS="3"
 $env:AI_API_ENABLED="true"
+$env:MARKET_REFERENCE_ENABLED="true"
+$env:PUBLIC_DATA_SERVICE_KEY="your-data-go-kr-service-key"
+$env:JUSO_CONFIRM_KEY="your-juso-confirm-key"
+$env:BUILDING_REGISTER_ENABLED="true"
+$env:BUILDING_REGISTER_SERVICE_KEY="your-data-go-kr-service-key"
+$env:MARKET_REFERENCE_LOOKBACK_MONTHS="6"
+$env:MARKET_REFERENCE_TIMEOUT_SECONDS="5"
 ```
 
 - `CORS_ALLOW_ORIGINS`: 쉼표로 구분한 브라우저 origin 목록입니다. 값이 없으면 `http://localhost:3000`, `https://dive-2026-teletubbies.hgumax.chatgpt.site`, 로컬 개발 주소가 기본 허용됩니다.
@@ -93,3 +100,15 @@ $env:AI_API_ENABLED="true"
 - `PROPERTY_STORE_TTL_SECONDS`: 매물 저장소 캐시 TTL입니다. TTL 전이라도 파일 수정 시간/크기가 바뀌면 다시 읽습니다.
 - `AI_API_TIMEOUT_SECONDS`: AI API 호출 timeout입니다. 기본값은 `3.0`초입니다.
 - `LOCAL_SIMILAR_CASES_ENABLED`: 운영 기본값은 `false`입니다. `true`로 켠 경우에만 AI 장애 시 명시적으로 `ai_api_status: "local_mock"` 상태와 함께 로컬 모의사례를 반환합니다.
+
+### Market reference API
+
+- `MARKET_REFERENCE_ENABLED`: 주소 기반 분석에서 공공 실거래 기준값 조회를 사용할지 정합니다. 기본값은 `true`입니다.
+- `PUBLIC_DATA_SERVICE_KEY` 또는 `MOLIT_API_SERVICE_KEY`: 국토교통부 아파트 전월세 실거래가 API 서비스키입니다.
+- `JUSO_CONFIRM_KEY` 또는 `JUSO_API_KEY`: 주소 검색 API 승인키입니다. 있으면 주소에서 법정동코드를 더 정확히 찾고, 없으면 일부 구/군 로컬 매핑으로 시도합니다.
+- `BUILDING_REGISTER_ENABLED`: 건축물대장 표제부 조회를 사용할지 정합니다. 기본값은 `true`입니다.
+- `BUILDING_REGISTER_SERVICE_KEY`: 건축물대장 API 서비스키입니다. 없으면 `PUBLIC_DATA_SERVICE_KEY`를 재사용합니다.
+- `MARKET_REFERENCE_LOOKBACK_MONTHS`: 최근 몇 개월 거래를 기준으로 볼지 정합니다. 기본값은 `6`개월입니다.
+- `MARKET_REFERENCE_TIMEOUT_SECONDS`: 시세 기준값 API 호출 timeout입니다. 기본값은 `5`초입니다.
+- `MOLIT_APT_RENT_API_URL`, `MOLIT_OFFICETEL_RENT_API_URL`, `MOLIT_ROW_HOUSE_RENT_API_URL`, `MOLIT_DETACHED_RENT_API_URL`: 국토부 실거래가 API URL을 환경별로 덮어쓸 때만 설정합니다.
+- `BUILDING_REGISTER_TITLE_API_URL`, `JUSO_SEARCH_API_URL`: 건축물대장/주소 API URL을 환경별로 덮어쓸 때만 설정합니다.

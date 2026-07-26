@@ -9,6 +9,17 @@ import type {
 
 export const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
 
+function getConfiguredApiBaseUrl(): string | undefined {
+  const nextPublicValue = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (nextPublicValue) return nextPublicValue;
+
+  const viteEnv = import.meta.env as Record<string, string | undefined> | undefined;
+  return (
+    viteEnv?.VITE_API_BASE_URL?.trim() ||
+    viteEnv?.NEXT_PUBLIC_API_BASE_URL?.trim()
+  );
+}
+
 export class ApiError extends Error {
   readonly status: number | null;
   readonly code: string | null;
@@ -34,7 +45,7 @@ export class ApiError extends Error {
 export function getApiBaseUrl(explicitBaseUrl?: string): string {
   const configured =
     explicitBaseUrl?.trim() ||
-    process.env.NEXT_PUBLIC_API_BASE_URL?.trim() ||
+    getConfiguredApiBaseUrl() ||
     DEFAULT_API_BASE_URL;
   return configured.replace(/\/+$/, "");
 }
@@ -134,12 +145,14 @@ export async function analyzeProperty(
   request: AnalyzeRequestPayload,
   options: ApiClientOptions = {},
 ): Promise<unknown> {
+  const hasPropertyId = Boolean(request.property_id?.trim());
+  const hasAddress = Boolean(request.address_query.trim());
   if (
-    !request.property_id.trim() ||
+    (!hasPropertyId && !hasAddress) ||
     !Number.isFinite(request.planned_deposit) ||
     request.planned_deposit <= 0
   ) {
-    throw new ApiError("매물 ID와 0원보다 큰 보증금이 필요합니다.", {
+    throw new ApiError("주소 또는 매물 ID와 0원보다 큰 보증금이 필요합니다.", {
       code: "INVALID_ANALYZE_REQUEST",
     });
   }
@@ -168,29 +181,40 @@ export async function searchAndAnalyze(
 
   const searchItems = await searchProperties(address, options);
   const searchItem = searchItems[0];
-  if (!searchItem) {
-    throw new ApiError("주소와 일치하는 매물을 찾지 못했습니다.", {
-      status: 404,
-      code: "PROPERTY_NOT_FOUND",
-    });
-  }
+  const addressOnlyItem: PropertySearchItem = {
+    propertyId: "ADDRESS_ONLY",
+    addressDisplay: address,
+    district: null,
+    housingType: null,
+    referenceValue: null,
+    guaranteeStatus: null,
+  };
+  const selectedItem = searchItem ?? addressOnlyItem;
 
   const request: AnalyzeRequestPayload = {
-    property_id: searchItem.propertyId,
     address_query: address,
     planned_deposit: input.plannedDeposit,
     monthly_rent: input.monthlyRent ?? 0,
     user_note: input.userNote ?? "",
   };
+  if (searchItem) {
+    request.property_id = searchItem.propertyId;
+  }
   if (input.userCorrections) {
     request.user_corrections = input.userCorrections;
   }
 
   const rawAnalysisResponse = await analyzeProperty(request, options);
+  const analysis = adaptAnalyzeResponse(rawAnalysisResponse);
+  const propertyId = analysis.propertySummary.propertyId ?? selectedItem.propertyId;
   return {
-    propertyId: searchItem.propertyId,
-    searchItem,
-    analysis: adaptAnalyzeResponse(rawAnalysisResponse),
+    propertyId,
+    searchItem: {
+      ...selectedItem,
+      propertyId,
+      addressDisplay: selectedItem.addressDisplay ?? address,
+    },
+    analysis,
     rawAnalysisResponse,
   };
 }

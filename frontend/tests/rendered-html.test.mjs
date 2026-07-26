@@ -142,14 +142,14 @@ test("server-renders the live-analysis entry screen", async () => {
   assert.doesNotMatch(html, /DIVE 2026 MVP|API 연결 전 샘플|개발용 샘플/);
 });
 
-test("uses the configured API base URL and the localhost default", () => {
+test("uses the configured API base URL and trims trailing slashes", () => {
   const previous = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   try {
-    delete process.env.NEXT_PUBLIC_API_BASE_URL;
+    process.env.NEXT_PUBLIC_API_BASE_URL = "http://127.0.0.1:9000///";
     assert.equal(
       integration.getApiBaseUrl(),
-      "http://127.0.0.1:8000",
+      "http://127.0.0.1:9000",
     );
     assert.equal(
       integration.getApiBaseUrl("https://api.example.com///"),
@@ -245,26 +245,40 @@ test("searches by address, selects the first property, then posts analyze", asyn
   );
 });
 
-test("does not call analyze or fabricate fallback data when search is empty", async () => {
-  let callCount = 0;
-  const fetcher = async () => {
-    callCount += 1;
-    return jsonResponse({ items: [] });
+test("falls back to address-only analysis when property search is empty", async () => {
+  const calls = [];
+  const fetcher = async (input, init) => {
+    calls.push({ input: String(input), init });
+    if (calls.length === 1) return jsonResponse({ items: [] });
+    return jsonResponse({
+      ...analyzeResponse,
+      property_summary: {
+        ...analyzeResponse.property_summary,
+        property_id: "ADDR-abc123",
+        address_display: "서울특별시 강남구 테헤란로 152",
+      },
+    });
   };
 
-  await assert.rejects(
-    integration.searchAndAnalyze(
-      { address: "검색되지 않는 주소", plannedDeposit: 100000000 },
-      { fetcher },
-    ),
-    (error) => {
-      assert.ok(error instanceof integration.ApiError);
-      assert.equal(error.code, "PROPERTY_NOT_FOUND");
-      assert.equal(error.status, 404);
-      return true;
-    },
+  const result = await integration.searchAndAnalyze(
+    { address: "서울특별시 강남구 테헤란로 152", plannedDeposit: 100000000 },
+    { fetcher },
   );
-  assert.equal(callCount, 1);
+
+  assert.equal(calls.length, 2);
+  assert.equal(calls[1].init.method, "POST");
+  assert.deepEqual(JSON.parse(calls[1].init.body), {
+    address_query: "서울특별시 강남구 테헤란로 152",
+    planned_deposit: 100000000,
+    monthly_rent: 0,
+    user_note: "",
+  });
+  assert.equal(result.propertyId, "ADDR-abc123");
+  assert.equal(result.searchItem.propertyId, "ADDR-abc123");
+  assert.equal(
+    result.analysis.propertySummary.addressDisplay,
+    "서울특별시 강남구 테헤란로 152",
+  );
 });
 
 test("maps incomplete API responses to explicit empty values", () => {

@@ -10,7 +10,7 @@ export type PropertySearchItem = {
 };
 
 export type AnalyzeRequestPayload = {
-  property_id: string;
+  property_id?: string;
   address_query: string;
   planned_deposit: number;
   monthly_rent: number;
